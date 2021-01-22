@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{20E57F86-6562-462C-B617-6AD84946081F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>YMMHRSystemLogic</RootNamespace>
+    <AssemblyName>YMMHRSystemLogic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DBFramework">
+      <HintPath>..\DLLs\DBFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EmailComponent">
+      <HintPath>..\DLLs\EmailComponent.dll</HintPath>
+    </Reference>
+    <Reference Include="Encriptador">
+      <HintPath>..\DLLs\Encriptador.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLLs\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data">
+      <HintPath>..\DLLs\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\LegalProcedure.cs" />
+    <Compile Include="Classes\Diner.cs" />
+    <Compile Include="Classes\Gift.cs" />
+    <Compile Include="Classes\GiftAssociate.cs" />
+    <Compile Include="Classes\PrizeTeam.cs" />
+    <Compile Include="Classes\PrizeAssociate.cs" />
+    <Compile Include="Classes\Prize.cs" />
+    <Compile Include="Classes\FindingType.cs" />
+    <Compile Include="Classes\Transport.cs" />
+    <Compile Include="Classes\WorkerFile.cs" />
+    <Compile Include="Classes\Process.cs" />
+    <Compile Include="Classes\FoodType.cs" />
+    <Compile Include="Classes\Log.cs" />
+    <Compile Include="Classes\Login.cs" />
+    <Compile Include="Classes\Permission.cs" />
+    <Compile Include="Classes\Role.cs" />
+    <Compile Include="Classes\Route.cs" />
+    <Compile Include="Classes\SendEmail.cs" />
+    <Compile Include="Classes\SessionExpireFilterAttribute.cs" />
+    <Compile Include="Classes\Shift.cs" />
+    <Compile Include="Classes\Stop.cs" />
+    <Compile Include="Classes\User.cs" />
+    <Compile Include="DTO\DtoFindingType.cs" />
+    <Compile Include="DTO\DtoGift.cs" />
+    <Compile Include="DTO\DtoGiftAssociate.cs" />
+    <Compile Include="DTO\DtoPrizeTeamPointLog.cs" />
+    <Compile Include="DTO\DtoPrizeTeamAssociate.cs" />
+    <Compile Include="DTO\DtoPrizeTeamSecurityCross.cs" />
+    <Compile Include="DTO\DtoPrizeTeamScrap.cs" />
+    <Compile Include="DTO\DtoPrizeTeamDockAudit.cs" />
+    <Compile Include="DTO\DtoPrizeTeamProductivity.cs" />
+    <Compile Include="DTO\DtoPrizeTeamConfiguration.cs" />
+    <Compile Include="DTO\DtoPrizeTeamAttendance.cs" />
+    <Compile Include="DTO\DtoPrizeTeam.cs" />
+    <Compile Include="DTO\DtoPrizeAssociateAttendance.cs" />
+    <Compile Include="DTO\DtoPrizeAssociate.cs" />
+    <Compile Include="DTO\DtoAdmission.cs" />
+    <Compile Include="DTO\DtoExtraordinaryDiner.cs" />
+    <Compile Include="DTO\DtoDismissal.cs" />
+    <Compile Include="DTO\DtoExtraordinaryTransport.cs" />
+    <Compile Include="DTO\DtoDiner.cs" />
+    <Compile Include="DTO\DtoPrize.cs" />
+    <Compile Include="DTO\DtoPrizeAssociateConfiguration.cs" />
+    <Compile Include="DTO\DtoPrizeAssociatePrize.cs" />
+    <Compile Include="DTO\DtoPrizeAssociateYear.cs" />
+    <Compile Include="DTO\DtoPrizeAssociateMonth.cs" />
+    <Compile Include="DTO\DtoPrizeAssociateFinding.cs" />
+    <Compile Include="DTO\DtoGiftLog.cs" />
+    <Compile Include="DTO\DtoPrizeAssociatePointLog.cs" />
+    <Compile Include="DTO\DtoSindicateContract.cs" />
+    <Compile Include="DTO\DtoSindicateAttachment.cs" />
+    <Compile Include="DTO\DtoSindicate.cs" />
+    <Compile Include="DTO\DtoTransport.cs" />
+    <Compile Include="DTO\DtoPrizeLog.cs" />
+    <Compile Include="DTO\DtoWarning.cs" />
+    <Compile Include="DTO\DtoWorkerAttachment.cs" />
+    <Compile Include="DTO\DtoFoodType.cs" />
+    <Compile Include="DTO\DtoLegalProcedure.cs" />
+    <Compile Include="DTO\DtoLogin.cs" />
+    <Compile Include="DTO\DtoPermission.cs" />
+    <Compile Include="DTO\DtoRole.cs" />
+    <Compile Include="DTO\DtoRoute.cs" />
+    <Compile Include="DTO\DtoRouteStop.cs" />
+    <Compile Include="DTO\DtoShift.cs" />
+    <Compile Include="DTO\DtoStop.cs" />
+    <Compile Include="DTO\DtoTask.cs" />
+    <Compile Include="DTO\DtoTrajectory.cs" />
+    <Compile Include="DTO\DtoUser.cs" />
+    <Compile Include="DTO\DtoProcess.cs" />
+    <Compile Include="DTO\DtoWorkerFile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

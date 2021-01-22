@@ -1,0 +1,80 @@
+﻿@model DtoRole
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Roles";
+    Role role = new Role();
+}
+<script src="~/Scripts/Role.js"></script>
+<script>
+    $SaveTreePermissions = '@Url.Action("SaveTreePermissions", "Role")';
+    $RoleIndex = '@Url.Action("Index", "Role")';
+</script>
+<head>
+    <title>Edit Role</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Edit Roles</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveRole"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" onclick="SaveTree()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+                </a>
+            }
+            <a class="button flat-button" href="@Url.Action("Index", "Role")" style="color:white">
+                <span class="mif-cross"></span><span class="actionButton"> Cancel</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------FLEX GRID------------------------------>
+    <div class="row mt-10">
+        <div class="cell-md-5 mx-5">
+            <!--------------------------------------- SIDEBAR ROL ------------------------------------------>
+
+            <input type="text" class="mt-10" data-role="input" name="Name" id="Name" data-prepend="Role Name" value="@Model.Name" data-validate="required" autocomplete="off" data-step="2" data-intro="Role name" data-position='auto'>
+            <span id="feedback" class="invalid_feedback m-0">
+                Enter a Name
+            </span>
+
+            <textarea id="Description" data-prepend="Description" class="my-5" data-role="textarea" name="Description" data-step="3" data-intro="Role description" data-position='auto'>@Model.Description</textarea>
+
+            <h4>Users with this role:</h4>
+            <ul style="list-style-type: none; max-height: 200px; overflow-y: auto;" data-step="4" data-intro="User List" data-position='auto'>
+                @if (Model.UserList.Count <= 0)
+                {
+                    <li><strong>This role does not have users</strong></li>
+                }
+                @foreach (var item in Model.UserList)
+                {
+                    <li>@item</li>
+                }
+            </ul>
+        </div>
+
+        <div class="cell-md-5 mx-10">
+            <h4 style="color: black; padding-top: 14px"><b>Permission Tree</b></h4>
+            <div id="PermissionTree" name="@Model.RoleId" style="width: 800px; height: 50vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="Permission Tree" data-position='auto'>
+                @Html.Partial("~/Views/Permission/PermissionTree.cshtml", role.LoadRolePermissions(Model.RoleId))
+            </div>
+
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderEditRole" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin" style="visibility: hidden"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+</body>
+<script>
+    $SaveTreePermissions = '@Url.Action("SaveTreePermissions", "Role")';
+    $RoleIndex = '@Url.Action("Index", "Role")';
+</script>
+
+

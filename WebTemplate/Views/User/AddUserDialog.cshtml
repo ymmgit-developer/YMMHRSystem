@@ -1,0 +1,81 @@
+﻿@model DtoUser
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">User</div>
+
+<div class="dialog-content">
+    <form id="UserForm" data-role="validator" data-on-validate-form="NewUser()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell-md-6">
+                <input type="text" name="Name" id="Name" data-role="input" data-prepend="Name:" data-validate="required" class="user" autocomplete="off" value="@Model.Name">
+                <span class="invalid_feedback">
+                    Enter a Name
+                </span>
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="FirstSurname" id="FirstSurname" data-role="input" data-prepend="Surname:" data-validate="required" class="user" autocomplete="off" value="@Model.FirstSurname">
+                <span class="invalid_feedback">
+                    Entar a Surname
+                </span>
+            </div>
+        </div>
+        <div class="row mt-2 mb-2">
+            <div class="cell-md-6">
+                <input type="text" name="LastSurname" id="LastSurname" data-role="input" data-prepend="Second Surname:" data-validate="required" class="user" autocomplete="off" value="@Model.LastSurname">
+                <span class="invalid_feedback">
+                    Enter a surname
+                </span>
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="WorkerId" id="WorkerId" data-role="input" data-prepend="Worker ID:" data-validate="required" class="user" autocomplete="off" value="@Model.WorkerId">
+                <span class="invalid_feedback">
+                   Enter a worker ID
+                </span>
+            </div>
+        </div>
+        <div class=" row mt-2 mb-2">
+            <div class="cell-md-6">
+                <input type="email" name="Email" id="Email" data-role="input" data-prepend="Email:" data-validate="required" class="user" autocomplete="off" value="@Model.Email">
+                <span class="invalid_feedback">
+                    Enter an email address
+                </span>
+            </div>
+            <div class="cell-md-6">
+                <input type="password" name="Password" id="Password" data-role="input" data-prepend="Password:" data-validate="required" class="user" autocomplete="off" value="@Model.Password">
+                <span class="invalid_feedback">
+                    Enter a password
+                </span>
+            </div>
+        </div>
+        <div class="row mt-2 mb-2">
+            <div class="cell-md-12">
+                <select data-role="select" id="RoleId" name="RoleId" class="user">
+
+                    @foreach (var item in Model.RoleList)
+                    {
+                        if (Model.RoleId == item.RoleId)
+                        {
+                            <option selected value="@item.RoleId">@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.RoleId">@item.Name</option>
+
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mt-2 mb-2">
+            <div class="dialog-actions float-right">
+                @if (HttpContext.Current.Session["CanSaveUser"].Equals(true))
+                {
+                <div><button id="SaveUser" class="button primary"><span class="mif-floppy-disk"></span> Save </button></div>
+                }
+                <div><span id="userPreloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            </div>
+        </div>
+    </form>
+</div>

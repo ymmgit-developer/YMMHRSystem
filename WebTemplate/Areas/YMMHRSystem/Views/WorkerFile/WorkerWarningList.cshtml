@@ -1,0 +1,104 @@
+﻿@model List<DtoWarning>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div class="row d-flex flex-align-center flex-justify-between mx-5">
+    <div><h6 style="color:black">Warnings</h6></div>
+    <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenWarningDialog()"><span class="mif-plus"></span><span class="actionButton"> New </span></a></div>
+</div>
+<div id="WarningTable">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttWarning" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Motive</th>
+                <th style="text-align: center">Date</th>
+                <th style="text-align: center">File</th>
+                <th style="text-align: center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="@item.WarningId">
+                    <td style="text-align: center">
+                        <span> @item.Motive </span>
+                    </td>
+                    <td style="text-align: center">
+                        <span> @item.Date.ToShortDateString() </span>
+                    </td>
+                    <td style="text-align: center">
+                        <span> @Path.GetFileName(item.FileName) </span>
+                    </td>
+                    <td style="text-align: center">
+                        <a class="button small my-button-colors" style="cursor: pointer; " href="@Url.Action("GetWarningPDF", "WorkerFile", new { Area = "YMMHRSystem" , warningId = item.WarningId })" target="_blank"><span class="mif-eye"></span><span class="actionButton"> View </span></a>
+                        @if (HttpContext.Current.Session["CanDeleteWorkerFile"].Equals(true))
+                        {
+                            <a class="button small bg-red fg-white"style="cursor: pointer; " onclick="ConfirmDeleteWarning(@item.WarningId)"><span class="mif-bin"></span><span class="actionButton"> Delete </span></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteWarning" name="DeleteWarning" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeleteWarning()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteWarning')"> No</button>
+    </div>
+</div>
+
+<script>
+    var tableWarning;
+    $(document).ready(function () {
+
+        tableWarning = $('#dttWarning').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "20vh",
+            scrollCollapse: true
+        });
+
+    });
+
+    function DeleteWarning() {
+        var aux;
+        $("#dttWarning tr").each(function () {
+            if ($(this).attr("id") == window.$WarningId) {
+                aux = $(this);
+            }
+        });
+        table = $('#dttWarning').DataTable();
+        $.ajax({
+            method: "POST",
+            url: window.$DeleteWarning,
+            data: { warningId: window.$WarningId},
+            success: function (result) {
+                if (result === "true") {
+                    Metro.toast.create("Warning deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the warning.", null, null, "bg-red fg-white");
+                }
+                tableWarning.row(aux).remove().draw();
+                Metro.dialog.close('#DeleteWarning')
+            }
+        });
+    }
+
+    function ConfirmDeleteWarning(warningId) {
+        var dialog = Metro.getPlugin('#DeleteWarning', 'dialog');
+        dialog.open();
+        window.$WarningId = warningId;
+    }
+</script>
+

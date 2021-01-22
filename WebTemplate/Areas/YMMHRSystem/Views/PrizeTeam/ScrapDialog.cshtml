@@ -1,0 +1,55 @@
+﻿@model DtoPrizeTeamScrap
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    List<string> months = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+    List<string> years = new List<string>();
+    for (int i = 2013; i <= DateTime.Now.Year; i++)
+    {
+        years.Add(i.ToString());
+    }
+}
+<div class="dialog-title">Scrap</div>
+<div class="dialog-content">
+    <form id="ScrapForm" data-role="validator" data-on-validate-form="SavePrizeTeamScrap()" action="javascript:">
+
+        <div class="row">
+            <div class="cell-md-12">
+                <select data-role="select" id="Year" name="Year" data-prepend="Year:">
+                    @foreach (var item in years)
+                    {
+                        if (item == DateTime.Now.Year.ToString())
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+
+                    }
+                </select>
+            </div>
+            <div class="cell-md-12">
+                <select data-role="select" id="Month" name="Month" data-prepend="Month:">
+                    @foreach (var item in months)
+                    {
+                        if (item == DateTime.Now.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture))
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="SavePrizeTeamScrap" class="button my-control-colors"><span class="mif-checkmark"> Ok</span> </button></div>
+        </div>
+    </form>
+</div>
+

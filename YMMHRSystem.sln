@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YMMHRSystem", "YMMHRSystem\YMMHRSystem.csproj", "{ABCA3297-35CD-43E9-ABA2-3FE8CA2D6C10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTemplate", "WebTemplate\WebTemplate.csproj", "{722C7271-0E13-4E43-9828-1D8521535465}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YMMHRSystemLogic", "YMMHRSystemLogic\YMMHRSystemLogic.csproj", "{20E57F86-6562-462C-B617-6AD84946081F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABCA3297-35CD-43E9-ABA2-3FE8CA2D6C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCA3297-35CD-43E9-ABA2-3FE8CA2D6C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABCA3297-35CD-43E9-ABA2-3FE8CA2D6C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCA3297-35CD-43E9-ABA2-3FE8CA2D6C10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{722C7271-0E13-4E43-9828-1D8521535465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{722C7271-0E13-4E43-9828-1D8521535465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{722C7271-0E13-4E43-9828-1D8521535465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{722C7271-0E13-4E43-9828-1D8521535465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20E57F86-6562-462C-B617-6AD84946081F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E57F86-6562-462C-B617-6AD84946081F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20E57F86-6562-462C-B617-6AD84946081F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20E57F86-6562-462C-B617-6AD84946081F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

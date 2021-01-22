@@ -1,0 +1,112 @@
+﻿@model DtoPrizeAssociate
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Prize Associate";
+}
+<script src="~/Areas/YMMHRSystem/Scripts/PrizeAssociate.js"></script>
+<script>
+    $AssociateMonthDialog = '@Url.Action("AssociateMonthDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAssociateMonth = '@Url.Action("SaveAssociateMonth", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $DeletePrizeAssociateMonth = '@Url.Action("DeletePrizeAssociateMonth", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $AssociateYearDialog = '@Url.Action("AssociateYearDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAssociateYear = '@Url.Action("SaveAssociateYear", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $DeletePrizeAssociateYear = '@Url.Action("DeletePrizeAssociateYear", "PrizeAssociate", new { area = "YMMHRSystem"})';
+    $AttendanceDialog = '@Url.Action("AttendanceDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAttendance = '@Url.Action("SaveAttendance", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $DeletePrizeAssociateAttendance = '@Url.Action("DeletePrizeAssociateAttendance", "PrizeAssociate", new { area = "YMMHRSystem"})';
+    $FindingDialog = '@Url.Action("FindingDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAssociateFinding = '@Url.Action("SaveAssociateFinding", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $DeletePrizeAssociateFinding = '@Url.Action("DeletePrizeAssociateFinding", "PrizeAssociate", new { area = "YMMHRSystem"})';
+    $PrizeDialog = '@Url.Action("PrizeDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAssociatePrize = '@Url.Action("SavePrizeAssociatePrize", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $DeletePrizeAssociatePrize = '@Url.Action("DeletePrizeAssociatePrize", "PrizeAssociate", new { area = "YMMHRSystem"})';
+    $PointConfigurationDialog = '@Url.Action("PointConfigurationDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SavePointConfiguration = '@Url.Action("SavePointConfiguration", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $PrizeAssociatePointLogDialog = '@Url.Action("PrizeAssociatePointLogDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $AdjustmentDialog = '@Url.Action("AdjustmentDialog", "PrizeAssociate", new { area = "YMMHRSystem" })';
+    $SaveAdjustment = '@Url.Action("SaveAdjustment", "PrizeAssociate", new { area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Associate Summary</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">@Model.Associate</h5>
+        <div class="ml-auto pr-5">
+            <a class="button flat-button" style="color:white" onclick="PrizeAssociatePointLogDialog(@Model.PrizeAssociateId)"><span class="mif-assignment"></span> <span class="actionButton"> Adjustment Log</span></a>
+            @if (HttpContext.Current.Session["CanSavePrizeAssociate"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" onclick="AdjustmentDialog()"><span class="mif-tab"></span><span class="actionButton"> Point Adjustment</span></a>
+                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-cogs"></span><span class="actionButton"> Point Configuration</span>
+                </a>
+            }
+            <a class="button flat-button" href="@Url.Action("Index", "PrizeAssociate", new { Area = "YMMHRSystem" })" style="color:white">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------CONTAINER------------------------------>
+    <div class="container-fluid mt-2">
+        <!-----------------------------------STOP PANEL------------------------------>
+        <div class="row">
+            <div class="cell-md-6">
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="All PrizeAssociate stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AttendanceList.cshtml", Model.AttendanceList)
+                </div>
+            </div>
+            <div class="cell-md-6">
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All PrizeAssociate stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AssociateMonthList.cshtml", Model.AssociateMonthList)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-6">
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All PrizeAssociate stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AssociateYearList.cshtml", Model.AssociateYearList)
+                </div>
+            </div>
+            <div class="cell-md-6">
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="All PrizeAssociate stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/FindingList.cshtml", Model.FindingList)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="All PrizeAssociate stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/PrizeList.cshtml", Model.PrizeList)
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttendanceDialog" name="AttendanceDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AssociateMonthDialog" name="AssociateMonthDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AssociateYearDialog" name="AssociateYearDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="FindingDialog" name="FindingDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PrizeDialog" name="PrizeDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PointConfigurationDialog" name="PointConfigurationDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="1000" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PrizeAssociatePointLogDialog" name="PrizeAssociatePointLogDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="600" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AdjustmentDialog" name="AdjustmentDialog" class="dialog" data-role="dialog">      
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Loading....</span>
+        </div>
+    </div>
+</body>

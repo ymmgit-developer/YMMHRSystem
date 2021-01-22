@@ -1,0 +1,138 @@
+﻿@model List<DtoWorkerFile>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Worker Records";
+}
+<head>
+    <script>
+        $SaveWorkerFile = '@Url.Action("SaveWorkerFile", "WorkerFile", new { area = "YMMHRSystem" })';
+        $LoadWorkerFile = '@Url.Action("LoadWorkerFile", "WorkerFile", new { area = "YMMHRSystem" })';
+        $DismissWorkerFile = '@Url.Action("DismissWorkerFile", "WorkerFile", new { area = "YMMHRSystem" })';
+        $DismissWorker = '@Url.Action("DismissWorker", "WorkerFile", new { area = "YMMHRSystem" })';
+        $AdmitWorkerFile = '@Url.Action("AdmitWorkerFile", "WorkerFile", new { area = "YMMHRSystem" })';
+        $AdmitWorker = '@Url.Action("AdmitWorker", "WorkerFile", new { area = "YMMHRSystem" })';
+        $ImportWorkers = '@Url.Action("ImportWorkers", "WorkerFile", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/WorkerFile.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Worker Records</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveWorkerFile"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will allow multiple worker importation" data-position='auto' onclick="Metro.dialog.open('#ImportDialog')"><span class="mif-upload"></span><span class="actionButton"> Import </span></a>
+                <a class="button flat-button" style="color:white" data-step="2" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' href="@Url.Action("LoadWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" , nMR4z = 0 })"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+    <div class="container-fluid mt-5">
+        <div id="WorkerFileTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttWorkerFiles" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">ID</th>
+                        <th style="text-align: center">Name</th>
+                        <th style="text-align: center">Admission Date</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Status</th>
+                        <th style="text-align: center" data-step="4" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td style="text-align: center">
+                                <span> @item.WorkerId </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Names </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @(item.AdmissionDate?.ToShortDateString()) </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Process </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @(item.Status ? "Active" : "Inactive") </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white"  style="cursor: pointer;" href="@Url.Action("LoadWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" , nMR4z = item.WorkerFileId })"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                @if (HttpContext.Current.Session["CanDismissWorkerFile"].Equals(true) && item.Status && (item.DismissalNumber < 2))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="DismissWorkerFile(@item.WorkerFileId)"><span class="mif-cancel"></span><span class="actionButton"> Dismiss</span></a>
+                                }
+                                @if (HttpContext.Current.Session["CanRehireWorkerFile"].Equals(true) && item.Rehirable && (item.AdmissionNumber < 2))
+                                {
+                                    <a class="button bg-green fg-white" style="cursor: pointer;" onclick="AdmitWorkerFile(@item.WorkerFileId)"><span class="mif-user-plus"></span><span class="actionButton"> Rehire</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="700" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DismissalDialog" name="DismissalDialog" class="dialog" data-role="dialog">
+    </div>
+
+    <div data-overlay="true" data-width="400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AdmissionDialog" name="AdmissionDialog" class="dialog" data-role="dialog">
+    </div>
+
+    <div data-overlay="true" data-width="400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ImportDialog" name="ImportDialog" class="dialog container-fluid" data-role="dialog">
+            <div class="dialog-title">Import</div>
+            <div class="dialog-content">
+                <div class="row">
+                    <div class="cell-md-12">
+                        <input type="file" id="Url" name="Url" data-role="file" data-button-title="<span class='mif-folder mif-2x'></span>">
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-actions d-flex flex-justify-between">
+                <a class="button my-button-colors" style="cursor: pointer; color: white;" href="@Url.Action("CreateDocument", "WorkerFile", new { area = "YMMHRSystem" })"><span class="mif-download"></span><span class="actionButton"> Download Template</span></a>
+                <button onclick="ImportWorkers()" class="button success"><span class="mif-checkmark"> Import</span></button>
+            </div>
+        </div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Loading....</span>
+        </div>
+    </div>
+
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="TemplateError" name="TemplateError" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>Error trying to import template:</p>
+            <p>- Template does not have the correct columns</p>
+            <p>- Template is blank</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#TemplateError')">OK</button>
+        </div>
+    </div>
+</body>
+

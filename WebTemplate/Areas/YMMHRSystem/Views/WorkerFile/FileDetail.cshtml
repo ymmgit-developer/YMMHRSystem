@@ -1,0 +1,296 @@
+﻿@model DtoWorkerFile
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Worker Record";
+    List<string> educationList = new List<string> { "Primary School", "High School", "Preparatory", "University" };
+    List<string> jobList = new List<string> { "Associate Production", "Team Leader", "Coordinator", "Assistant Manager", "Manager", "Senior Manager", "Intern" };
+    List<string> civilStatusList = new List<string> { "Single", "Married", "Free Union", "Divorced", "Widower" };
+    List<string> workerTypeList = new List<string> { "Union Worker", "Staff" };
+    Process process = new Process();
+    var processList = process.LoadMultiple();
+}
+<script src="~/Areas/YMMHRSystem/Scripts/WorkerFile.js"></script>
+<script>
+    $SaveWorkerFile = '@Url.Action("SaveWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" })';
+    $GetDismissalPDF = '@Url.Action("GetDismissalPDF", "WorkerFile", new { area = "YMMHRSystem" })';
+    $GetAttachmentPDF = '@Url.Action("GetAttachmentPDF", "WorkerFile", new { area = "YMMHRSystem" })';
+    $GetTrajectoryPDF = '@Url.Action("GetTrajectoryPDF", "WorkerFile", new { area = "YMMHRSystem" })';
+    $GetWarningPDF = '@Url.Action("GetWarningPDF", "WorkerFile", new { area = "YMMHRSystem" })';
+    $DeleteDismissal = '@Url.Action("DeleteDismissalFile", "WorkerFile", new { area = "YMMHRSystem" })';
+    $AttachmentDialog = '@Url.Action("AttachmentDialog", "WorkerFile", new { area = "YMMHRSystem" })';
+    $AddAttachment = '@Url.Action("AddAttachment", "WorkerFile", new { area = "YMMHRSystem" })';
+    $DeleteAttachment = '@Url.Action("DeleteAttachmentFile", "WorkerFile", new { area = "YMMHRSystem" })';
+    $TrajectoryDialog = '@Url.Action("TrajectoryDialog", "WorkerFile", new { area = "YMMHRSystem" })';
+    $AddTrajectory = '@Url.Action("AddTrajectory", "WorkerFile", new { area = "YMMHRSystem" })';
+    $DeleteTrajectory = '@Url.Action("DeleteTrajectoryFile", "WorkerFile", new { area = "YMMHRSystem"})';
+    $WarningDialog = '@Url.Action("WarningDialog", "WorkerFile", new { area = "YMMHRSystem" })';
+    $AddWarning = '@Url.Action("AddWarning", "WorkerFile", new { area = "YMMHRSystem" })';
+    $DeleteWarning = '@Url.Action("DeleteWarningFile", "WorkerFile", new { area = "YMMHRSystem"})';
+    $SavePhoto = '@Url.Action("SavePhoto", "WorkerFile", new { area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Worker Record</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Edit Record</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveWorkerFile"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" onclick="SaveWorkerFile()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+                </a>
+            }
+            <a class="button flat-button" href="@Url.Action("Index", "WorkerFile", new { Area = "YMMHRSystem" })" style="color:white">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------CONTAINER------------------------------>
+    <div class="container-fluid mt-2" id="FormDetail">
+        <div class="row">
+            <div class="cell-md-10 mb-0 pb-0">
+                <!----------------------------------- SUB ROW------------------------------>
+                <div class="row mb-1">
+                    <div class="cell">
+                        <input type="text" name="Names" id="Names" data-role="input" data-prepend="Names:" class="WorkerFile" autocomplete="off" value="@Model.Names">
+                    </div>
+                    <div class="cell">
+                        <input type="text" name="WorkerId" id="WorkerId" data-role="input" data-prepend="Worker ID:" class="WorkerFile" autocomplete="off" value="@Model.WorkerId">
+                    </div>
+                    <div class="cell">
+                        @if (Model.WorkerFileId == 0)
+                        {
+                            <input data-prepend="Admission Date:" id="GetAdmissionDate" name="GetAdmissionDate" value="@(Model.AdmissionDate?.ToShortDateString())" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        }
+                        else
+                        {
+                            <input type="text" name="GetAdmissionDate" id="GetAdmissionDate" data-role="input" readonly="readonly" data-prepend="Admission Date:" class="WorkerFile" autocomplete="off" value="@(Model.AdmissionDate?.ToShortDateString())">
+                        }
+                        @Html.Hidden("AdmissionDate", Model.AdmissionDate)
+                    </div>
+                </div>
+                <!----------------------------------- SUB ROW------------------------------>
+                <div class="row mb-1">
+                    <div class="cell">
+                        <input data-prepend="Date of Birth:" id="GetDoB" name="GetDoB" value="@Model.DoB" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        @Html.Hidden("DoB", Model.DoB)
+                    </div>
+                    <div class="cell">
+                        <select class="WorkerFile" data-role="select" id="Process" name="Process" data-prepend="Process:">
+                            @foreach (var item in processList)
+                            {
+                                if (Model.Process == item.Name)
+                                {
+                                    <option selected value="@item.Name">@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Name">@item.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="cell">
+                        <select class="WorkerFile" data-role="select" id="Job" name="Job" data-prepend="Job Title:">
+                            @foreach (var item in jobList)
+                            {
+                                if (Model.Job == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <!----------------------------------- SUB ROW------------------------------>
+                <div class="row mb-1">
+                    <div class="cell">
+                        <input type="email" name="Email" id="Email" data-role="input" data-prepend="Email:" class="WorkerFile" autocomplete="off" value="@Model.Email">
+                    </div>
+                    <div class="cell">
+                        <input type="text" name="Telephone" id="Telephone" data-role="input" data-prepend="Telephone:" class="WorkerFile" autocomplete="off" value="@Model.Telephone">
+                    </div>
+                    <div class="cell">
+                        <select class="WorkerFile" data-role="select" id="CivilStatus" name="CivilStatus" data-prepend="Civil Status:">
+                            @foreach (var item in civilStatusList)
+                            {
+                                if (Model.CivilStatus == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <!----------------------------------- SUB ROW------------------------------>
+                <div class="row">
+                    <div class="cell">
+                        <select class="WorkerFile" data-role="select" id="Education" name="Education" data-prepend="Education Level:">
+                            @foreach (var item in educationList)
+                            {
+                                if (Model.Education == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="cell">
+                        <select class="WorkerFile" data-role="select" id="Type" name="Type" data-prepend="Worker Type:">
+                            @foreach (var item in workerTypeList)
+                            {
+                                if (Model.Type == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="cell">
+                        <input type="text" name="Rehirable" id="Rehirable" data-role="input" readonly="readonly" data-prepend="Rehirable:" class="WorkerFile" autocomplete="off" value="@(Model.Rehirable ? "Yes" : "No" )">
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-2 flex-justify-center mb-0 pb-0">
+                <div class="img-container" style="width:150px; margin:auto;">
+                    @if (!string.IsNullOrEmpty(Model.WorkerPhoto))
+                    {
+                        <img id="Photo" onclick="$('#Url').trigger('click'); return true;" src="@Url.Content(Model.WorkerPhoto)">
+                    }
+                    else
+                    {
+                        <img id="Photo" onclick="$('#Url').trigger('click'); return true;" style="opacity: 0.4" src="~/Content/Resources/default-user.png">
+                    }
+                </div>
+            </div>
+            <input type="file" style="display:none" class="hide" name="Url" id="Url" data-role="file" data-on-select="ChangePhoto()" data-button-title="Select" data-prepend="" autocomplete="off" value="@Model.WorkerPhoto">
+        </div>
+        <div class="row">
+            <div class="cell-md-10 mt-0 pt-0">
+                <div class="row">
+                    <div class="cell">
+                        <input type="text" name="CURP" id="CURP" data-role="input" data-prepend="CURP:" class="WorkerFile" autocomplete="off" value="@Model.CURP">
+                    </div>
+                    <div class="cell">
+                        <input type="text" name="RFC" id="RFC" data-role="input" data-prepend="RFC:" class="WorkerFile" autocomplete="off" value="@Model.RFC">
+                    </div>
+                    <div class="cell">
+                        <input type="text" name="NSS" id="NSS" data-role="input" data-prepend="NSS:" class="WorkerFile" autocomplete="off" value="@Model.NSS">
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-2 flex-justify-center">
+                @if (Model.Gender)
+                {
+                    <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Male">
+                    <input type="radio" class="genderCheck" id="Female" name="GenderRadio" data-role="radio" data-style="2" data-caption="Female">
+                }
+                else
+                {
+                    <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" data-role="radio" data-style="2" data-caption="Male">
+                    <input type="radio" class="genderCheck" id="Female" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Female">
+                }
+            </div>
+        </div>
+
+        @Html.Hidden("Status", Model.Status, new { @class = "WorkerFile" })
+        @Html.Hidden("Gender", Model.Gender, new { @class = "WorkerFile" })
+        @Html.Hidden("UserCreated", Model.UserCreated, new { @class = "WorkerFile" })
+        @Html.Hidden("DateAdded", Model.DateAdded, new { @class = "WorkerFile" })
+        @Html.Hidden("WorkerPhoto", Model.WorkerPhoto, new { @class = "WorkerFile" })
+        @Html.Hidden("DismissalNumber", Model.DismissalNumber, new { @class = "WorkerFile" })
+        @Html.Hidden("AdmissionNumber", Model.AdmissionNumber, new { @class = "WorkerFile" })
+        <!-----------------------------------STOP PANEL------------------------------>
+        <div class="row">
+            <div class="cell-md-10">
+                <div id="DismissalTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerDismissalList.cshtml", Model.DismissalList)
+                </div>
+            </div>
+            <div class="cell-md-2">
+                <div id="AdmissionTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All WorkerFile stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAdmissionList.cshtml", Model.AdmissionList)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-6">
+                <div id="TrajectoryTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerTrajectoryList.cshtml", Model.TrajectoryList)
+                </div>
+            </div>
+            <div class="cell-md-6">
+                <div id="FileTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All WorkerFile stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAttachmentList.cshtml", Model.AttachmentList)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div id="WarningTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerWarningList.cshtml", Model.WarningList)
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-width="300" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttachmentDialog" name="AttachmentDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="300" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="TrajectoryDialog" name="TrajectoryDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="600" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="WarningDialog" name="Warning" class="dialog" data-role="dialog">
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderWorkerFile" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>- WorkerFile already exists</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <div><button id="SaveStop" class="button my-control-colors"><span class="mif-floppy-disk"></span> Import </button></div>
+            <div><button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button></div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+
+        $(".genderCheck").on("change", function (e) {
+            debugger;
+            if (e.target.checked) {
+                if (e.target.id == "Female") {
+                    $('#Gender').val("false");
+                } else {
+                    $('#Gender').val("true");
+                }
+            }
+        });
+    });
+</script>

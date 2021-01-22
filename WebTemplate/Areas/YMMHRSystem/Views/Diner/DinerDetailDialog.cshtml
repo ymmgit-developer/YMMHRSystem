@@ -1,0 +1,102 @@
+﻿@model DtoDiner
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Diner</div>
+
+<div class="dialog-content">
+    <form id="DinerForm" data-role="validator" data-on-validate-form="AddDiner()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row mb-2">
+                    <div class="cell">
+                        <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+
+                            @switch (Model.Type)
+                            {
+                                case "Associate":
+                                    <option selected value="Associate">Associate</option>
+                                    <option value="YMM">YMM</option>
+                                    <option value="Saturday">Saturday</option>
+                                    break;
+                                case "YMM":
+                                    <option value="Associate">Associate</option>
+                                    <option selected value="YMM">YMM</option>
+                                    <option value="Saturday">Saturday</option>
+                                    break;
+                                default:
+                                    <option value="Associate">Associate</option>
+                                    <option value="YMM">YMM</option>
+                                    <option selected value="Saturday">Saturday</option>
+                                    break;
+                            }
+                        </select>
+                    </div>
+                    <div class="cell">
+                        <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <span class="invalid_feedback">
+                            Enter a starting date
+                        </span>
+                    </div>
+                    <div class="cell">
+                        <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <span class="invalid_feedback">
+                            Enter a finishing date
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell">
+                        <input type="text" data-role="input" data-validate="required" value="@Model.Dishes" data-prepend="Dishes:" id="Dishes" name="Dishes">
+                        <span class="invalid_feedback">
+                            Enter the number of dishes
+                        </span>
+                    </div>
+                    <div class="cell">
+                        <input type="text" data-role="input" data-validate="required" value="@Model.UnitPrice" data-prepend="Unit Price: $" id="UnitPrice" name="UnitPrice">
+                        <span class="invalid_feedback">
+                            Enter a unit price
+                        </span>
+                    </div>
+                    <div class="cell">
+                        <input type="text" data-role="input" readonly value="@Model.Total" data-prepend="Total: $" id="Total" name="Total">
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("Date", Model.Date)
+        <div class="row">
+            <div class="dialog-actions d-flex flex-justify-start w-100">
+                @if (HttpContext.Current.Session["CanSaveDiner"].Equals(true))
+                {
+                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"></span> Save </button></div>
+                }
+                <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        setInterval(function () {
+            $("#UniPrice").val($("#UniPrice").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+        }, 500);
+
+        $('#UnitPrice').keyup(function () {
+            CalculateTotal();
+        });
+
+        $('#Dishes').keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g, '');
+            CalculateTotal();
+        });
+    });
+
+    function CalculateTotal() {
+        var dishes = $('#Dishes').val();
+        var unitPrice = $('#UnitPrice').val()
+        $('#Total').val(dishes * unitPrice);
+    }
+</script>

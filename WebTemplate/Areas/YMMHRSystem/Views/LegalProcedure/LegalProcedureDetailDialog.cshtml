@@ -1,0 +1,53 @@
+﻿@model DtoLegalProcedure
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Legal Procedures</div>
+
+<div class="dialog-content">
+    <form id="LegalProcedureForm" data-role="validator" data-on-validate-form="AddLegalProcedure()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row mb-2">
+                    <div class="cell">
+                        <input type="text" name="Name" id="Name" data-role="input" data-prepend="Name:" data-validate="required" class="legalProcedure" autocomplete="off" value="@Model.Name">
+                        <span class="invalid_feedback">
+                            Enter a Name
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell">
+                        <select data-role="select" id="Process" name="Process" class="legalProcedure">
+                            @if (Model.Process == "HR")
+                            {
+                                <option selected="selected" value="HR">Human Resources</option>
+                                <option value="GA">General Affairs</option>
+                            }
+                            else
+                            {
+                                <option selected="selected" value="GA">General Affairs</option>
+                                <option value="HR">Human Resources</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        <div class="row">
+            <div class="row mt-2 mb-2">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveLegalProcedure"].Equals(true))
+                    {
+                        <div><button id="SaveLegalProcedure" class="button my-control-colors"><span class="mif-floppy-disk"></span> Save </button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

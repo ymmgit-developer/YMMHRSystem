@@ -1,0 +1,98 @@
+﻿@model List<DtoPrizeTeamAssociate>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div class="row d-flex flex-align-center flex-justify-between mx-5">
+    <div><h6 style="color:black">Associates</h6></div>
+    <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenNewTeamAssociateDialog()"><span class="mif-plus"></span><span class="actionButton"> New </span></a></div>
+</div>
+<div id="PrizeTeamAssociatesTable" style="display:none;">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttPrizeTeamAssociates" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Name</th>
+                <th style="text-align: center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="@item.PrizeTeamAssociateId">
+                    <td style="text-align: center">
+                        <span> @item.Associate </span>
+                    </td>
+                    <td style="text-align: center">
+                        @if (HttpContext.Current.Session["CanDeletePrizeTeam"].Equals(true))
+                        {
+                            <a class="button small bg-red fg-white" style="cursor: pointer; " onclick="ConfirmDeleteTeamAssociate(@item.PrizeTeamAssociateId)"><span class="mif-bin"></span><span class="actionButton"> Delete </span></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteTeamAssociate" name="DeleteTeamAssociate" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeletePrizeTeamAssociate()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteTeamAssociate')"> No</button>
+    </div>
+</div>
+
+<script>
+    var tableTeamAssociate;
+    $(document).ready(function () {
+
+        tableTeamAssociate = $('#dttPrizeTeamAssociates').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "37vh",
+            scrollCollapse: true,
+            initComplete: function () {
+                $("#PrizeTeamAssociatesTable").show();
+            }
+        });
+
+    });
+
+    function DeletePrizeTeamAssociate() {
+        var aux;
+        $("#dttPrizeTeamAssociates tr").each(function () {
+            if ($(this).attr("id") == window.$PrizeTeamAssociateId) {
+                aux = $(this);
+            }
+        });
+        table = $('#dttPrizeTeamAssociates').DataTable();
+        $.ajax({
+            method: "POST",
+            url: window.$DeletePrizeTeamAssociate,
+            data: { prizeTeamAssociateId: window.$PrizeTeamAssociateId },
+            success: function (result) {
+                if (result === "true") {
+                    Metro.toast.create("Team associate deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the associate.", null, null, "bg-red fg-white");
+                }
+                tableTeamAssociate.row(aux).remove().draw();
+                Metro.dialog.close('#DeleteTeamAssociate')
+            }
+        });
+    }
+
+    function ConfirmDeleteTeamAssociate(teamAssociateId) {
+        var dialog = Metro.getPlugin('#DeleteTeamAssociate', 'dialog');
+        dialog.open();
+        window.$PrizeTeamAssociateId = teamAssociateId;
+    }
+</script>
+

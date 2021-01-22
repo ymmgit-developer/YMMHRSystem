@@ -1,0 +1,108 @@
+﻿@model List<DtoGiftAssociate>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Gift System";
+}
+<head>
+    <script>
+        $SaveAssociateGift = '@Url.Action("SaveAssociateGift", "GiftAssociate", new { area = "YMMHRSystem" })';
+        $LoadGiftAssociate = '@Url.Action("LoadGiftAssociate", "GiftAssociate", new { area = "YMMHRSystem" })';
+        $DeleteGiftAssociate = '@Url.Action("DeleteGiftAssociate", "GiftAssociate", new { area = "YMMHRSystem" })';
+        $OpenGiftDialog = '@Url.Action("OpenGiftDialog", "GiftAssociate", new { area = "YMMHRSystem" })';
+        $OpenGiftLogDialog = '@Url.Action("OpenGiftLogDialog", "GiftAssociate", new { area = "YMMHRSystem" })';
+        $ImportWorkers = '@Url.Action("ImportWorkers", "GiftAssociate", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/GiftAssociate.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Gift System: Associate</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveGiftAssociate"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will allow multiple worker importation" data-position='auto' onclick="ImportWorkers()"><span class="mif-user-plus"></span><span class="actionButton"> Import/Refresh</span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+    <div class="container-fluid mt-5">
+        <div id="GiftAssociateTable" style="display: none" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttGiftAssociates" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Associate</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Month</th>
+                        <th style="text-align: center">Day</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td style="text-align: center">
+                                <span> @item.Associate </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Process </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Month </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Day </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="OpenGiftLogDialog('@item.Associate')"><span class="mif-assignment"></span><span class="actionButton"> Log</span></a>
+                                @if (HttpContext.Current.Session["CanDeleteGiftAssociate"].Equals(true))
+                                {
+                                    <a class="button bg-green fg-white" style="cursor: pointer;" onclick="OpenGiftDialog(@item.GiftAssociateId, '@item.Associate')"><span class="mif-gift"></span><span class="actionButton"> Gift</span></a>
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteGiftAssociate(@item.GiftAssociateId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="600" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="GiftDialog" name="GiftDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="GiftLogDialog" name="GiftLogDialog" class="dialog" data-role="dialog">
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Loading....</span>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteGiftAssociate" name="DeleteGiftAssociate" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteGiftAssociate()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteGiftAssociate')"> No</button>
+        </div>
+    </div>
+</body>
+

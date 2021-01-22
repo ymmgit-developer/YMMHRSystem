@@ -1,0 +1,115 @@
+﻿@model DtoPrizeTeam
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Prize Team";
+    WorkerFile workerFile = new WorkerFile();
+    var associateImporterList = workerFile.LoadMultiple();
+}
+<script src="~/Areas/YMMHRSystem/Scripts/PrizeTeam.js"></script>
+<script>
+    $NewTeamAssociateDialog = '@Url.Action("NewTeamAssociateDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamAssociate = '@Url.Action("SavePrizeTeamAssociate", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamAssociate = '@Url.Action("DeletePrizeTeamAssociate", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $PrizeTeamProductivityDialog = '@Url.Action("PrizeTeamProductivityDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamProductivity = '@Url.Action("SavePrizeTeamProductivity", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamProductivity = '@Url.Action("DeletePrizeTeamProductivity", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $PrizeTeamScrapDialog = '@Url.Action("PrizeTeamScrapDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamScrap = '@Url.Action("SavePrizeTeamScrap", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamScrap = '@Url.Action("DeletePrizeTeamScrap", "PrizeTeam", new { area = "YMMHRSystem"})';
+    $PrizeTeamAttendanceDialog = '@Url.Action("PrizeTeamAttendanceDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamAttendance = '@Url.Action("SavePrizeTeamAttendance", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamAttendance = '@Url.Action("DeletePrizeTeamAttendance", "PrizeTeam", new { area = "YMMHRSystem"})';
+    $PrizeTeamDockAuditDialog = '@Url.Action("PrizeTeamDockAuditDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamDockAudit = '@Url.Action("SavePrizeTeamDockAudit", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamDockAudit = '@Url.Action("DeletePrizeTeamDockAudit", "PrizeTeam", new { area = "YMMHRSystem"})';
+    $PrizeTeamSecurityCrossDialog = '@Url.Action("PrizeTeamSecurityCrossDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePrizeTeamSecurityCross = '@Url.Action("SavePrizeTeamSecurityCross", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $DeletePrizeTeamSecurityCross = '@Url.Action("DeletePrizeTeamSecurityCross", "PrizeTeam", new { area = "YMMHRSystem"})';
+    $PointConfigurationDialog = '@Url.Action("PointConfigurationDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $SavePointConfiguration = '@Url.Action("SavePointConfiguration", "PrizeTeam", new { area = "YMMHRSystem" })';
+    $PrizeTeamPointLogDialog = '@Url.Action("PrizeTeamPointLogDialog", "PrizeTeam", new { area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Team Summary</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">@Model.Name</h5>
+        <div class="ml-auto pr-5">
+            <a class="button flat-button" style="color:white" onclick="PrizeTeamPointLogDialog(@Model.PrizeTeamId)"><span class="mif-assignment"></span> <span class="actionButton"> Point Log</span></a>
+            @if (HttpContext.Current.Session["CanSavePrizeTeam"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-cogs"></span><span class="actionButton"> Point Configuration</span>
+                </a>
+            }
+            <a class="button flat-button" href="@Url.Action("Index", "PrizeTeam", new { Area = "YMMHRSystem" })" style="color:white">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------CONTAINER------------------------------>
+    <div class="container-fluid mt-2">
+        <!-----------------------------------STOP PANEL------------------------------>
+        <div class="row">
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="All PrizeTeam stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/AttendanceList.cshtml", Model.AttendanceList)
+                </div>
+            </div>
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All PrizeTeam stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/AssociateList.cshtml", Model.AssociateList)
+                </div>
+            </div>
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All PrizeTeam stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/ProductivityList.cshtml", Model.ProductivityList)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-6">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="All PrizeTeam stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/SecurityCrossList.cshtml", Model.SecurityCrossList)
+                </div>
+            </div>
+            <div class="cell-md-6">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="All PrizeTeam stops" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/DockAuditList.cshtml", Model.DockAuditList)
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttendanceDialog" name="AttendanceDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ProductivityDialog" name="ProductivityDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ScrapDialog" name="ScrapDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DockAuditDialog" name="DockAuditDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="SecurityCrossDialog" name="SecurityCrossDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="600" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="NewTeamAssociateDialog" name="NewTeamAssociateDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PointConfigurationDialog" name="PointConfigurationDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="1000" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PrizeTeamPointLogDialog" name="PrizeTeamPointLogDialog" class="dialog" data-role="dialog">
+    </div>
+    <div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AssociateImporter" name="AssociateImporter" class="dialog" data-role="dialog">
+        @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/AssociateList.cshtml", associateImporterList)
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Loading....</span>
+        </div>
+    </div>
+</body>

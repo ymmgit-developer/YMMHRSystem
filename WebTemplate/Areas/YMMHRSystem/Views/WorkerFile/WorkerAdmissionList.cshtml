@@ -1,0 +1,45 @@
+﻿@model List<DtoAdmission>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<h6 class="pl-5" style="color:black">Admissions</h6>
+<div id="AdmissionTable">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttAdmissions" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align: center">
+                        <span> @(item.Admission?.ToShortDateString()) </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var table;
+    $(document).ready(function () {
+
+        table = $('#dttAdmissions').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "20vh",
+            scrollCollapse: true
+        });
+
+    });
+</script>
+

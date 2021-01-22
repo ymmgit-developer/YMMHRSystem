@@ -1,0 +1,41 @@
+﻿@model DtoPrizeTeamConfiguration
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Point Configuration</div>
+<div class="dialog-content">
+    <form id="PointForm" data-role="validator" data-on-validate-form="SavePointConfiguration()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell-md-6">
+                <label>Productivity</label>
+                <input type="text" name="Productivity" id="Productivity" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.Productivity">
+            </div>
+            <div class="cell-md-6">
+                <label>Dock Audit</label>
+                <input type="text" name="DockAudit" id="DockAudit" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.DockAudit">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-6">
+                <label>Security Cross</label>
+                <input type="text" name="SecurityCross" id="SecurityCross" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.SecurityCross">
+            </div>
+            <div class="cell-md-6">
+                <label>Scrap</label>
+                <input type="text" name="Scrap" id="Scrap" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.Scrap">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <label>Monthly Attendance</label>
+                <input type="text" name="MonthlyAttendance" id="MonthlyAttendance" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.MonthlyAttendance">
+            </div>
+        </div>
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="SavePointConfiguration" class="button my-control-colors"><span class="mif-checkmark"> Ok</span> </button></div>
+        </div>
+    </form>
+</div>
+

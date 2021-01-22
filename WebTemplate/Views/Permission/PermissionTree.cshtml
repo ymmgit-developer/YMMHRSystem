@@ -1,0 +1,98 @@
+﻿@using YMMHRSystemLogic
+@model List<DtoPermission>
+@{
+    Layout = null;
+    int index = 0, taskIndex = 0;
+}
+<script src="~/Scripts/PermissionTree.js"></script>
+<div data-role="treeview">
+    <ul>
+        @foreach (DtoPermission category1 in @Model.Where((value) => value.FatherCategoryId == index))
+        {
+            <li>
+                <input type="checkbox" class="padre" data-role="checkbox" data-caption="@category1.Name" title="">
+                @{
+                    var submenu = @Model.Count(value => value.FatherCategoryId == category1.TaskCategoryId);
+                }
+                @if (submenu > 0)
+                {
+                    <ul>
+                        @foreach (DtoPermission category2 in @Model.Where((value) => value.FatherCategoryId == category1.TaskCategoryId))
+                        {
+                            <li>
+                                <input class="padre" type="checkbox" data-role="checkbox" data-caption="@category2.Name" title="">
+
+                                @{
+                                    var submenu2 = @Model.Count(value => value.FatherCategoryId == category2.TaskCategoryId);
+                                }
+
+                                @if (submenu2 > 0)
+                                {
+                                    <ul>
+
+                                        @foreach (DtoPermission category3 in @Model.Where((value) => value.FatherCategoryId == category2.TaskCategoryId))
+                                        {
+                                            <li>
+                                                <input class="padre" type="checkbox" data-role="checkbox" data-caption="@category3.Name" title="">
+                                                @if (category3.TaskList.Any())
+                                                {
+                                                    <ul>
+                                                        @foreach (var task in category3.TaskList)
+                                                        {
+                                                            @Html.Hidden("taskList[" + taskIndex + "].TaskId", task.TaskId, new { @class = "taskList", @id = task.TaskId })
+                                                            @Html.Hidden("taskList[" + taskIndex + "].Name", task.Name, new { @class = "taskList" })
+                                                            @Html.Hidden("taskList[" + taskIndex + "].TaskCategoryId", task.TaskCategoryId, new { @class = "taskList" })
+                                                            @Html.Hidden("taskList[" + taskIndex + "].hasCheck", task.hasCheck.ToString().ToLower(), new { @class = "taskList taskCheckbox", @id = "checkbox" + task.TaskId })
+                                                            taskIndex++;
+                                                            if (task.hasCheck)
+                                                            {
+                                                                <li><input class="task1" type="checkbox" data-role="checkbox" checked data-caption="@task.Name" title=""></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><input class="task1" type="checkbox" data-role="checkbox" data-caption="@task.Name" title=""></li>
+                                                            }
+
+
+                                                        }<!--CUARTO FOREACH-->
+                                                    </ul>
+                                                }
+                                            </li>
+                                        }<!--TERCER PRIMER FOREACH-->
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    if (category2.TaskList.Any())
+                                    {
+                                        <ul>
+                                            @foreach (var task in category2.TaskList)
+                                            {
+                                                @Html.Hidden("taskList[" + taskIndex + "].TaskId", task.TaskId, new { @class = "taskList", @id = task.TaskId })
+                                                @Html.Hidden("taskList[" + taskIndex + "].Name", task.Name, new { @class = "taskList" })
+                                                @Html.Hidden("taskList[" + taskIndex + "].TaskCategoryId", task.TaskCategoryId, new { @class = "taskList" })
+                                                @Html.Hidden("taskList[" + taskIndex + "].hasCheck", task.hasCheck.ToString().ToLower(), new { @class = "taskList taskCheckbox", @id = "checkbox" + task.TaskId })
+                                                taskIndex++;
+                                                if (task.hasCheck)
+                                                {
+                                                    <li><input class="task2" type="checkbox" data-role="checkbox" checked data-caption="@task.Name" title=""></li>
+                                                }
+                                                else
+                                                {
+                                                    <li><input class="task2" type="checkbox" data-role="checkbox" data-caption="@task.Name" title=""></li>
+                                                }
+                                            }<!--TERCER SEGUNDO FOREACH-->
+                                        </ul>
+                                    }
+                                }
+
+                            </li>
+                        }<!--SEGUNDO FOREACH-->
+                    </ul>
+
+                }
+            </li>
+        } <!--PRIMER FOREACH-->
+    </ul>
+</div>

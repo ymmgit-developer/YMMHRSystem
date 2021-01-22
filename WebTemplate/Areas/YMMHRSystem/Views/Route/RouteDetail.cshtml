@@ -1,0 +1,152 @@
+﻿@model DtoRoute
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Route";
+    YMMHRSystemLogic.Route route = new YMMHRSystemLogic.Route();
+    Stop stop = new Stop();
+    Shift shift = new Shift();
+    List<DtoShift> shiftList = shift.LoadMultiple();
+    List<DtoStop> stopList = stop.LoadMultiple();
+
+}
+<script src="~/Areas/YMMHRSystem/Scripts/Route.js"></script>
+<script>
+    $DeleteStop = '@Url.Action("DeleteRouteStop", "Route", new { Area = "YMMHRSystem" })';
+    $SaveRoute = '@Url.Action("SaveRoute", "Route", new { Area = "YMMHRSystem" })';
+    $GetReference = '@Url.Action("GetReference", "Route", new { Area = "YMMHRSystem" })';
+    $ValidateRouteStopExistence = '@Url.Action("ValidateRouteStopExistence", "Route", new { Area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Route</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Edit Route</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveRoute"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" onclick="SaveRoute()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+                </a>
+            }
+            <a class="button flat-button" href="@Url.Action("Index", "Route", new { Area = "YMMHRSystem" })" style="color:white">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------FLEX GRID------------------------------>
+    <div class="row mt-10">
+        <div class="cell-md-12" data-step="1" data-intro="Route information" data-position="auto">
+            <div class="row mb-2">
+                <div class="cell-md-6">
+                    <input type="text" name="GetName" id="GetName" data-role="input" data-prepend="Name:" autocomplete="off" value="@Model.Name">
+                </div>
+                <div class="cell-md-6">
+                    @if (Model.Extraordinary)
+                    {
+                        <input type="checkbox" data-role="checkbox" data-style="2" checked="checked" data-caption="Extraordinary" class="routeCheck">
+                    }
+                    else
+                    {
+                        <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Extraordinary" class="routeCheck">
+                    }
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="cell-md-6">
+                    <select data-role="select" id="Shift" name="Shift" class="route" data-prepend="Shift:">
+                        @foreach (var item in shiftList)
+                        {
+                            if (Model.Shift == item.Name)
+                            {
+                                <option selected value="@item.Name">@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Name">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="cell-md-6">
+                    <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="GetCost" name="GetCost">
+                    @Html.Hidden("Cost", Model.Cost, new { @class = "route" })
+                </div>
+            </div>
+            @Html.Hidden("Name", Model.Name, new { @class = "route" })
+            @Html.Hidden("Extraordinary", Model.Extraordinary, new { @class = "route" })
+            @Html.Hidden("UserCreated", Model.UserCreated, new { @class = "route" })
+            @Html.Hidden("DateAdded", Model.DateAdded, new { @class = "route" })
+        </div>
+    </div>
+    <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+    <!-----------------------------------STOP PANEL------------------------------>
+    <div class="row mt-2 d-flex flex-align-center" data-step="2" data-intro="Route stop fields" data-position="auto">
+        <div class="cell-md-4">
+            <select data-on-change="StopSelected()" data-role="select" id="StopName" name="StopName" data-prepend="Stop:">
+                @foreach (var item in stopList)
+                {
+                    <option value="@item.StopId">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="cell-md-4">
+            <input type="text" readonly="readonly" name="Reference" id="Reference" data-role="input" data-prepend="Reference:" autocomplete="off" value="">
+        </div>
+        <div class="cell-md-2">
+            <input style="font-size:11px;"  data-role="timepicker" data-seconds="false" data-value="" id="Time" name="Time">
+        </div>
+        <div class="cell-md-2" style="text-align:center;">
+            <button id="AddStop" style="width:80%;" onclick="AddStop(@Model.RouteId)" class="button my-control-colors"><span class="mif-plus"> Add</span> </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell-md-12">
+            <div id="StopTable" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All Route stops" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/Route/RouteStopList.cshtml", route.GetRouteStopList(Model.RouteId))
+            </div>
+        </div>
+    </div>
+
+
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderRoute" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>- Route already exists</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+
+        StopSelected();
+
+        setInterval(function () {
+            $("#GetCost").val($("#GetCost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+        }, 500);
+    });
+
+    $(".routeCheck").on("change", function (e) {
+        debugger;
+        if (e.target.checked) {
+            $('#Extraordinary').val("true");
+        } else {
+            $('#Extraordinary').val("false");
+        }
+    });
+</script>
+

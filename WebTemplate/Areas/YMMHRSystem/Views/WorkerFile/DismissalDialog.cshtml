@@ -1,0 +1,66 @@
+﻿@model DtoDismissal
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Dismissal</div>
+<div class="dialog-content">
+    <form id="WorkerDismissalForm" data-role="validator" data-on-validate-form="DismissWorker()" action="javascript:">
+
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row mb-2">
+                    <div class="cell-md-5">
+                        <input data-prepend="Date:" id="GetDate" name="GetDate" value="" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <span class="invalid_feedback">
+                            Enter a Date
+                        </span>
+                        @Html.Hidden("Date", Model.Date)
+                    </div>
+                    <div class="cell-md-5">
+                        <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+                            <option value="Dismissal">Dismissal</option>
+                            <option value="Resignation">Resignation</option>
+                            <option value="End of Contract">End of Contract</option>
+                        </select>
+                    </div>
+                    <div class="cell-md-2">
+                        <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Rehire" class="dismissalCheck">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell">
+                        <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value=""></textarea>
+                        <span class="invalid_feedback">
+                            Enter a Motive
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell">
+                        <input type="file" id="file" name="file" data-role="file" data-validate="required" data-button-title="<span class='mif-folder mif-2x'></span>">
+                        <span class="invalid_feedback">
+                            Upload a file
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("Rehirable", Model.Rehirable)
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="DismissWorker" class="button my-control-colors"><span class="mif-checkmark"> OK</span></button></div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+
+    $(".dismissalCheck").on("change", function (e) {
+        if (e.target.checked) {
+            $('#Rehirable').val("true");
+        } else {
+            $('#Rehirable').val("false");
+        }
+    });
+</script>
+

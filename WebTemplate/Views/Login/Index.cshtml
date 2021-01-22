@@ -1,0 +1,84 @@
+﻿@model YMMHRSystemLogic.DtoUser
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+@Scripts.Render("~/bundles/jquery")
+<link href="~/Content/webTemplate.css" rel="stylesheet" />
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        .login-form {
+            width: 350px;
+            height: auto;
+            top: 50%;
+            margin-top: -160px;
+        }
+    </style>
+    <script>
+        $SendEmailPasswordRecovery = '@Url.Action("SendEmailPasswordRecovery", "Login")';
+        $SaveUser = '@Url.Action("SendContactEmail", "Login")';
+
+        function invalidForm() {
+            var form = $(this);
+            form.addClass("ani-ring");
+            setTimeout(function () {
+                form.removeClass("ani-ring");
+            }, 1000);
+        }
+
+        function validateForm() {
+            $(".login-form").animate({
+                opacity: 0
+            });
+        }
+
+    </script>
+    <script src="~/Scripts/Login.js"></script>-
+    <title>Log In</title>
+</head>
+<body class="h-vh-100" style="background-image: url('@Url.Content("~/Content/Resources/yachiyo.jpg")'); background-repeat: round;">
+    <div class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateForm">
+        @using (Html.BeginForm("LogIn", "Login", FormMethod.Post, new { }))
+        {
+            <span class="mif-vpn-lock mif-4x float-right" style="margin-top:-10px;"></span>
+            <h2 class="text-light">Log In</h2>
+            <hr class="thin mt-4 mb-4 bg-white">
+            <div class="form-group">
+                <input type="text" id="Email" name="Email" data-role="input" data-prepend="<span class='mif-user'>" placeholder="Worker ID or Email" data-validate="required">
+            </div>
+            <div class="form-group">
+                <input type="password" id="Password" name="Password" data-role="input" data-prepend="<span class='mif-key'>" placeholder="Password" data-validate="required">
+            </div>
+            <div class="form-group mt-10">
+                <button class="button my-control-colors">Log In</button>
+            </div>
+            <br />
+            <a style="cursor: pointer;" onclick="PasswordRecoveryDialog();"><span class="mif-key"></span> Forgot your password?</a>
+        }
+    </div>
+    <!---------------------------------------RECUPERAR CONSTRASEÑA DIALOG----------------------------->
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" data-role="dialog" id="PasswordRecovery" class="dialog">
+        <div class="dialog-title">Password Recovery</div>
+        <div class="dialog-content">
+            <form data-role="validator" action="javascript:" data-on-validate-form="SendEmailPasswordRecovery()">
+                <p>Enter your credentials to send the password recovery form.</p>
+                <input type="email" name="UserPasswordRecovery" id="UserPasswordRecovery" data-role="input" data-prepend="<span class='mif-user'>" placeholder="Worker ID or Email" data-validate="required" autocomplete="off">
+                <div class="dialog-actions">
+                    <button id="SendEmail" class="button primary"><span class="mif-paper-plane"></span> Send</button>
+                    <span id="preloaderEmail" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!---------------------------------------PRELOADER DIALOG----------------------------->
+    <div data-overlay="true" data-close-button="false" data-overlay-click-close="false" data-role="dialog" id="PreloaderLogin" class="padding20 dialog" style="width: auto; height: auto; display: none">
+        <span id="preloaderRedirect" class="mif-2x mif-spinner4 ani-spin" style="visibility: hidden"></span>
+        <span>Redirecting...</span>
+    </div>
+
+</body>
+

@@ -1,0 +1,51 @@
+﻿@model DtoPrize
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Prize</div>
+
+<div class="dialog-content">
+    <form id="PrizeForm" data-role="validator" data-on-validate-form="SavePrize()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row mb-2">
+                    <div class="cell">
+                        <input type="text" name="Name" id="Name" data-role="input" data-prepend="Name:" data-validate="required" autocomplete="off" value="@Model.Name">
+                        <span class="invalid_feedback">
+                            Enter a Name
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell">
+                        <label>Points:</label>
+                        <input type="text" name="Points" id="Points" data-role="spinner" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.Points">
+                    </div>
+                    <div class="cell">
+                        <label>Quantity:</label>
+                        <input type="text" data-role="spinner" name="Quantity" id="Quantity" autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.Quantity">
+                    </div>
+                    <div class="cell">
+                        <label>Minimum:</label>
+                        <input type="text" name="Minimum" id="Minimum" data-role="spinner"  autocomplete="off" data-buttons-position="right" data-min-value="0" value="@Model.Minimum">
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("Date", Model.Date)
+        <div class="row">
+            <div class="row mt-2 mb-2">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSavePrize"].Equals(true))
+                    {
+                        <div><button id="SavePrize" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+

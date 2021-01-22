@@ -1,0 +1,100 @@
+﻿@model List<DtoPrizeAssociateYear>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div class="row d-flex flex-align-center flex-justify-between mx-5">
+    <div><h6 style="color:black">Associate of the Year</h6></div>
+    <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenAssociateYearDialog()"><span class="mif-plus"></span><span class="actionButton"> New </span></a></div>
+</div>
+<div id="AssociateYearTable" style="display:none;">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttAssociateYear" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Year</th>
+                <th style="text-align: center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="@item.PrizeAssociateYearId">
+
+                    <td style="text-align: center">
+                        <span> @item.Year </span>
+                    </td>
+
+                    <td style="text-align: center">
+                        @if (HttpContext.Current.Session["CanDeletePrizeAssociate"].Equals(true))
+                        {
+                            <a class="button small bg-red fg-white" style="cursor: pointer; " onclick="ConfirmDeleteAssociateYear(@item.PrizeAssociateYearId)"><span class="mif-bin"></span><span class="actionButton"> Delete </span></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteAssociateYear" name="DeleteAssociateYear" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeletePrizeAssociateYear()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteAssociateYear')"> No</button>
+    </div>
+</div>
+
+<script>
+    var tableAssociateYear;
+    $(document).ready(function () {
+
+        tableAssociateYear = $('#dttAssociateYear').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "20vh",
+            scrollCollapse: true,
+            initComplete: function () {
+                $("#AssociateYearTable").show();
+            }
+        });
+
+    });
+
+    function DeletePrizeAssociateYear() {
+        var aux;
+        $("#dttAssociateYear tr").each(function () {
+            if ($(this).attr("id") == window.$AssociateYearId) {
+                aux = $(this);
+            }
+        });
+        table = $('#dttAssociateYear').DataTable();
+        $.ajax({
+            method: "POST",
+            url: window.$DeletePrizeAssociateYear,
+            data: { prizeAssociateYearId: window.$AssociateYearId },
+            success: function (result) {
+                if (result === "true") {
+                    Metro.toast.create("Associate Year deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the Associate Year.", null, null, "bg-red fg-white");
+                }
+                tableAssociateYear.row(aux).remove().draw();
+                Metro.dialog.close('#DeleteAssociateYear')
+            }
+        });
+    }
+
+    function ConfirmDeleteAssociateYear(associateYearId) {
+        var dialog = Metro.getPlugin('#DeleteAssociateYear', 'dialog');
+        dialog.open();
+        window.$AssociateYearId = associateYearId;
+    }
+</script>
+

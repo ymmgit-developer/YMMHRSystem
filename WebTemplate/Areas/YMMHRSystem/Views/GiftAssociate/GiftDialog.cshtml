@@ -1,0 +1,28 @@
+﻿@model DtoGiftLog
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    Gift gift = new Gift();
+    var giftList = gift.LoadMultiple(true);
+}
+<div class="dialog-title">Gift</div>
+<div class="dialog-content">
+    <form id="GiftForm" data-role="validator" data-on-validate-form="SaveAssociateGift()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <select data-role="select" id="GiftId" name="GiftId" data-prepend="Gift:">
+                    @foreach (var item in giftList)
+                    {
+                        <option value="@item.GiftId">@item.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        @Html.Hidden("Gift", Model.Gift)
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="SaveAssociateGift" class="button my-control-colors"><span class="mif-checkmark"> OK</span> </button></div>
+        </div>
+    </form>
+</div>
+

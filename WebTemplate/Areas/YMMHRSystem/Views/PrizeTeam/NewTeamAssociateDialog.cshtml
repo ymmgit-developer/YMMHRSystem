@@ -1,0 +1,27 @@
+﻿@model DtoPrizeTeamAssociate
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Team</div>
+<div class="dialog-content">
+    <form id="TeamAssociateForm" data-role="validator" data-on-validate-form="SavePrizeTeamAssociate()" action="javascript:">
+
+        <div class="row">
+            <div class="cell-md-10">
+                <input type="text" name="Associate" id="Associate" data-role="input" readonly="readonly" data-prepend="Associate:" data-validate="required" autocomplete="off" value="">
+                <span class="invalid_feedback">
+                    Select an Associate
+                </span>
+            </div>
+            <div class="cell-md-2">
+                <a class="button my-button-colors" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
+            </div>
+        </div>
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="SavePrizeTeamAssociate" class="button my-control-colors"><span class="mif-checkmark"> OK</span></button></div>
+        </div>
+    </form>
+</div>
+

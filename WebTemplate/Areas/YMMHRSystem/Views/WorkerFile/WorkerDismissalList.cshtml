@@ -1,0 +1,105 @@
+﻿@model List<DtoDismissal>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<h6 class="pl-5" style="color:black">Dismissals</h6>
+<div id="DismissalTable">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttDismissals" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Motive</th>
+                <th style="text-align: center">Date</th>
+                <th style="text-align: center">Type</th>
+                <th style="text-align: center" data-step="4" data-intro="Open file" data-position='auto'>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="@item.DismissalId">
+
+                    <td style="text-align: center">
+                        <span> @item.Motive </span>
+                    </td>
+
+                    <td style="text-align: center">
+                        <span> @item.Date.ToShortDateString() </span>
+                    </td>
+
+                    <td style="text-align: center">
+                        <span> @item.Type </span>
+                    </td>
+
+                    <td style="text-align: center">
+                        <a class="button small my-button-colors" style="cursor: pointer; " href="@Url.Action("GetDismissalPDF", "WorkerFile", new { Area = "YMMHRSystem" , dismissalId = item.DismissalId })" target="_blank"><span class="mif-eye"></span><span class="actionButton"> View </span></a>
+                        @if (HttpContext.Current.Session["CanDeleteWorkerFile"].Equals(true) && (Model.Count - 1) == Model.IndexOf(item))
+                        {
+                            <a class="button small bg-red fg-white"style="cursor: pointer; " onclick="ConfirmDeleteDismissal(@item.DismissalId)"><span class="mif-bin"></span><span class="actionButton"> Delete </span></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteDismissal" name="DeleteDismissal" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeleteDismissal()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteDismissal')"> No</button>
+    </div>
+</div>
+
+<script>
+    var table;
+    $(document).ready(function () {
+
+        table = $('#dttDismissals').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "30vh",
+            scrollCollapse: true
+        });
+
+    });
+
+    function DeleteDismissal() {
+        var aux;
+        $("#dttDismissals tr").each(function () {
+            if ($(this).attr("id") == window.$DismissalId) {
+                aux = $(this).parents('tr');
+            }
+        });
+        debugger;
+        table = $('#dttDismissals').DataTable();
+        $.ajax({
+            method: "POST",
+            url: window.$DeleteDismissal,
+            data: { dismissalId: window.$DismissalId },
+            success: function (result) {
+                if (result === "true") {
+                    Metro.toast.create("Dismissal deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the dismissal.", null, null, "bg-red fg-white");
+                }
+                table.row(aux).remove().draw();
+                Metro.dialog.close('#DeleteDismissal')
+            }
+        });
+    }
+
+    function ConfirmDeleteDismissal(dismissalId) {
+        var dialog = Metro.getPlugin('#DeleteDismissal', 'dialog');
+        dialog.open();
+        window.$DismissalId = dismissalId;
+    }
+</script>
+

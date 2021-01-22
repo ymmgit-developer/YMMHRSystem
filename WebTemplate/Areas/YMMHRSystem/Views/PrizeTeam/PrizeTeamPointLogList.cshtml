@@ -1,0 +1,57 @@
+﻿@model List<DtoPrizeTeamPointLog>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Team Point Log</div>
+<div class="dialog-content">
+    <div id="PrizeTeamPointLogTable">
+        <!---------------------------------------TABLA ------------------------------------------>
+        <table id="dttPrizeTeamPointLog" class="display compact" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Movement Type</th>
+                    <th style="text-align: center">Quantity</th>
+                    <th style="text-align: center">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td style="text-align: center">
+                        <span> @item.MovementType </span>
+                    </td>
+                    <td style="text-align: center">
+                        <span> @item.Quantity </span>
+                    </td>
+                    <td style="text-align: center">
+                        <span> @item.Date </span>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="dialog-actions p-0 d-flex flex-justify-end">
+    <div><button onclick="Metro.dialog.close('#PrizeTeamPointLogDialog')" class="button my-control-colors"><span class="mif-cancel"> Close</span></button></div>
+</div>
+<script>
+    var table;
+    $(document).ready(function () {
+
+        table = $('#dttPrizeTeamPointLog').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "35vh",
+            scrollCollapse: true
+        });
+
+    });
+</script>
+

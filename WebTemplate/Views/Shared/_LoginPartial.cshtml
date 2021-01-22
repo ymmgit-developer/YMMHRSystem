@@ -1,0 +1,11 @@
+﻿@model YMMHRSystemLogic.DtoUser
+<script src="~/Scripts/Login.js"></script>
+@using (Html.BeginForm("LogOff", "Login", new { area = "" }, FormMethod.Post, new { @id = "logoutForm", @class = "app-bar-container float-left" }))
+{
+    @Html.AntiForgeryToken()
+    <a class="app-bar-item dropdown-toggle marker-light pl-1 pr-5" href="#"><span class="mif-user"><span id=""> Welcome, @Model.Name</span></span></a>    
+    <ul class="d-menu place-right" data-role="dropdown">
+        <li><a class="pl-5" href="@Url.Action("PasswordRecovery", "Login", new {isEmail = false, area = ""})"><span class="mif-key"></span> Reset Password</a></li>
+        <li><a class="pl-5" href="javascript:document.getElementById('logoutForm').submit()"><span class="mif-switch"></span> Log out</a></li>
+    </ul>
+}

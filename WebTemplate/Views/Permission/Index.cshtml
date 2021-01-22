@@ -1,0 +1,110 @@
+﻿@model List<DtoUser>
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Permisos";
+    Permission permission = new Permission();
+}
+<head>
+    <title>Permisos</title>
+    <script src="~/Scripts/Permission.js"></script>
+</head>
+<body>
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Permisos</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSavePermission"].Equals(true))
+            {
+                <a class="button flat-button" onclick="SaveTree()" style="color:white" data-step="1" data-intro="Save changes" data-position='bottom'>
+                    <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+                </a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home")">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-5" style="width:100%">
+        <div class="cell-md-6 px-5">
+            <!---------------------------------------TABLA ROLES-USUARIO ------------------------------------------>
+            <table id="dttRolUsuario" class="display" data-step="2" data-intro="User and role list" data-position='auto'>
+                <thead>
+                    <tr>
+                        <th style="text-align: left">User</th>
+                        <th style="text-align: center">Role</th>
+                        <th style="text-align: center" data-step="3" data-intro="User role settings are reset, to save changes, click Save Button." data-position='auto'>Reset</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr id="@item.UserId">
+                            <td id="CompleteName" class="selectedUser">
+                                @item.Name @item.FirstSurname @item.LastSurname
+                            </td>
+                            <td style="text-align: center" class="selectedUser">
+                                @Html.DisplayFor(modelItem => item.RoleName)
+                            </td>
+                            <td style="text-align: center" class="ReturnDefaultRole">
+                                <a class="mif-loop2" style="cursor: pointer;" onclick="ReturnDefaultRole(@item.RoleId)"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cell-md-6 px-5">
+            <h5 class="thin" style="color:black;">User: <span id="UserName">A user is not selected</span></h5>
+            <h5 style="color: black; padding-top: 8px"><b>Permission Tree</b></h5>
+            <div id="PermissionTree" style="display:none; height: 50vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="Permission Tree, user tasks can be modified" data-position='auto'>
+                @Html.Partial("~/Views/Permission/PermissionTree.cshtml", permission.Load(0))
+            </div>
+
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADERPERMISO DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderPermission" class="dialog">
+        <div class="dialog-content">
+            <span id="preloader" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Loading....</span>
+        </div>
+    </div>
+
+    <!------------------------------------------------------------PRELOADERROL DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderRole" class="dialog">
+        <div class="dialog-content">
+            <span id="preloader2" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Resetting role....</span>
+        </div>
+    </div>
+
+    <!------------------------------------------------------------PRELOADERGUARDAR DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderSave" class="dialog">
+        <div class="dialog-content">
+            <span id="preloader3" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+
+    <!------------------------------------------------------------UserChanges DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="UserChanges" class="dialog">
+        <div class="dialog-title">Changes have been made</div>
+        <div class="dialog-content"> Do you wish to cancel these changes</div>
+        <div class="dialog-actions">
+            <button class="button primary" onclick="ChangeUser()"> Yes</button>
+            <button class="button alert" onclick="CancelChange()"> No</button>
+        </div>
+    </div>
+</body>
+<script>
+    $LoadTreeByUser = '@Url.Action("LoadTreeByUser", "Permission")';
+    $SaveTreePermissions = '@Url.Action("SaveTreePermissons", "Permission")';
+    $ReturnDefaultRole = '@Url.Action("ReturnDefaultRole", "Permission")';
+    $changesMade = false;
+</script>
+

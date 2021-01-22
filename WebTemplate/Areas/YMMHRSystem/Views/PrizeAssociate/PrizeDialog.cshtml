@@ -1,0 +1,78 @@
+﻿@model DtoPrizeAssociatePrize
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    Prize prize = new Prize();
+    PrizeAssociate prizeAssociate = new PrizeAssociate();
+    int points = prizeAssociate.GetPrizeAssociatePoints(Convert.ToInt64(Session["LoadedPrizeAssociateId"]));
+    var prizeList = prize.LoadMultipleWithPointFilter(points);
+    List<string> months = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+    List<string> years = new List<string>();
+    for (int i = 2013; i <= DateTime.Now.Year; i++)
+    {
+        years.Add(i.ToString());
+    }
+}
+<div class="dialog-title">Prize</div>
+<div class="dialog-content">
+    <form id="PrizeForm" data-role="validator" data-on-validate-form="SaveAssociatePrize()" action="javascript:">
+
+        <div class="row">
+            <div class="cell-md-12">
+                <select data-role="select" id="Year" name="Year" data-prepend="Year:">
+                    @foreach (var item in years)
+                    {
+                        if (item == DateTime.Now.Year.ToString())
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-12">
+                <select data-role="select" id="Month" name="Month" data-prepend="Month:">
+                    @foreach (var item in months)
+                    {
+                        if (item == DateTime.Now.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture))
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-6">
+                <select data-role="select" data-on-change="PrizeSelected()" id="PrizeId" name="PrizeId" data-prepend="Prize:">
+                    @foreach (var item in prizeList)
+                    {
+                        <option id="@item.Quantity" value="@item.PrizeId">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="Quantity" id="Quantity" data-role="input" data-prepend="In Stock:" readonly="readonly" autocomplete="off" value="">
+            </div>
+        </div>
+        @Html.Hidden("Prize", Model.Prize)
+        <div class="dialog-actions d-flex px-0 flex-justify-between mt-2">
+            <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            <div><button id="SaveAssociatePrize" class="button my-control-colors"><span class="mif-checkmark"> OK</span> </button></div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        PrizeSelected();
+    });
+</script>
+

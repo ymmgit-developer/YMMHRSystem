@@ -1,0 +1,26 @@
+﻿@using System.Security.Policy
+@using System.Web.Mvc.Html
+@{
+    ViewBag.Title = "Access Denied";
+}
+
+
+
+<div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+    <div class="ml-auto pr-5">
+            <a class="button flat-button" href="@Url.Action("Index", "Home")"> <span class="mif-arrow-left"> </span><span class="actionButton"> Back </span></a>
+        </div>
+    </div>
+
+    <div style="margin-top: 100px; height: 100%; text-align:center">
+        <h1>
+            <b>You do not count with the necessary permissions</b>
+        </h1>
+        <h2>
+            <b> Contact your administrator </b>
+        </h2>
+        <br />
+        <div><img src="~/Content/Resources/lock.jpg" /></div>
+    </div>
+
+

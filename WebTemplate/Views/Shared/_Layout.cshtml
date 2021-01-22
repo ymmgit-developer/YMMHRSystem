@@ -1,0 +1,237 @@
+﻿@using System.Globalization
+@using YMMHRSystemLogic
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/af-2.3.4/b-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.20/af-2.3.4/b-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <link href="https://nightly.datatables.net/buttons/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://nightly.datatables.net/buttons/js/buttons.colVis.min.js"></script>
+    <script src="https://nightly.datatables.net/buttons/js/buttons.html5.min.js"></script>
+    <script src="https://nightly.datatables.net/buttons/js/buttons.print.min.js"></script>
+
+    <link href="https://nightly.datatables.net/select/css/select.dataTables.css?_=766c9ac11eda67c01f759bab53b4774d.css" rel="stylesheet" type="text/css" />
+    <script src="https://nightly.datatables.net/select/js/dataTables.select.js?_=766c9ac11eda67c01f759bab53b4774d"></script>
+    <link href="https://nightly.datatables.net/searchpanes/css/searchPanes.dataTables.css?_=1abb1d155e39f9bdd42ce7accaeb459d.css" rel="stylesheet" type="text/css" />
+    <script src="https://nightly.datatables.net/searchpanes/js/dataTables.searchPanes.js?_=1abb1d155e39f9bdd42ce7accaeb459d"></script>
+    <script src="~/Scripts/intro.js"></script>
+    <link href="~/Content/introjs.css" rel="stylesheet" />
+
+    <style>
+        .actionButton {
+            display: inline;
+        }
+
+        .alt-header:nth-child(1), .h1:nth-child(1), .h2:nth-child(1), .h3:nth-child(1), .h4:nth-child(1), .h5:nth-child(1), .h6:nth-child(1), .header:nth-child(1), .leader:nth-child(1), .sub-alt-header:nth-child(1), .sub-header:nth-child(1), .sub-leader:nth-child(1), h1:nth-child(1), h2:nth-child(1), h3:nth-child(1), h4:nth-child(1), h5:nth-child(1), h6:nth-child(1) {
+            margin-top: 1rem;
+        }
+
+        #titleBar {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 53px;
+            z-index: 1;
+            background-color: rgb(54, 54, 54);
+            color: white;
+        }
+
+        .file, .input, .select, .spinner, .tag-input, .textarea, input[type=datetime-local], input[type=email], input[type=file], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week], select, textarea {
+            font-size: 0.95rem;
+        }
+
+        @@media (max-width: 768px) {
+
+            body {
+                margin-bottom: 50px;
+            }
+
+            #titleBar {
+                position: fixed;
+                top: unset;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }      
+
+            .actionButton {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+@{
+    User user = new User();
+    DtoUser dtoUser = user.Load(Convert.ToInt64(Session["UserId"]));
+    int indice = 0;
+}
+<body style="width: 100%;overflow:visible;">
+    <div id="appbar" data-expand-point="md" data-role="appbar">
+        <a class="brand no-hover">
+            <img height="28" width="32" src="~/Content/Resources/whitey.png" />
+        </a>
+
+        <ul class="app-bar-menu">
+            @foreach (DtoPermission i in dtoUser.PermissionList.Where((value) => value.FatherCategoryId == indice))
+            {
+                <li>
+                    @{
+                        var submenu = dtoUser.PermissionList.Count(value => value.FatherCategoryId == i.TaskCategoryId);
+                        if (i.Name == "SETTINGS")
+                        {
+                            if (submenu > 0)
+                            {
+                                if (i.Url == "#")
+                                {
+                                    <a href="@i.Url"><span class="@i.Icon"></span></a>
+                                }
+                                else
+                                {
+                                    if (string.IsNullOrWhiteSpace(i.Url.Split('/')[3]))
+                                    {
+                                        <a href="@Url.Action(i.Url.Split('/')[2], i.Url.Split('/')[1], new { Area = "" })"><span class="@i.Icon"></span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action(i.Url.Split('/')[2], i.Url.Split('/')[1], new { Area = "YMMHRSystem"})"><span class="@i.Icon"></span></a>
+                                    }
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            i.Name = i.Name.ToLower().ToString();
+                            i.Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(i.Name);
+                            if (i.Url == "#")
+                            {
+                                <a href="@i.Url" class="dropdown-toggle"><span class="@i.Icon"></span> @i.Name</a>
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(i.Url.Split('/')[3]))
+                                {
+                                    <a href="@Url.Action(i.Url.Split('/')[2], i.Url.Split('/')[1], new { Area = "" })" class="dropdown-toggle"><span class="@i.Icon"></span> @i.Name</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action(i.Url.Split('/')[2], i.Url.Split('/')[1], new { Area = "YMMHRSystem"})" class="dropdown-toggle"><span class="@i.Icon"></span> @i.Name</a>
+                                }
+                            }
+                        }
+
+
+                        if (submenu > 0)
+                        {
+                            <ul class="d-menu" data-role="dropdown">
+
+                                @foreach (DtoPermission j in dtoUser.PermissionList.Where((value) => value.FatherCategoryId == i.TaskCategoryId))
+                                {
+                                    @*<li class="divider bg-orangered"></li>*@
+                                    <li>
+                                        @{
+                                            var submenu2 = dtoUser.PermissionList.Count(value => value.FatherCategoryId == j.TaskCategoryId);
+                                            j.Name = j.Name.ToLower().ToString();
+                                            j.Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(j.Name);
+
+
+                                            if (submenu2 > 0)
+                                            {
+                                                if (i.Url == "#")
+                                                {
+                                                    <a href="@j.Url" class="dropdown-toggle"><span class="@j.Icon" title="@j.Icon"></span> @j.Name</a>
+                                                }
+                                                else
+                                                {
+                                                    if (string.IsNullOrWhiteSpace(j.Url.Split('/')[3]))
+                                                    {
+                                                        <a href="@Url.Action(j.Url.Split('/')[2], j.Url.Split('/')[1], new { Area = "" })" class="dropdown-toggle">
+                                                            <span class="@j.Icon" title="@j.Icon"></span> @j.Name
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="@Url.Action(j.Url.Split('/')[2], j.Url.Split('/')[1], new { Area = "YMMHRSystem"})" class="dropdown-toggle">
+                                                            <span class="@j.Icon" title="@j.Icon"></span> @j.Name
+                                                        </a>
+                                                    }
+
+                                                }
+
+                                                <ul class="d-menu" data-role="dropdown">
+
+                                                    @foreach (DtoPermission k in dtoUser.PermissionList.Where((value) => value.FatherCategoryId == j.TaskCategoryId))
+                                                    {
+                                                        @*<li class="divider bg-orangered"></li>*@
+                                                        <li>
+                                                            @{
+                                                                k.Name = k.Name.ToLower().ToString();
+                                                                k.Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(k.Name);
+                                                                if (string.IsNullOrWhiteSpace(k.Url.Split('/')[3]))
+                                                                {
+                                                                    <a href="@Url.Action(k.Url.Split('/')[2], k.Url.Split('/')[1], new { Area = "" })"><span class="@k.Icon" title="@k.Icon"></span> @k.Name</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="@Url.Action(k.Url.Split('/')[2], k.Url.Split('/')[1], new { Area = "YMMHRSystem" })"><span class="@k.Icon" title="@k.Icon"></span> @k.Name</a>
+                                                                }
+
+                                                            }
+                                                        </li>
+
+                                                    }<!--TERCER FOREACH-->
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                if (string.IsNullOrWhiteSpace(j.Url.Split('/')[3]))
+                                                {
+                                                    <a href="@Url.Action(j.Url.Split('/')[2], j.Url.Split('/')[1], new { Area = "" })">
+                                                        <span class="@j.Icon" title="@j.Icon"></span> @j.Name
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action(j.Url.Split('/')[2], j.Url.Split('/')[1], new { Area = "YMMHRSystem" })">
+                                                        <span class="@j.Icon" title="@j.Icon"></span> @j.Name
+                                                    </a>
+                                                }
+
+                                            }
+                                        }
+                                    </li>
+
+                                }<!--SEGUNDO FOREACH-->
+                            </ul>
+                        }
+                    }
+                </li>
+            }<!--PRIMER FOREACH-->
+        </ul>
+        <div class="app-bar-container ml-auto">
+            @Html.Partial("_LoginPartial", dtoUser)
+        </div>
+
+    </div>
+    <div class="container-fluid">
+        <div class="cell">
+            @RenderBody()
+        </div>
+    </div>
+
+
+</body>
+</html>

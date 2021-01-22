@@ -1,0 +1,119 @@
+﻿@model List<DtoDiner>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Diner";
+}
+<head>
+    <script>
+        $SaveDiner = '@Url.Action("SaveDiner", "Diner", new { area = "YMMHRSystem" })';
+        $LoadDiner = '@Url.Action("LoadDiner", "Diner", new { area = "YMMHRSystem" })';
+        $DeleteDiner = '@Url.Action("DeleteDiner", "Diner", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Diner.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Diner</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveDiner"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' onclick="DinerDetailDialog(0)"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="DinerTable" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttDiner" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Type</th>
+                        <th style="text-align: center">Dishes</th>
+                        <th style="text-align: center">Unit Price</th>
+                        <th style="text-align: center">Total</th>
+                        <th style="text-align: center">Created By</th>
+                        <th style="text-align: center">Date</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td style="text-align: center">
+                                <span> @item.Type </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Dishes </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.UnitPrice </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Total </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.UserCreated </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Date.ToShortDateString() </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white"  style="cursor: pointer;" onclick="DinerDetailDialog(@item.DinerId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                @if (HttpContext.Current.Session["CanDeleteDiner"].Equals(true))
+                                {
+                                    <a class="button bg-red fg-white"style="cursor: pointer;" onclick="ConfirmDeleteDiner(@item.DinerId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="800" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DinerDetail" name="DinerDetail" class="dialog" data-role="dialog">
+
+    </div>
+
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>- Diner already exists</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteDiner" name="DeleteDiner" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteDiner()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteDiner')"> No</button>
+        </div>
+    </div>
+</body>
+

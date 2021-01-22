@@ -1,0 +1,117 @@
+﻿@model List<DtoRouteStop>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div id="RouteStopTable">
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttRouteStops" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Stop</th>
+                <th style="text-align: center">Reference</th>
+                <th style="text-align: center">Time</th>
+                <th style="text-align: center" data-step="4" data-intro="Delete route stop" data-position='auto'>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 0;
+            }
+            @foreach (var item in Model)
+            {
+            <tr id="@item.RouteStopId">
+                @Html.Hidden("StopList[" + index + "].RouteStopId", item.RouteStopId, new { @class = "route" })
+                @Html.Hidden("StopList[" + index + "].RouteId", item.RouteId, new { @class = "route" })
+                @Html.Hidden("StopList[" + index + "].StopId", item.StopId, new { @class = "route" })
+                @Html.Hidden("StopList[" + index + "].StopName", item.StopName, new { @class = "route" })
+                @Html.Hidden("StopList[" + index + "].Reference", item.Reference, new { @class = "route" })
+                @Html.Hidden("StopList[" + index + "].Time", item.Time, new { @class = "route" })
+                <td style="text-align: center">
+                    <span> @item.StopName </span>
+                </td>
+
+                <td style="text-align: center">
+                    <span> @item.Reference </span>
+                </td>
+
+                <td style="text-align: center">
+                    <span> @item.Time </span>
+                </td>
+
+                <td style="text-align: center">
+                    @if (HttpContext.Current.Session["CanDeleteRoute"].Equals(true))
+                    {
+                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRouteStop(@item.RouteId, @item.StopId, '@item.StopName')"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                    }
+                </td>
+            </tr>
+                index++;
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteRouteStop" name="DeleteRouteStop" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeleteStop()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteRouteStop')"> No</button>
+    </div>
+</div>
+
+<!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+
+<script>
+    var table;
+    $(document).ready(function () {
+
+        table = $('#dttRouteStops').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "45vh",
+            scrollCollapse: true
+        });
+
+    }); 
+
+    function DeleteStop() {
+        var aux;
+        $("#dttRouteStops td").each(function () {
+            if ($(this).text() === window.$Reference) {
+                aux = $(this).parents('tr');
+            }
+        });
+        $.ajax({
+            method: "POST",
+            url: window.$DeleteStop,
+            data: { routeId: window.$RouteId, stopId: window.$StopId },
+            success: function (result) {
+                if (result === "true") {
+                    Metro.toast.create("Stop deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the stop.", null, null, "bg-red fg-white");
+                }
+                table.row(aux).remove().draw();
+                Metro.dialog.close('#DeleteRouteStop')
+            }
+        });
+    }
+
+    function ConfirmDeleteRouteStop(routeId, stopId, reference) {
+        var dialog = Metro.getPlugin('#DeleteRouteStop', 'dialog');
+        dialog.open();
+        window.$RouteId = routeId;
+        window.$StopId = stopId;
+        window.$Reference = reference;
+    }
+
+</script>
+

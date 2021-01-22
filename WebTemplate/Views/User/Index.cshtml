@@ -1,0 +1,93 @@
+﻿@model List<DtoUser>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Index";
+    User user = new User();
+}
+<head>
+    <title>Users</title>
+
+    <script>
+        $SaveUser = '@Url.Action("SaveUser" , "User")';
+        $LoadUser = '@Url.Action("LoadUser", "User")';
+        $BlockUser = '@Url.Action("BlockUser", "User")';
+    </script>
+    <script src="~/Scripts/User.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Users</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveUser"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" style="color:white" data-intro="Opens a window to enter new user information" data-position='auto' onclick="AddUserDialog(0)"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home")">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="TablaUsuarios" data-step="2" data-intro="User List" data-position='auto'>
+            <!---------------------------------------TABLA USUARIO ------------------------------------------>
+            <table id="dttUsuarios" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: left">User</th>
+                        <th style="text-align: left">Role</th>
+                        <th style="text-align: center" data-step="3" data-intro="Edit user button" data-position='auto'>Edit</th>
+                        <th style="text-align: center" data-step="4" data-intro="Block user button" data-position='auto'>Active</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span> @item.Name @item.FirstSurname @item.LastSurname </span>
+                            </td>
+
+                            <td>
+                                @item.RoleName
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="mif-pencil " style="cursor: pointer;" onclick="AddUserDialog(@item.UserId)"></a>
+                            </td>
+
+                            <td style="text-align: center">
+                                @if (HttpContext.Current.Session["CanDeleteUser"].Equals(true))
+                                {
+                                    if (item.Status == "1")
+                                    {
+                                        <input type="checkbox" id="@("Status" + item.UserId)" name="@("Status" + item.UserId)" checked="checked" data-role="switch" data-material="true" onclick="BlockUser(@item.UserId)">
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="@("Status" + item.UserId)" name="@("Status" + item.UserId)" data-role="switch" data-material="true" onclick="BlockUser(@item.UserId)">
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOG USUARIO ------------------------------------------>
+    <div data-overlay="true" data-width="1000" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AddUser" name="AddUser" class="dialog container" data-role="dialog">
+
+    </div>
+
+</body>
+

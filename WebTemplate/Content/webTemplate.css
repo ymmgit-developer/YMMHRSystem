@@ -1,0 +1,129 @@
+﻿
+body {
+    font-size: 1em;
+    font-family: inherit;
+    padding-top: 52px;
+    padding-bottom: 20px;
+}
+
+a {
+    cursor: pointer;
+    color: black;
+}
+
+    a.button.my-button-colors {
+        color: white;
+        background-color: rgb(54, 54, 54);
+    }
+
+        a.button.my-button-colors:hover {
+            background-color: orangered;
+            color: white;
+        }
+
+.hide {
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+}
+
+.my-control-colors {
+    color: white;
+    background-color: rgb(54, 54, 54);
+}
+
+    .my-control-colors:hover {
+        background-color: orangered;
+        color: white;
+    }
+
+
+h5 {
+    color: white;
+}
+
+.app-bar-container .d-menu {
+    top: 100% !important;
+}
+
+.d-menu li {
+    background-color: orangered;
+    color: white;
+}
+
+    .d-menu li:hover {
+        background-color: rgb(54, 54, 54);
+    }
+
+    .d-menu li.active > a {
+        background-color: rgb(54, 54, 54);
+    }
+
+.app-bar {
+    background-color: orangered;
+    color: white;
+}
+
+    .app-bar .app-bar-menu {
+        background-color: orangered;
+        color: white;
+    }
+
+        .app-bar .app-bar-menu :hover {
+            background-color: rgb(54, 54, 54);
+        }
+
+    .app-bar .brand,
+    .app-bar .app-bar-item,
+    .app-bar .app-bar-container,
+    .app-bar .app-bar-button {
+        background-color: orangered;
+        color: white;
+    }
+
+    .app-bar .app-bar-menu > li,
+    .app-bar .app-bar-menu > li > a {
+        background-color: orangered;
+        color: white;
+    }
+
+    .app-bar .app-bar-menu .d-menu,
+    .app-bar .app-bar-menu .v-menu {
+        background-color: orangered;
+        color: white;
+    }
+
+    .app-bar .app-bar-menu .divider,
+    .app-bar .app-bar-container .divider {
+        background-color: rgb(54, 54, 54);
+    }
+
+    .app-bar .brand:not(.no-hover):hover,
+    .app-bar .app-bar-menu li:not(.no-hover):hover,
+    .app-bar .hamburger:not(.no-hover):hover,
+    .app-bar .app-bar-item:not(.no-hover):hover,
+    .app-bar .brand:not(.no-hover):active,
+    .app-bar .app-bar-menu li:not(.no-hover):active,
+    .app-bar .hamburger:not(.no-hover):active,
+    .app-bar .app-bar-item:not(.no-hover):active,
+    .app-bar .brand:not(.no-hover) .active,
+    .app-bar .app-bar-menu li:not(.no-hover) .active,
+    .app-bar .hamburger:not(.no-hover) .active,
+    .app-bar .app-bar-item:not(.no-hover) .active {
+        background: rgb(54, 54, 54);
+    }
+
+/*.table.cell-border .td,
+.table.cell-border .th,
+.table.cell-border td,
+.table.cell-border th {
+    text-align: center;
+}*/
+/*===================*/
+/*div.dataTables_scroll {
+    flex-grow: 2;
+}
+
+.dataTables_wrapper {
+    display: block !important;
+}*/
