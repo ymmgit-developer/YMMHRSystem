@@ -69,14 +69,21 @@ namespace YMMHRSystemLogic
         /// Load multiple LegalProcedure with fields.
         /// </summary>
         /// <returns>Load LegalProcedure Dto</returns>
-        public List<DtoLegalProcedure> LoadMultiple()
+        public List<DtoLegalProcedure> LoadMultiple(string processFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoLegalProcedure> legalProcedureList = new List<DtoLegalProcedure>();
-
-                mapping.Load<DtoLegalProcedure>("SELECT LegalProcedureId, Name, Process, UserCreated, DateAdded FROM LegalProcedures ORDER BY LegalProcedureId", "LegalProcedures", new DtoLegalProcedure());
+                if (processFilter == "")
+                {
+                    mapping.Load<DtoLegalProcedure>("SELECT LegalProcedureId, Name, Process, UserCreated, DateAdded FROM LegalProcedures ORDER BY LegalProcedureId", "LegalProcedures", new DtoLegalProcedure());
+                }
+                else
+                {
+                    mapping.Load<DtoLegalProcedure>("SELECT LegalProcedureId, Name, Process, UserCreated, DateAdded FROM LegalProcedures WHERE Process = '" + processFilter + "' ORDER BY LegalProcedureId", "LegalProcedures", new DtoLegalProcedure());
+                }
+               
                 legalProcedureList.AddRange(mapping.dtoList.Select(renglon => (DtoLegalProcedure)renglon.Dto));
 
                 return legalProcedureList;

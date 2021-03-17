@@ -9,7 +9,6 @@ namespace YMMHRSystemLogic
     public class DtoSindicateContract
     {
         public long SindicateContractId { get; set; }
-        public long SindicateId { get; set; }
         public string FileName { get; set; }
         public DateTime? DateAdded { get; set; }
     }

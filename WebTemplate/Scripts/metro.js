@@ -19548,7 +19548,7 @@ $.noConflict = function() {
                 backgroundSize: o.size,
                 backgroundRepeat: o.repeat ? "repeat" : "no-repeat",
                 backgroundColor: o.color,
-                backgroundAttachment: o.attachment,
+                backgroundContract: o.attachment,
                 backgroundOrigin: o.origin
             });
 

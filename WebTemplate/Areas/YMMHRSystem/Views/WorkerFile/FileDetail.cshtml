@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Worker Record";
     List<string> educationList = new List<string> { "Primary School", "High School", "Preparatory", "University" };
-    List<string> jobList = new List<string> { "Associate Production", "Team Leader", "Coordinator", "Assistant Manager", "Manager", "Senior Manager", "Intern" };
+    List<string> jobList = new List<string> { "Associate Production", "Team Leader", "Coordinator", "Assistant Manager", "Manager", "Senior Manager", "Vice President", "President", "Intern", "Senior Technical Staff" };
     List<string> civilStatusList = new List<string> { "Single", "Married", "Free Union", "Divorced", "Widower" };
     List<string> workerTypeList = new List<string> { "Union Worker", "Staff" };
     Process process = new Process();
@@ -65,7 +65,7 @@
                     <div class="cell">
                         @if (Model.WorkerFileId == 0)
                         {
-                            <input data-prepend="Admission Date:" id="GetAdmissionDate" name="GetAdmissionDate" value="@(Model.AdmissionDate?.ToShortDateString())" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                            <input data-prepend="Admission Date:" id="GetAdmissionDate" name="GetAdmissionDate" value="@(Model.AdmissionDate?.ToShortDateString())" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         }
                         else
                         {
@@ -77,7 +77,7 @@
                 <!----------------------------------- SUB ROW------------------------------>
                 <div class="row mb-1">
                     <div class="cell">
-                        <input data-prepend="Date of Birth:" id="GetDoB" name="GetDoB" value="@Model.DoB" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Date of Birth:" id="GetDoB" name="GetDoB" value="@Model.DoB" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         @Html.Hidden("DoB", Model.DoB)
                     </div>
                     <div class="cell">

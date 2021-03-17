@@ -46,7 +46,7 @@ function OpenPrizeTeamDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#NewTeamDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -76,7 +76,7 @@ function SavePrizeTeam() {
 
 function ConfirmDeletePrizeTeam(prizeTeamId) {
     var dialog = Metro.getPlugin('#DeletePrizeTeam', 'dialog');
-    dialog.open();
+    setTimeout(function () { dialog.open(); }, 100);
     window.$prizeTeamId = prizeTeamId;
 }
 
@@ -109,7 +109,7 @@ function OpenPrizeTeamProductivityDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#ProductivityDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -142,7 +142,7 @@ function OpenPrizeTeamScrapDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#ScrapDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -176,7 +176,7 @@ function OpenPrizeTeamDockAuditDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#DockAuditDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -210,7 +210,7 @@ function OpenPrizeTeamSecurityCrossDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#SecurityCrossDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -244,7 +244,7 @@ function OpenPrizeTeamAttendanceDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AttendanceDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -278,7 +278,7 @@ function OpenPointConfigurationDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#PointConfigurationDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -313,7 +313,7 @@ function PrizeTeamPointLogDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#PrizeTeamPointLogDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -352,7 +352,7 @@ function OpenNewTeamAssociateDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#NewTeamAssociateDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

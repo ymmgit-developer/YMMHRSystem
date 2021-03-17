@@ -46,7 +46,7 @@ function SaveWorkerFile() {
         var data = $('#FormDetail').find('select, input').serialize();
 
         var dialog = Metro.getPlugin('#preloaderWorkerFile', 'dialog');
-        dialog.open();
+        setTimeout(function () { dialog.open(); }, 100);
 
         $.ajax({
             method: "POST",
@@ -76,7 +76,7 @@ function DismissWorkerFile(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#DismissalDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -114,7 +114,7 @@ function AdmitWorkerFile(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#AdmissionDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -160,7 +160,7 @@ function OpenAttachmentDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AttachmentDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -196,7 +196,7 @@ function OpenTrajectoryDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#TrajectoryDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -232,7 +232,7 @@ function OpenWarningDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#WarningDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

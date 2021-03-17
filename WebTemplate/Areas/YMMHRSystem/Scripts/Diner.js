@@ -74,7 +74,7 @@ function DinerDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#DinerDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -150,7 +150,7 @@ function ExtraordinaryDinerDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#ExtraordinaryDinerDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

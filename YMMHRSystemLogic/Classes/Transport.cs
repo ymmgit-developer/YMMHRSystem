@@ -12,6 +12,9 @@ namespace YMMHRSystemLogic
     {
         Log log = new Log();
         SQLTools oDatabase = new SQLTools();
+        SendEmail sendEmail = new SendEmail();
+        EmailNotification emailNotification = new EmailNotification();
+
         #region Standard Methods
         /// <summary>
         /// Loads the Transport DTO
@@ -87,6 +90,30 @@ namespace YMMHRSystemLogic
                 throw ex;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public List<DtoTransport> LoadMultipleWithFilter(string startDate, string endDate)
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoTransport> transportList = new List<DtoTransport>();
+
+                mapping.Load<DtoTransport>("SELECT TransportId, Route, Shift, Date, StartDate, FinishDate, Cost, UserCreated, Type FROM Transports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY TransportId", "Transports", new DtoTransport());
+                transportList.AddRange(mapping.dtoList.Select(renglon => (DtoTransport)renglon.Dto));
+
+                return transportList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Transports With Filter", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleWithFilter");
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// Loads the Extra Transport DTO
@@ -128,6 +155,15 @@ namespace YMMHRSystemLogic
                 {
                     extraTransport.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     extraTransport.Date = DateTime.Now;
+                    sendEmail.SendEmailTemplate("YMM HR System: Extra Transport Request", "TemplateExtraTransportRequest", new[,]
+{
+                        {"$APPLICANT$", extraTransport.UserCreated},
+                        {"$ROUTE$", extraTransport.Route},
+                        {"$STOP$", extraTransport.Stop},
+                        {"$ASSOCIATE$",extraTransport.AssociateName},
+                        {"$DATE$", extraTransport.StartDate?.ToString("dd/MM/yyyy")}
+                    }, sendEmail.GetAdminEmail(), emailNotification.GetExtraTransportContacts(1).Split(',').ToList());
+
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = extraTransport, TableName = "ExtraordinaryTransports" });
@@ -159,6 +195,30 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 log.WriteToErrorLog("HR System", "Load Multiple Extra Transports", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleExtra");
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public List<DtoExtraordinaryTransport> LoadMultipleExtraWithFilter(string startDate, string endDate)
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
+
+                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Shift, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated FROM ExtraordinaryTransports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryTransportId", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
+
+                return extraTransportList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Extra Transports With Filter", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleExtraWithFilter");
                 throw ex;
             }
         }

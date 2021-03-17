@@ -51,9 +51,6 @@
     <Reference Include="DBFramework">
       <HintPath>..\..\YMMTicketSystem\DLLs\DBFramework.dll</HintPath>
     </Reference>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.12.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
-      <HintPath>..\packages\DocumentFormat.OpenXml.2.12.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
-    </Reference>
     <Reference Include="EmailComponent">
       <HintPath>..\..\YMMTicketSystem\DLLs\EmailComponent.dll</HintPath>
     </Reference>
@@ -66,8 +63,8 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=5.5.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.5.5.0\lib\net45\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=5.5.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.5.5.4\lib\net45\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
@@ -165,9 +162,15 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Areas\YMMHRSystem\Controllers\FoodTypeController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\GraphController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\EmailNotificationController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\UtilityCarController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\LegalProcedureController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\GiftAssociateController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\CoffeeBreakController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\RoomController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\VehicleController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\TranslationController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\PrizeTeamController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\PrizeAssociateController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\GiftController.cs" />
@@ -175,10 +178,14 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\ProcessController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\RouteController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\FindingTypeController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\ImmigrationProcedureController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\LegalRequirementController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\SindicateController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\ShiftController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\StopController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\DinerController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\TransportController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\BusinessTripController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\WorkerFileController.cs" />
     <Compile Include="Areas\YMMHRSystem\YMMHRSystemAreaRegistration.cs" />
     <Compile Include="Controllers\Error\ErrorController.cs" />
@@ -193,17 +200,31 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\YMMHRSystem\Scripts\EmailNotification.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\DinerGraph.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\SindicateGraph.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Record.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\WorkerFileGraph.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\TransportGraph.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\UtilityCar.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\LegalProcedure.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Gift.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\GiftAssociate.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\CoffeeBreak.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Room.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Vehicle.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Translation.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\PrizeTeam.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Process.js" />
-    <Content Include="Areas\YMMHRSystem\Scripts\FoodType.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Diner.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Prize.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\FindingType.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\ImmigrationProcedure.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\LegalRequirement.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Sindicate.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Transport.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\PrizeAssociate.js" />
+    <Content Include="Areas\YMMHRSystem\Scripts\BusinessTrip.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\WorkerFile.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Shift.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Route.js" />
@@ -239,8 +260,6 @@
     <Content Include="Areas\YMMHRSystem\Views\Shift\ShiftDetailDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Stop\Index.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Stop\StopDetailDialog.cshtml" />
-    <Content Include="Areas\YMMHRSystem\Views\FoodType\Index.cshtml" />
-    <Content Include="Areas\YMMHRSystem\Views\FoodType\FoodTypeDetailDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Process\Index.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Process\ProcessDetailDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\LegalProcedure\Index.cshtml" />
@@ -316,10 +335,60 @@
     <Content Include="Areas\YMMHRSystem\Views\GiftAssociate\Index.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\GiftAssociate\GiftAssociateLogList.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\GiftAssociate\GiftDialog.cshtml" />
-    <None Include="Properties\PublishProfiles\ChildPartsSystem.pubxml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\SindicateDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\SindicateAttachmentList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\AttachmentDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\SindicateContractList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Sindicate\ContractDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\ImmigrationProcedure\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\ImmigrationProcedure\ImmigrationProcedureDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\LegalRequirement\AttachmentDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\LegalRequirement\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\LegalRequirement\LegalRequirementAttachmentList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\LegalRequirement\LegalRequirementDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Translation\AttachmentDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Translation\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Translation\AttachmentList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Translation\TranslationDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Translation\TranslationList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\CoffeeBreak\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\CoffeeBreak\CoffeeBreakDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Room\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Room\RoomDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Vehicle\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Vehicle\VehicleDetailDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\UtilityCar\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\UtilityCar\UtilityCarDetail.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\AttachmentDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\BusinessTripDetail.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\AttachmentList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\PassengerList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\PassengerDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\TaxiDetailList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\TaxiDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\TaxiResponseList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\FlightDetailList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\FlightDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\FlightResponseList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\CarRentalDetailList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\CarRentalDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\CarRentalResponseList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\HotelDetailList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\HotelDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\BusinessTrip\HotelResponseList.cshtml" />
+    <Content Include="ExcelTemplates\HTFForm.xlsx" />
+    <Content Include="Areas\YMMHRSystem\Views\Graph\Transport.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Graph\Diner.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Graph\Sindicate.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Graph\WorkerFile.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Graph\Record.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\EmailNotification\Index.cshtml" />
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\chartjs-plugin-datalabels.min.js" />
+    <None Include="Properties\PublishProfiles\HRSystem.pubxml" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -340,6 +409,27 @@
     <Content Include="Scripts\Role.js" />
     <Content Include="Scripts\AdminRole.js" />
     <Content Include="Scripts\User.js" />
+    <Content Include="Templates\TemplateGiftAnniversary.html" />
+    <Content Include="Templates\TemplateLegalRequirementRenewal.html" />
+    <Content Include="Templates\TemplateLegalRequirementExpiration.html" />
+    <Content Include="Templates\TemplateImmigrationProcedureRejection.html" />
+    <Content Include="Templates\TemplateImmigrationProcedureApproval.html" />
+    <Content Include="Templates\TemplateCoffeeBreakFinish.html" />
+    <Content Include="Templates\TemplateBusinessTripRequest.html" />
+    <Content Include="Templates\TemplateBusinessTripResponse.html" />
+    <Content Include="Templates\TemplateImmigrationProcedureRequest.html" />
+    <Content Include="Templates\TemplateTranslationFinish.html" />
+    <Content Include="Templates\TemplateTranslationStart.html" />
+    <Content Include="Templates\TemplateTranslationRequest.html" />
+    <Content Include="Templates\TemplateUtilityCarFinish.html" />
+    <Content Include="Templates\TemplateCoffeeBreakRequest.html" />
+    <Content Include="Templates\TemplateCoffeeBreakStart.html" />
+    <Content Include="Templates\TemplateUtilityCarStart.html" />
+    <Content Include="Templates\TemplateUtilityCarRequest.html" />
+    <Content Include="Templates\TemplateVehicleService.html" />
+    <Content Include="Templates\TemplateVehicleVerification.html" />
+    <Content Include="Templates\TemplateExtraTransportRequest.html" />
+    <Content Include="Templates\TemplateExtraDinerRequest.html" />
     <Content Include="Templates\TemplateContactAdmin.html" />
     <Content Include="Templates\TemplateContactEmail.html" />
     <Content Include="Templates\TemplatePasswordRecovery.html" />
@@ -375,11 +465,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="WorkerFiles\Attachments\" />
-    <Folder Include="WorkerFiles\Dismissals\" />
-    <Folder Include="WorkerFiles\Trajectory\" />
-    <Folder Include="WorkerFiles\Warnings\" />
-    <Folder Include="WorkerFiles\WorkerPhotos\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

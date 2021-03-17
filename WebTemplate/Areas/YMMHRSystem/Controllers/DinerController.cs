@@ -102,7 +102,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
         }
 
-
         // GET: YMMHRSystem/ExtraordinaryDiner
         public ActionResult ExtraordinaryDiner()
         {
@@ -155,7 +154,8 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
-                if (dtoExtraDiner.Date?.Subtract(DateTime.Now).TotalHours < 4)
+                DateTime? dateOrdered = dtoExtraDiner.Date?.Add(dtoExtraDiner.Time);
+                if (dateOrdered?.Subtract(DateTime.Now).TotalHours < 4)
                 {
                     return Json("false", JsonRequestBehavior.AllowGet);
                 }
@@ -168,7 +168,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-
+                dtoExtraDiner.Lading = dtoExtraDiner.LadingCost > 0.0m ? true : false;
                 diner.SaveExtra(dtoExtraDiner);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

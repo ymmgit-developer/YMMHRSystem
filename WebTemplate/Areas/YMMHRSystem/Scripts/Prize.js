@@ -42,7 +42,7 @@ function PrizeDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#PrizeDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -56,7 +56,7 @@ function PrizeLogDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#PrizeLogDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

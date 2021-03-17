@@ -41,7 +41,7 @@ function LegalProcedureDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#LegalProcedureDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

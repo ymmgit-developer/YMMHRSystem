@@ -12,6 +12,7 @@ namespace YMMHRSystemLogic
         public string Names { get; set; }
         public string WorkerId { get; set; }
         public DateTime? AdmissionDate { get; set; }
+        public DateTime? DismissalDate { get; set; }
         public string Process { get; set; }
         public DateTime? DoB { get; set; }
         public string CivilStatus { get; set; }

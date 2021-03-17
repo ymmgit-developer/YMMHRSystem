@@ -42,7 +42,7 @@ function GiftDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#GiftDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -56,7 +56,7 @@ function GiftLogDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#GiftLogDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

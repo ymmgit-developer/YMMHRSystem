@@ -220,7 +220,29 @@ namespace YMMHRSystemLogic
                 throw ex;
             }
         }
+        /// <summary>
+        /// Gets Admin Email
+        /// </summary>
+        /// <returns></returns>
+        public string GetAdminEmail()
+        {
+            try
+            {
+                DataRow row = null;
+                string sqlQuery = "SELECT AdminEmail FROM EmailConfiguration WHERE EmailConfigurationId = 1";
+                row = sqlTools.GetRow(sqlQuery, "Get Admin Email");
 
+                if (row == null || row["AdminEmail"].ToString() == "") return "";
+
+                return row["AdminEmail"].ToString();
+
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get Admin Email", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetAdminEmail");
+                throw ex;
+            }
+        }
 
     }
 }

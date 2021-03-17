@@ -33,7 +33,6 @@
 
 });
 
-
 function SaveRoute() {
     if ($("#GetName").val() !== "") {
         $("#Cost").val($("#GetCost").val())
@@ -85,7 +84,7 @@ function AddStop(id) {
                 if (result === "true") {
                     Metro.toast.create("Stop already exists within another route.", null, null, "bg-red fg-white");
                 } else {
-                    var node = table.row.add([stopName, reference, time, "<a class='mif-bin' style='cursor: pointer background-color: white; color: red;' onclick='ConfirmDeleteStop(" + RouteId + "," + stopId + ",\"" + reference + "\")'></a>"]).draw(false).node();
+                    var node = table.row.add([stopName, reference, time, "<a class='button small bg-red fg-white' style='cursor: pointer;' onclick='ConfirmDeleteStop(" + RouteId + "," + stopId + ",\"" + reference + "\")'><span class='mif-bin'></span><span class='actionButton'> Delete</span></a>"]).draw(false).node();
                     $(node).css('text-align', 'center');
                     $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteStopId' class='route' value=''>");
                     $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteId' class='route' value='" + RouteId + "'>");

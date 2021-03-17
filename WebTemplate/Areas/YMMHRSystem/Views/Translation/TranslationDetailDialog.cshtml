@@ -1,0 +1,112 @@
+﻿@model DtoTranslation
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    var complexityLevelList = new List<string> { "A", "B", "C" };
+}
+<div class="dialog-title">Translation</div>
+
+<div class="dialog-content">
+    <form id="TranslationForm" data-role="validator" data-on-validate-form="AddTranslation()" action="javascript:">
+        <div class="row mb-1">
+            <div class="cell">
+                <input type="text" autocomplete="off" data-role="input" data-validate="required" data-prepend="Issue:" id="Issue" name="Issue" value="@Model.Issue">
+            </div>
+            <div class="cell">
+                <input data-prepend="Deadline:" data-min-date="@DateTime.Now" data-validate="required" id="Deadline" name="Deadline" value="@(Model.Deadline?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.Deadline?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+            {
+
+                <div class="cell">
+                    <select data-role="select" id="ComplexityLevel" name="ComplexityLevel" data-prepend="Complexity Level:">
+                        @foreach (var item in complexityLevelList)
+                        {
+                            if (Model.ComplexityLevel == item)
+                            {
+                                <option selected value="@item">@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="cell">
+                    <input data-prepend="Final Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinalDate" name="FinalDate" value="@(Model.FinalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                </div>
+            }
+            else
+            {
+                <div class="cell">
+                    <input data-prepend="Status:" readonly="readonly" value="@(Model.Status == 3 ? "Complete" : Model.Status == 2 ? "In Progress" : "New")" autocomplete="off" data-role="input">
+                </div>
+                <div class="cell">
+                    <input data-prepend="Final Date:" readonly="readonly" id="FinalDate" name="FinalDate" value="@(Model.FinalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? "" : Model.FinalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="input">
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <textarea data-role="textarea" data-prepend="Description:" name="Description" id="Description" data-validate="required" autocomplete="off" value="@Model.Description">@Model.Description</textarea>
+            </div>
+        </div>
+        <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+        <div class="row">
+            <div id="AttachmentTable" class="cell-md-6">
+                @Html.Partial("~/Areas/YMMHRSystem/Views/Translation/AttachmentList.cshtml", Model.AttachmentList)
+            </div>
+            <div id="TranslationTable" class="cell-md-6">
+                @Html.Partial("~/Areas/YMMHRSystem/Views/Translation/TranslationList.cshtml", Model.TranslatedList)
+            </div>
+        </div>
+        @Html.Hidden("Status", Model.Status)
+        @Html.Hidden("AssignedTo", Model.AssignedTo)
+        @Html.Hidden("Associate", Model.Associate)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        @Html.Hidden("TranslationId", Model.TranslationId)
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="dialog-actions d-flex flex-justify-start">
+                    @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        if (HttpContext.Current.Session["CanSaveTranslation"].Equals(true))
+                        {
+                            if (Model.TranslationId != 0)
+                            {
+                                if (Model.Status == 1)
+                                {
+                                    <div><a id="StartTranslation" onclick="StartTranslation()" class="button bg-blue fg-white"><span class="mif-play"> Start</span></a></div>
+                                }
+                                if (Model.Status == 2)
+                                {
+                                    <div><a id="EndTranslation" onclick="EndTranslation()" class="button bg-green fg-white"><span class="mif-stop"> End</span></a></div>
+                                }
+
+                            }
+                            if (Model.Status <= 1)
+                            {
+                                <div><button id="SaveTranslation" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (HttpContext.Current.Session["CanSaveTranslation"].Equals(true))
+                        {
+                            if (Model.Status <= 1)
+                            {
+                                <div><button id="SaveTranslation" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                            }
+                        }
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

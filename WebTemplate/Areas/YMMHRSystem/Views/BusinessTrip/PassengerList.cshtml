@@ -1,0 +1,117 @@
+﻿@model List<DtoPassengerDetail>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div class="dialog-content">
+    <div class="row d-flex flex-align-center flex-justify-between mx-2">
+        <div><h6>Passengers</h6></div>
+        <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenPassengerDialog(0)"><span class="mif-plus"></span><span class="actionButton"> Add </span></a></div>
+    </div>
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttPassenger" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">Passenger</th>
+                <th style="text-align: center">Company Name</th>
+                <th style="text-align: center">Purpose</th>
+                <th style="text-align: center">Type</th>
+                <th style="text-align: center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr id="@item.PassengerDetailId">
+                <td style="text-align: center">
+                    <span> @item.Passenger </span>
+                </td>
+
+                <td style="text-align: center">
+                    <span> @item.CompanyName </span>
+                </td>
+
+                <td style="text-align: center">
+                    <span> @item.Purpose </span>
+                </td>
+
+                <td style="text-align: center">
+                    <span> @item.Type </span>
+                </td>
+
+                <td style="text-align: center">
+                    <a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenPassengerDialog(@item.PassengerDetailId)"><span class="mif-eye"></span></a>
+                    @if (HttpContext.Current.Session["CanDeleteBusinessTrip"].Equals(true))
+                    {
+                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeletePassenger(@item.PassengerDetailId)"><span class="mif-bin"></span></a>
+                    }
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeletePassenger" name="DeletePassenger" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeletePassenger()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeletePassenger')"> No</button>
+    </div>
+</div>
+
+<script>
+    var tablePassenger;
+    $(document).ready(function () {
+
+        tablePassenger = $('#dttPassenger').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "20vh",
+            scrollCollapse: true,
+            initComplete: function () {
+                $("#PassengerTable").show();
+            }
+        });
+
+    });
+
+
+    function DeletePassenger() {
+        var aux;
+        $("#dttPassenger tr").each(function () {
+            if ($(this).attr("id") == window.$PassengerId) {
+                aux = $(this);
+            }
+        });
+
+        $.ajax({
+            method: "POST",
+            url: window.$DeletePassenger,
+            data: { passengerDetailId: window.$PassengerId },
+            success: function (result) {
+                if (result === "true") {
+                    tablePassenger.row(aux).remove().draw();
+                    Metro.toast.create("Passenger deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the passenger or business trip is complete.", null, null, "bg-red fg-white");
+                }
+                Metro.dialog.close('#DeletePassenger')
+            }
+        });
+    }
+
+    function ConfirmDeletePassenger(passengerId) {
+        var dialog = Metro.getPlugin('#DeletePassenger', 'dialog');
+        dialog.open();
+        window.$PassengerId = passengerId;
+    }
+</script>
+
+

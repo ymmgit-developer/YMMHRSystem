@@ -1,0 +1,60 @@
+﻿@model DtoPassengerDetail
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    var typeList = new List<string> { "Support from Yachiyo", "Business Trip", "External Company" };
+}
+<div class="dialog-title">Passenger</div>
+
+<div class="dialog-content">
+    <form id="PassengerForm" data-role="validator" data-on-validate-form="AddPassenger()" action="javascript:">
+        @Html.Hidden("PassengerDetailId", Model.PassengerDetailId)
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input type="text" name="Passenger" id="Passenger" data-role="input" data-prepend="Passenger:" data-validate="required" autocomplete="off" value="@Model.Passenger">
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="CompanyName" id="CompanyName" data-role="input" data-prepend="Company Name:" data-validate="required" autocomplete="off" value="@Model.CompanyName">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input type="text" name="Purpose" id="Purpose" data-role="input" data-prepend="Purpose:" data-validate="required" autocomplete="off" value="@Model.Purpose">
+            </div>
+            <div class="cell-md-6">
+                <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+                    @foreach (var item in typeList)
+                    {
+                        if (Model.Type == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-12">
+                <textarea data-role="textarea" data-prepend="Notes:" name="Notes" id="Notes" autocomplete="off" value="@Model.Notes">@Model.Notes</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row mt-2 mb-1">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveBusinessTrip"].Equals(true))
+                    {
+                        <div><button id="SavePassenger" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

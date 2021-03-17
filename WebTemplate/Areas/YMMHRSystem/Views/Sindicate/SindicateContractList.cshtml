@@ -1,0 +1,107 @@
+﻿@model List<DtoSindicateContract>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Sindicate Contracts</div>
+
+<div class="dialog-content">
+    <div class="row d-flex flex-align-center flex-justify-end mx-5">
+        <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenContractDialog()"><span class="mif-plus"></span><span class="actionButton"> Add </span></a></div>
+    </div>
+    <div id="ContractTable">
+        <!---------------------------------------TABLA ------------------------------------------>
+        <table id="dttContract" class="display compact" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align: center">File</th>
+                    <th style="text-align: center">Date</th>
+                    <th style="text-align: center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr id="@item.SindicateContractId">
+                    <td style="text-align: center">
+                        <span> @Path.GetFileName(item.FileName) </span>
+                    </td>
+                    <td style="text-align: center">
+                        <span> @item.DateAdded </span>
+                    </td>
+                    <td style="text-align: center">
+                        <a class="button small my-button-colors" style="cursor: pointer;" href="@Url.Action("GetContractPDF", "Sindicate", new { Area = "YMMHRSystem" , sindicateContractId = item.SindicateContractId })" target="_blank"><span class="mif-eye"></span><span class="actionButton"> View </span></a>
+                        @if (HttpContext.Current.Session["CanDeleteSindicate"].Equals(true))
+                        {
+                            <a class="button small mif-plus bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteContract(@item.SindicateContractId)"><span class="actionButton"> Delete </span></a>
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <div data-overlay="true" data-width="300" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ContractDialog" name="ContractDialog" class="dialog" data-role="dialog">
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteContract" name="DeleteContract" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteContract()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteContract')"> No</button>
+        </div>
+    </div>
+
+    <script>
+        var tableContract;
+        $(document).ready(function () {
+
+            tableContract = $('#dttContract').DataTable({
+                retrieve: true,
+                responsive: true,
+                searching: false,
+                info: false,
+                paging: false,
+                ordering: false,
+                scrollY: "20vh",
+                scrollCollapse: true
+            });
+
+        });
+
+
+        function DeleteContract() {
+            var aux;
+            $("#dttContract tr").each(function () {
+                if ($(this).attr("id") == window.$ContractId) {
+                    aux = $(this);
+                }
+            });
+
+            $.ajax({
+                method: "POST",
+                url: window.$DeleteContract,
+                data: { sindicateContractId: window.$ContractId },
+                success: function (result) {
+                    if (result === "true") {
+                        Metro.toast.create("Contract deleted.", null, null, "bg-green fg-white");
+                    } else {
+                        Metro.toast.create("Error deleting the contract.", null, null, "bg-red fg-white");
+                    }
+                    tableContract.row(aux).remove().draw();
+                    Metro.dialog.close('#DeleteContract')
+                }
+            });
+        }
+
+        function ConfirmDeleteContract(contractId) {
+            var dialog = Metro.getPlugin('#DeleteContract', 'dialog');
+            dialog.open();
+            window.$ContractId = contractId;
+        }
+    </script>
+
+

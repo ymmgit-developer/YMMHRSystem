@@ -12,6 +12,9 @@ namespace YMMHRSystemLogic
     {
         Log log = new Log();
         SQLTools oDatabase = new SQLTools();
+        SendEmail sendEmail = new SendEmail();
+        EmailNotification emailNotification = new EmailNotification();
+
         #region Standard Methods
         /// <summary>
         /// Loads the Diner DTO
@@ -87,6 +90,30 @@ namespace YMMHRSystemLogic
                 throw ex;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public List<DtoDiner> LoadMultipleWithFilter(string startDate, string endDate)
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoDiner> dinerList = new List<DtoDiner>();
+
+                mapping.Load<DtoDiner>("SELECT DinerId, Type, Dishes, UnitPrice, Total, Date, StartDate, FinishDate, UserCreated FROM Diner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY DinerId", "Diner", new DtoDiner());
+                dinerList.AddRange(mapping.dtoList.Select(renglon => (DtoDiner)renglon.Dto));
+
+                return dinerList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Diners with Filter", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleWithFilter");
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// Loads the Extra Diner DTO
@@ -128,6 +155,14 @@ namespace YMMHRSystemLogic
                 {
                     extraDiner.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     extraDiner.DateAdded = DateTime.Now;
+
+                    sendEmail.SendEmailTemplate("YMM HR System: Extra Diner Request", "TemplateExtraDinerRequest", new[,]
+{
+                        {"$APPLICANT$", extraDiner.UserCreated},
+                        {"$TYPE$", extraDiner.Type},
+                        {"$ASSOCIATE$", extraDiner.AssociateName},
+                        {"$DATE$", extraDiner.Date?.ToString("dd/MM/yyyy")}
+                    }, sendEmail.GetAdminEmail(), emailNotification.GetExtraDinerContacts(1).Split(',').ToList());
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = extraDiner, TableName = "ExtraordinaryDiner" });
@@ -151,7 +186,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryDiner> extraDinerList = new List<DtoExtraordinaryDiner>();
 
-                mapping.Load<DtoExtraordinaryDiner>("SELECT ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, Cost, Lading, LadingCost, Motive, DateAdded, UserCreated FROM ExtraordinaryDiner ORDER BY ExtraordinaryDinerId", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
+                mapping.Load<DtoExtraordinaryDiner>("SELECT ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, TypeCost, Lading, LadingCost, Motive, DateAdded, UserCreated FROM ExtraordinaryDiner ORDER BY ExtraordinaryDinerId", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
                 extraDinerList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryDiner)renglon.Dto));
 
                 return extraDinerList;
@@ -159,6 +194,30 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 log.WriteToErrorLog("HR System", "Load Multiple Extra Diners", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleExtra");
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public List<DtoExtraordinaryDiner> LoadMultipleExtraWithFilter(string startDate, string endDate)
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoExtraordinaryDiner> extraDinerList = new List<DtoExtraordinaryDiner>();
+
+                mapping.Load<DtoExtraordinaryDiner>("SELECT ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, Cost, Lading, LadingCost, Motive, DateAdded, UserCreated FROM ExtraordinaryDiner WHERE DateAdded BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryDinerId", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
+                extraDinerList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryDiner)renglon.Dto));
+
+                return extraDinerList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Extra Diners With Filter", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleExtraWithFilter");
                 throw ex;
             }
         }

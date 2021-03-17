@@ -41,7 +41,7 @@ function ProcessDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#ProcessDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

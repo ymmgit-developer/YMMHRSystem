@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace YMMHRSystemLogic
+{
+    public class DtoGraphXYZ
+    {
+        public string X { get; set; }
+        public int Z { get; set; }
+        public string Y { get; set; }
+    }
+}

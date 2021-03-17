@@ -1,0 +1,146 @@
+﻿@model DtoImmigrationProcedure
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+    LegalProcedure legalProcedure = new LegalProcedure();
+    var legalProcedureList = legalProcedure.LoadMultiple("GA");
+    var procedureTypeList = new List<string> { "Initial", "Renewal" };
+
+}
+<div class="dialog-title">Immigration Procedure</div>
+
+<div class="dialog-content">
+    <form id="ImmigrationProcedureForm" data-role="validator" data-on-validate-form="AddImmigrationProcedure()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell-md-6">
+                <input type="text" name="Associate" id="Associate" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.Associate">
+                <span class="invalid_feedback">
+                    Select an Associate
+                </span>
+            </div>
+            <div class="cell-md-2">
+                <a class="button my-button-colors w-100" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
+            </div>
+            <div class="cell-md-4">
+                <select data-role="select" id="ProcedureType" name="ProcedureType" data-prepend="Procedure:">
+                    @foreach (var item in procedureTypeList)
+                    {
+                        if (Model.ProcedureType == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-4">
+                <select data-role="select" id="DocumentType" name="DocumentType" data-prepend="Document:">
+                    @foreach (var item in legalProcedureList)
+                    {
+                        if (Model.DocumentType == item.Name)
+                        {
+                            <option selected value="@item.Name">@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Name">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-4">
+                <select data-role="select" id="Motive" name="Motive" data-prepend="Motive:">
+                    <option selected value="Job Requirement">Job Requirement</option>
+                    <option value="Training">Training</option>
+                    <option value="Supplier Visit">Supplier Visit</option>
+                </select>
+            </div>
+            <div class="cell-md-4">
+                <input data-prepend="Expiration Date:" id="ExpirationDate" name="ExpirationDate" value="@(Model.ExpirationDate.ToString("yyyy-MM-dd") == "0001-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ExpirationDate.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-12">
+                <textarea data-role="textarea" data-prepend="Justification:" name="Justification" id="Justification" data-validate="required" autocomplete="off" value="@Model.Justification">@Model.Justification</textarea>
+            </div>
+        </div>
+
+        @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+        {
+            if (Model.Status == 1 || !string.IsNullOrWhiteSpace(Model.RejectionMotive))
+            {
+                <div class="row mb-2">
+                    <div class="cell-md-12">
+                        <textarea data-role="textarea" data-prepend="Motive:" name="RejectionMotive" id="RejectionMotive" autocomplete="off" value="@Model.RejectionMotive">@Model.RejectionMotive</textarea>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrWhiteSpace(Model.RejectionMotive))
+            {
+                <div class="row mb-2">
+                    <div class="cell-md-12">
+                        <textarea data-role="textarea" readonly="readonly" data-prepend="Motive:" name="RejectionMotive" id="RejectionMotive" autocomplete="off" value="@Model.RejectionMotive">@Model.RejectionMotive</textarea>
+                    </div>
+                </div>
+            }
+        }
+        @Html.Hidden("Process", Model.Process)
+        @Html.Hidden("Date", Model.Date)
+        @Html.Hidden("CreatedBy", Model.CreatedBy)
+        @if (Model.Status <= 1)
+        {
+            <div class="row mt-2 mb-2">
+                <div class="cell-md-12">
+                    <div class="dialog-actions p-0 d-flex flex-justify-start">
+                        @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                        {
+                            if (HttpContext.Current.Session["CanSaveImmigrationProcedure"].Equals(true))
+                            {
+                                if (Model.ImmigrationProcedureId != 0)
+                                {
+                                    if (Model.Status == 1)
+                                    {
+                                        <div><a id="RejectImmigrationProcedure" onclick="RejectImmigrationProcedure()" class="button bg-red fg-white"><span class="mif-cancel"> Reject</span></a></div>
+                                        <div><a id="ApproveImmigrationProcedure" onclick="ApproveImmigrationProcedure()" class="button bg-green fg-white"><span class="mif-checkmark"> Approve</span></a></div>
+                                    }
+                                }
+                                if (Model.Status <= 1)
+                                {
+                                    <div><button id="SaveImmigrationProcedure" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (HttpContext.Current.Session["CanSaveImmigrationProcedure"].Equals(true))
+                            {
+                                if (Model.Status <= 1)
+                                {
+                                    <div><button id="SaveImmigrationProcedure" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                                }
+                            }
+                        }
+                        <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+<div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AssociateImporter" name="AssociateImporter" class="dialog" data-role="dialog">
+    @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/AssociateList.cshtml", associateList)
+</div>
+
+

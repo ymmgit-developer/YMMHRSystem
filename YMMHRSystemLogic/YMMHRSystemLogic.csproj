@@ -40,6 +40,12 @@
     <Reference Include="Encriptador">
       <HintPath>..\DLLs\Encriptador.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=5.5.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.5.5.4\lib\net45\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.3.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.3.6\lib\net46\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
@@ -54,9 +60,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
@@ -84,18 +98,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Graph.cs" />
+    <Compile Include="Classes\EmailNotification.cs" />
+    <Compile Include="Classes\UtilityCar.cs" />
     <Compile Include="Classes\LegalProcedure.cs" />
     <Compile Include="Classes\Diner.cs" />
     <Compile Include="Classes\Gift.cs" />
     <Compile Include="Classes\GiftAssociate.cs" />
+    <Compile Include="Classes\CoffeeBreak.cs" />
+    <Compile Include="Classes\Room.cs" />
+    <Compile Include="Classes\Vehicle.cs" />
+    <Compile Include="Classes\Translation.cs" />
     <Compile Include="Classes\PrizeTeam.cs" />
     <Compile Include="Classes\PrizeAssociate.cs" />
     <Compile Include="Classes\Prize.cs" />
     <Compile Include="Classes\FindingType.cs" />
+    <Compile Include="Classes\ImmigrationProcedure.cs" />
+    <Compile Include="Classes\LegalRequirement.cs" />
+    <Compile Include="Classes\Sindicate.cs" />
     <Compile Include="Classes\Transport.cs" />
+    <Compile Include="Classes\BusinessTrip.cs" />
     <Compile Include="Classes\WorkerFile.cs" />
     <Compile Include="Classes\Process.cs" />
-    <Compile Include="Classes\FoodType.cs" />
     <Compile Include="Classes\Log.cs" />
     <Compile Include="Classes\Login.cs" />
     <Compile Include="Classes\Permission.cs" />
@@ -106,9 +130,31 @@
     <Compile Include="Classes\Shift.cs" />
     <Compile Include="Classes\Stop.cs" />
     <Compile Include="Classes\User.cs" />
+    <Compile Include="DTO\DtoEmailNotification.cs" />
+    <Compile Include="DTO\DtoCarRentalReservation.cs" />
+    <Compile Include="DTO\DtoFlightReservation.cs" />
+    <Compile Include="DTO\DtoHeadCount.cs" />
+    <Compile Include="DTO\DtoTurnOver.cs" />
+    <Compile Include="DTO\DtoGraphXYZ.cs" />
+    <Compile Include="DTO\DtoGraph.cs" />
+    <Compile Include="DTO\DtoGraphStringDecimal.cs" />
+    <Compile Include="DTO\DtoGraphDecimal.cs" />
+    <Compile Include="DTO\DtoGraphString.cs" />
+    <Compile Include="DTO\DtoGraphInt.cs" />
+    <Compile Include="DTO\DtoHotelReservation.cs" />
+    <Compile Include="DTO\DtoBusinessTripAttachment.cs" />
+    <Compile Include="DTO\DtoTaxiReservation.cs" />
+    <Compile Include="DTO\DtoPassengerDetail.cs" />
+    <Compile Include="DTO\DtoUtilityCar.cs" />
+    <Compile Include="DTO\DtoVehicle.cs" />
+    <Compile Include="DTO\DtoCoffeeBreak.cs" />
     <Compile Include="DTO\DtoFindingType.cs" />
     <Compile Include="DTO\DtoGift.cs" />
     <Compile Include="DTO\DtoGiftAssociate.cs" />
+    <Compile Include="DTO\DtoRoom.cs" />
+    <Compile Include="DTO\DtoTranslationAttachment.cs" />
+    <Compile Include="DTO\DtoTranslation.cs" />
+    <Compile Include="DTO\DtoLegalRequirementAttachment.cs" />
     <Compile Include="DTO\DtoPrizeTeamPointLog.cs" />
     <Compile Include="DTO\DtoPrizeTeamAssociate.cs" />
     <Compile Include="DTO\DtoPrizeTeamSecurityCross.cs" />
@@ -133,6 +179,8 @@
     <Compile Include="DTO\DtoPrizeAssociateFinding.cs" />
     <Compile Include="DTO\DtoGiftLog.cs" />
     <Compile Include="DTO\DtoPrizeAssociatePointLog.cs" />
+    <Compile Include="DTO\DtoImmigrationProcedure.cs" />
+    <Compile Include="DTO\DtoLegalRequirement.cs" />
     <Compile Include="DTO\DtoSindicateContract.cs" />
     <Compile Include="DTO\DtoSindicateAttachment.cs" />
     <Compile Include="DTO\DtoSindicate.cs" />
@@ -140,7 +188,6 @@
     <Compile Include="DTO\DtoPrizeLog.cs" />
     <Compile Include="DTO\DtoWarning.cs" />
     <Compile Include="DTO\DtoWorkerAttachment.cs" />
-    <Compile Include="DTO\DtoFoodType.cs" />
     <Compile Include="DTO\DtoLegalProcedure.cs" />
     <Compile Include="DTO\DtoLogin.cs" />
     <Compile Include="DTO\DtoPermission.cs" />
@@ -153,6 +200,7 @@
     <Compile Include="DTO\DtoTrajectory.cs" />
     <Compile Include="DTO\DtoUser.cs" />
     <Compile Include="DTO\DtoProcess.cs" />
+    <Compile Include="DTO\DtoBusinessTrip.cs" />
     <Compile Include="DTO\DtoWorkerFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

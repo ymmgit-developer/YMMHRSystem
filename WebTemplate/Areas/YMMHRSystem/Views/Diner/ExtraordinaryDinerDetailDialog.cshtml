@@ -4,8 +4,7 @@
     Layout = null;
     WorkerFile workerFile = new WorkerFile();
     var associateList = workerFile.LoadMultiple();
-    FoodType foodType = new FoodType();
-    var foodTypeList = foodType.LoadMultiple();
+    var foodTypeList = new List<string>() { "Box Lunch", "Weekend", "Special", "Other" };
 }
 
 
@@ -28,7 +27,7 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                     </div>
                     <div class="cell-md-6">
                         <input style="font-size:12px;"  data-role="timepicker" data-seconds="false" data-value="@Model.Time" id="Time" name="Time">
@@ -36,16 +35,16 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <select data-on-change="TypeSelected()" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
+                        <select data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
                             @foreach (var item in foodTypeList)
                             {
-                                if (Model.Type == item.Name)
+                                if (Model.Type == item)
                                 {
-                                    <option selected value="@item.Cost">@item.Name</option>
+                                    <option selected value="@item">@item</option>
                                 }
                                 else
                                 {
-                                    <option value="@item.Cost">@item.Name</option>
+                                    <option value="@item">@item</option>
                                 }
                             }
                         </select>
@@ -62,22 +61,11 @@
                 @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <div class="row">
-                        <div class="cell-md-5">
-                            <input type="text" readonly data-role="input" value="@Model.Cost" data-prepend="Type Cost: $" id="Cost" name="Cost">
+                        <div class="cell-md-6">
+                            <input type="text" data-role="input" autocomplete="off" value="@Model.TypeCost" data-prepend="Type Cost: $" id="TypeCost" name="TypeCost">
                         </div>
-                        <div class="cell-md-2">
-                            @if (Model.Lading)
-                            {
-                                <input type="checkbox" id="LadingCheck" name="LadingCheck" data-role="checkbox" data-style="2" checked="checked" data-caption="Lading">
-                            }
-                            else
-                            {
-                                <input type="checkbox" id="LadingCheck" name="LadingCheck" data-role="checkbox" data-style="2" data-caption="Lading">
-                            }
-
-                        </div>
-                        <div class="cell-md-5">
-                            <input type="text" data-role="input" value="@Model.LadingCost" data-prepend="Lading Cost: $" id="LadingCost" name="LadingCost">
+                        <div class="cell-md-6">
+                            <input type="text" data-role="input" autocomplete="off" value="@Model.LadingCost" data-prepend="Lading Cost: $" id="LadingCost" name="LadingCost">
                         </div>
                     </div>
                 }
@@ -92,7 +80,7 @@
             <div class="dialog-actions d-flex flex-justify-start w-100">
                 @if (HttpContext.Current.Session["CanSaveExtraordinaryDiner"].Equals(true))
                 {
-                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"></span> Save </button></div>
+                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }
                 <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
             </div>
@@ -107,22 +95,10 @@
 <script>
     $(document).ready(function () {
 
-        $("#LadingCheck").on("change", function (e) {
-            if (e.target.checked) {
-                $('#Lading').val(true);
-            } else {
-                $('#Lading').val(false);
-            }
-        });
-
         setInterval(function () {
             $("#LadingCost").val($("#LadingCost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+            $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
         }, 500);
-
-        TypeSelected();
     });
 
-    function TypeSelected() {
-        $("#Cost").val($("#SelectType option:selected").val());
-    }
 </script>

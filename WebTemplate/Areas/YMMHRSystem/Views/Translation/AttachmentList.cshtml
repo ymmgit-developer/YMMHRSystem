@@ -1,0 +1,101 @@
+﻿@model List<DtoTranslationAttachment>
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+
+<div class="dialog-content">
+    <div class="row d-flex flex-align-center flex-justify-between mx-2">
+        <div><h6>Attachments</h6></div>
+        <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="OpenAttachmentDialog(false)"><span class="mif-plus"></span><span class="actionButton"> Add </span></a></div>
+    </div>
+    <!---------------------------------------TABLA ------------------------------------------>
+    <table id="dttAttachment" class="display compact" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center">File</th>
+                <th style="text-align: center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="@item.TranslationAttachmentId">
+                    <td style="text-align: center">
+                        <span> @Path.GetFileName(item.FileName) </span>
+                    </td>
+                    <td style="text-align: center">
+                        <a class="button small my-button-colors" style="cursor: pointer;" href="@Url.Action("GetAttachment", "Translation", new { Area = "YMMHRSystem" , translationAttachmentId = item.TranslationAttachmentId })" target="_blank"><span class="mif-download"></span></a>
+                        @if (HttpContext.Current.Session["CanDeleteTranslation"].Equals(true))
+                        {
+                            <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteAttachment(@item.TranslationAttachmentId)"><span class="mif-bin">  </span></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div data-overlay="true" data-width="400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttachmentDialog" name="AttachmentDialog" class="dialog" data-role="dialog">
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteAttachment" name="DeleteAttachment" class="dialog" data-role="dialog">
+    <div class="dialog-title">Delete</div>
+    <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="DeleteAttachment()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#DeleteAttachment')"> No</button>
+    </div>
+</div>
+
+<script>
+    var tableAttachment;
+    $(document).ready(function () {
+
+        tableAttachment = $('#dttAttachment').DataTable({
+            retrieve: true,
+            responsive: true,
+            searching: false,
+            info: false,
+            paging: false,
+            ordering: false,
+            scrollY: "20vh",
+            scrollCollapse: true
+        });
+
+    });
+
+
+    function DeleteAttachment() {
+        var aux;
+        $("#dttAttachment tr").each(function () {
+            if ($(this).attr("id") == window.$AttachmentId) {
+                aux = $(this);
+            }
+        });
+
+        $.ajax({
+            method: "POST",
+            url: window.$DeleteAttachment,
+            data: { translationAttachmentId: window.$AttachmentId },
+            success: function (result) {
+                if (result === "true") {
+                    tableAttachment.row(aux).remove().draw();
+                    Metro.toast.create("Attachment deleted.", null, null, "bg-green fg-white");
+                } else {
+                    Metro.toast.create("Error deleting the attachment or translation is complete.", null, null, "bg-red fg-white");
+                }
+                Metro.dialog.close('#DeleteAttachment')
+            }
+        });
+    }
+
+    function ConfirmDeleteAttachment(attachmentId) {
+        var dialog = Metro.getPlugin('#DeleteAttachment', 'dialog');
+        dialog.open();
+        window.$AttachmentId = attachmentId;
+    }
+</script>
+
+

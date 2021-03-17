@@ -12,6 +12,7 @@ namespace WebTemplate.Controllers
     {
         Login login = new Login();
         WorkerFile workerFile = new WorkerFile();
+        EmailNotification emailNotification = new EmailNotification();
         // GET: Home
         public ActionResult Index()
         {
@@ -24,13 +25,17 @@ namespace WebTemplate.Controllers
                     HttpContext.Session["CanRehireWorkerFile"] = Permission.QueryPermission("WORKERFILE.REHIRE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
                     HttpContext.Session["CanDeleteWorkerFile"] = Permission.QueryPermission("WORKERFILE.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
+                    HttpContext.Session["KiFirstHalfYear"] = workerFile.SetKiFirstHalfYear();
                     login.LoadSQLToolsStaticVariables(Session["UserId"].ToString());
+                    emailNotification.SendAnniversaryGiftEmail();
+                    emailNotification.SendLegalRequirementEmail();
+                    emailNotification.SendVehicleEmail();
 
                     return View("~/Areas/YMMHRSystem/Views/WorkerFile/Index.cshtml", workerFile.LoadMultiple());
                 }
                 else
                 {
-                    return View("~/Views/Shared/AccessDenied.cshtml");
+                    return View();
                 }
             }
             catch (Exception ex)

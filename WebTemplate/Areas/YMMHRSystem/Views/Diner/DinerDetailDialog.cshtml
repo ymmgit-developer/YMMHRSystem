@@ -2,6 +2,7 @@
 @using YMMHRSystemLogic
 @{
     Layout = null;
+    var typeList = new List<string> { "Associate", "YMM", "Saturday" };
 }
 <div class="dialog-title">Diner</div>
 
@@ -12,35 +13,27 @@
                 <div class="row mb-2">
                     <div class="cell">
                         <select data-role="select" id="Type" name="Type" data-prepend="Type:">
-
-                            @switch (Model.Type)
+                            @foreach (var item in typeList)
                             {
-                                case "Associate":
-                                    <option selected value="Associate">Associate</option>
-                                    <option value="YMM">YMM</option>
-                                    <option value="Saturday">Saturday</option>
-                                    break;
-                                case "YMM":
-                                    <option value="Associate">Associate</option>
-                                    <option selected value="YMM">YMM</option>
-                                    <option value="Saturday">Saturday</option>
-                                    break;
-                                default:
-                                    <option value="Associate">Associate</option>
-                                    <option value="YMM">YMM</option>
-                                    <option selected value="Saturday">Saturday</option>
-                                    break;
+                                if (Model.Type == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
                             }
                         </select>
                     </div>
                     <div class="cell">
-                        <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         <span class="invalid_feedback">
                             Enter a starting date
                         </span>
                     </div>
                     <div class="cell">
-                        <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         <span class="invalid_feedback">
                             Enter a finishing date
                         </span>
@@ -71,7 +64,7 @@
             <div class="dialog-actions d-flex flex-justify-start w-100">
                 @if (HttpContext.Current.Session["CanSaveDiner"].Equals(true))
                 {
-                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"></span> Save </button></div>
+                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }
                 <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
             </div>

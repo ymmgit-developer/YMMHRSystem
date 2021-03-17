@@ -1,0 +1,152 @@
+﻿@using YMMHRSystemLogic;
+@{
+    ViewBag.Title = "Diner";
+    List<int> years = new List<int>();
+    for (int i = 2020; i < DateTime.Now.Year + 1; i++)
+    {
+        years.Add(i);
+    }
+    List<DtoGraph> months = new List<DtoGraph>() {
+new DtoGraph{ X="All", Y=0 },
+new DtoGraph{ X="January", Y=1 },
+new DtoGraph{ X="February", Y=2 },
+new DtoGraph{ X="March", Y=3 },
+new DtoGraph{ X="April", Y=4 },
+new DtoGraph{ X="May", Y=5 },
+new DtoGraph{ X="June", Y=6 },
+new DtoGraph{ X="July", Y=7 },
+new DtoGraph{ X="August", Y=8 },
+new DtoGraph{ X="September", Y=9 },
+new DtoGraph{ X="October", Y=10 },
+new DtoGraph{ X="November", Y=11 },
+new DtoGraph{ X="December", Y=12 },
+};
+
+
+}
+<head>
+    <script src="~/Areas/YMMHRSystem/Scripts/DinerGraph.js"></script>
+    <script>
+        $LoadDinerGraphs = '@Url.Action("LoadDinerGraphs", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshDinerServicesByType = '@Url.Action("RefreshDinerServicesByType", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshDinerCostServicesByType = '@Url.Action("RefreshDinerCostServicesByType", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshPaymentComparative = '@Url.Action("RefreshPaymentComparative", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshExtraDinerServicesByProcess = '@Url.Action("RefreshExtraDinerServicesByProcess", "Graph", new { area = "YMMHRSystem" })';
+    </script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Diner</h5>
+        <div class="ml-auto pr-5">
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span id="boton2"> Regresar</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span id="boton3"> Tip </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2" style="text-align:center">
+        <div class="row mt-2">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        No. of Services by Type
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="DinerServicesByType"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate1" name="StartDate1" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate1" name="EndDate1" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshDinerServicesByType()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Cost of Services by Type
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="DinerCostServicesByType"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate2" name="StartDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate2" name="EndDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshDinerCostServicesByType()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Payment Comparative
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="PaymentComparative"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate3" name="StartDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate3" name="EndDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshPaymentComparative()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Extra Diner Services by Process
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="ExtraDinerServicesByProcess"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate4" name="StartDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate4" name="EndDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshExtraDinerServicesByProcess()">Graph</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    GenerateGraph();
+</script>
+
+

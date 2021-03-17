@@ -39,7 +39,7 @@
 
 function ConfirmDeletePrizeAssociate(prizeAssociateId) {
     var dialog = Metro.getPlugin('#DeletePrizeAssociate', 'dialog');
-    dialog.open();
+   setTimeout(function () { dialog.open(); }, 100);
     window.$prizeAssociateId = prizeAssociateId;
 }
 
@@ -95,7 +95,7 @@ function OpenAssociateMonthDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AssociateMonthDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -128,7 +128,7 @@ function OpenAssociateYearDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AssociateYearDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -162,7 +162,7 @@ function OpenFindingDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#FindingDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -196,7 +196,7 @@ function OpenPrizeDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#PrizeDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -231,7 +231,7 @@ function OpenAttendanceDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AttendanceDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -265,7 +265,7 @@ function OpenPointConfigurationDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#PointConfigurationDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -304,7 +304,7 @@ function PrizeAssociatePointLogDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#PrizeAssociatePointLogDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -317,7 +317,7 @@ function AdjustmentDialog() {
         success: function (result) {
             var dialog = Metro.getPlugin('#AdjustmentDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+           setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

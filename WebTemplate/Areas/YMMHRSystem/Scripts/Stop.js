@@ -42,7 +42,7 @@ function StopDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#StopDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

@@ -1,0 +1,125 @@
+﻿@model DtoVehicle
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    var statusList = new List<string> { "Pending", "Verified" };
+    var typeList = new List<string> { "Loan", "Utility Car" };
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+}
+<div class="dialog-title">Vehicle</div>
+
+<div class="dialog-content">
+    <form id="VehicleForm" data-role="validator" data-on-validate-form="AddVehicle()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell">
+                <input type="text" name="Model" id="Model" data-role="input" data-prepend="Model:" data-validate="required" autocomplete="off" value="@Model.Model">
+            </div>
+            <div class="cell">
+                <input type="text" name="Year" id="Year" data-role="input" data-prepend="Year:" data-validate="required" autocomplete="off" value="@Model.Year">
+            </div>
+            <div class="cell">
+                <input type="text" name="Color" id="Color" data-role="input" data-prepend="Color:" data-validate="required" autocomplete="off" value="@Model.Color">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell">
+                <input type="text" name="EngineNumber" id="EngineNumber" data-role="input" data-prepend="Engine Number:" data-validate="required" autocomplete="off" value="@Model.EngineNumber">
+            </div>
+            <div class="cell">
+                <input type="text" name="LicensePlate" id="LicensePlate" data-role="input" data-prepend="License Plate:" data-validate="required" autocomplete="off" value="@Model.LicensePlate">
+            </div>
+            <div class="cell">
+                <input type="text" name="VIN" id="VIN" data-role="input" data-prepend="VIN:" data-validate="required" autocomplete="off" value="@Model.VIN">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell">
+                <input data-prepend="Next Service:" id="NextService" name="NextService" data-validate="required" value="@Model.NextService" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell">
+                <input data-prepend="Next Verification:" id="NextVerification" name="NextVerification" data-validate="required" value="@Model.NextVerification" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell">
+                <input data-prepend="Annual Fee:" id="AnnualFee" name="AnnualFee" data-validate="required" value="@Model.AnnualFee" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell">
+                <select data-role="select" data-on-change="TypeSelected()" id="Type" name="Type" data-prepend="Type:">
+                    @foreach (var item in typeList)
+                    {
+                        if (Model.Type == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="Associate" id="Associate" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.Associate">
+            </div>
+            <div class="cell-md-2">
+                <a class="button my-button-colors w-100" id="Import" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell">
+                <input type="text" name="PolicyNumber" id="PolicyNumber" data-role="input" data-prepend="Policy Number:" data-validate="required" autocomplete="off" value="@Model.PolicyNumber">
+            </div>
+            <div class="cell">
+                <input data-prepend="Policy Start:" id="PolicyStart" name="PolicyStart" data-validate="required" value="@Model.PolicyStart" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell">
+                <input data-prepend="Policy End:" id="PolicyEnd" name="PolicyEnd" data-validate="required" value="@Model.PolicyEnd" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <select data-role="select" id="Status" name="Status" data-prepend="Status:">
+                    @foreach (var item in statusList)
+                    {
+                        if (Model.Status == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell">
+                <input data-prepend="Invoice Date:" id="InvoiceDate" name="InvoiceDate" data-validate="required" value="@Model.InvoiceDate" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+        </div>
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="dialog-actions d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveVehicle"].Equals(true))
+                    {
+                        <div><button id="SaveVehicle" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AssociateImporter" name="AssociateImporter" class="dialog" data-role="dialog">
+    @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/AssociateList.cshtml", associateList)
+</div>
+<script>
+    $(document).ready(function () {
+        TypeSelected();
+    });
+</script>
+
+

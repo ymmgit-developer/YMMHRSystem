@@ -1,0 +1,239 @@
+﻿@using YMMHRSystemLogic;
+@{
+    ViewBag.Title = "Worker Records";
+    List<int> years = new List<int>();
+    for (int i = 2020; i < DateTime.Now.Year + 1; i++)
+    {
+        years.Add(i);
+    }
+
+
+}
+<head>
+    <script src="~/Areas/YMMHRSystem/Scripts/WorkerFileGraph.js"></script>
+    <script>
+        $LoadWorkerFileGraphs = '@Url.Action("LoadWorkerFileGraphs", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshHeadCount = '@Url.Action("RefreshHeadCount", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshTurnover = '@Url.Action("RefreshTurnover", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshAdmissionDismissal = '@Url.Action("RefreshAdmissionDismissal", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshDismissalByType = '@Url.Action("RefreshDismissalByType", "Graph", new { area = "YMMHRSystem" })';
+    </script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Worker Records</h5>
+        <div class="ml-auto pr-5">
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span id="boton2"> Regresar</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span id="boton3"> Tip </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2" style="text-align:center">
+        <div class="row mt-2">
+            <div class="cell-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        Monthly Head Count
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="MonthlyHeadCount"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Accumulated Head Count
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="AccumulatedHeadCount"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="HeadCountYear" name="HeadCountYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshHeadCount()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        Monthly Turnover Rate
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="MonthlyTurnover"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Average Turnover Rate
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="AverageTurnover"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="TurnoverYear" name="TurnoverYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshTurnover()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Years of Service
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="YearsOfService"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54); height:48px;" class="row d-flex flex-justify-center flex-align-center"></div>
+        <div class="row">
+            <div class="cell-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        Monthly Admissions - Dismissals
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="MonthlyAdmissionDismissal"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Accumulated Admissions - Dismissals
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="TotalAdmissionDismissal"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="AdmissionDismissalYear" name="AdmissionDismissalYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshAdmissionDismissal()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        Monthly Dismissals by Type
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="MonthlyDismissalByType"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Accumulated Dismissals by Type
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="AccumulatedDismissalByType"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="DismissalByTypeYear" name="DismissalByTypeYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshDismissalByType()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Worker Ages
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="WorkerAges"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center"></div>
+        </div>
+    </div>
+</body>
+
+<script>
+    GenerateGraph();
+</script>
+
+

@@ -1,0 +1,221 @@
+﻿@model DtoBusinessTrip
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Business Trip";
+    var costCenterList = new List<string> { "1100 PFT BM Direct", "1200 PFT 2P Assy Direct", "1300 PFT Injection", "1500 PFT Semi Direct", "2100 SR Direct", "2200 SR Semi Direct", "6100 Quality", "6200 Maintenance", "6300 Production Control", "6400 New Model", "7100 Accounting", "7200 Purchasing", "7300 IT", "7400 HR", "7500 Staff Administration", "7600 EHS" };
+}
+<script src="~/Areas/YMMHRSystem/Scripts/BusinessTrip.js"></script>
+<script>
+    $BusinessTripIndex = '@Url.Action("Index", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $SaveBusinessTrip = '@Url.Action("SaveBusinessTrip", "BusinessTrip", new { Area = "YMMHRSystem" })';
+    $GetAttachmentPDF = '@Url.Action("GetAttachmentPDF", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AttachmentDialog = '@Url.Action("AttachmentDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddAttachment = '@Url.Action("AddAttachment", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeleteAttachment = '@Url.Action("DeleteAttachmentFile", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $PassengerDialog = '@Url.Action("PassengerDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddPassenger = '@Url.Action("AddPassenger", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeletePassenger = '@Url.Action("DeletePassenger", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $TaxiDialog = '@Url.Action("TaxiDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddTaxi = '@Url.Action("AddTaxi", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeleteTaxi = '@Url.Action("DeleteTaxi", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $HotelDialog = '@Url.Action("HotelDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddHotel = '@Url.Action("AddHotel", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeleteHotel = '@Url.Action("DeleteHotel", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $FlightDialog = '@Url.Action("FlightDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddFlight = '@Url.Action("AddFlight", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeleteFlight = '@Url.Action("DeleteFlight", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $CarRentalDialog = '@Url.Action("CarRentalDialog", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $AddCarRental = '@Url.Action("AddCarRental", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $DeleteCarRental = '@Url.Action("DeleteCarRental", "BusinessTrip", new { area = "YMMHRSystem" })';
+    $RespondBusinessTrip = '@Url.Action("RespondBusinessTrip", "BusinessTrip", new { area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Business Trip</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Business Trip</h5>
+        <div class="ml-auto pr-5">
+            @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+            {
+                if (HttpContext.Current.Session["CanSaveBusinessTrip"].Equals(true))
+                {
+                    if (Model.Status == 1)
+                    {
+                        <a onclick="ConfirmRespondBusinessTrip()" class="button flat-button fg-white"><span class="mif-checkmark"></span><span class="actionButton"> Respond</span></a>
+                    }
+                }
+            }
+
+            @if (Model.Status <= 1)
+            {
+                <a onclick="SaveBusinessTrip()" class="button flat-button fg-white"><span class="mif-floppy-disk"></span><span class="actionButton"> Save</span></a>
+            }
+
+            <a class="button flat-button" href="@Url.Action("Index", "BusinessTrip", new { Area = "YMMHRSystem" })" style="color:white">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+            </a>
+        </div>
+    </div>
+    <!-----------------------------------CONTAINER------------------------------>
+    <div class="container-fluid mt-2" style="font-size: 0.8em;" id="FormDetail">
+        <div class="d-flex flex-justify-start flex-align-center">
+            <div class="cell-md-4">
+                <input type="text" style="background-color: gainsboro" readonly="readonly" name="Associate" id="Associate" data-role="input" data-prepend="Applicator:" autocomplete="off" value="@Model.Associate">
+            </div>
+
+            <div class="cell-md-3">
+                @if (Model.Status <= 1)
+                {
+                    <select data-role="select" id="Process" name="Process" data-prepend="Process:">
+                        @foreach (var item in costCenterList)
+                        {
+                            if (Model.Process == item)
+                            {
+                                <option selected value="@item">@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                    </select>
+                }
+                else
+                {
+                    <input type="text" name="Process" id="Process" readonly="readonly" data-role="input" data-prepend="Process:" value="@Model.Process">
+                }
+            </div>
+            <div class="cell-md-3">
+                <input type="text" style="background-color: gainsboro" name="DateAdded" id="DateAdded" readonly="readonly" data-role="input" data-prepend="Date Applied:" value="@Model.DateAdded.ToShortDateString()">
+            </div>
+            <div class="cell-md-2">
+                <input type="text" style="background-color: gainsboro" readonly="readonly" data-role="input" data-prepend="Status:" value="@(Model.Status <= 1 ? "New" : "Complete")">
+            </div>
+        </div>
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("BusinessTripId", Model.BusinessTripId)
+        @Html.Hidden("Status", Model.Status)
+        <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+        <ul data-role="tabs" data-on-tab="RefreshTables()" data-expand="true">
+            <li><a href="#Details">Details</a></li>
+            @if (Model.Status <= 1)
+            {
+                if ((Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                {
+                    <li><a href="#Response">Response</a></li>
+                }
+                else
+                {
+                    <li class="disabled"><a href="#Response">Response</a></li>
+                }
+
+            }
+            else
+            {
+                <li><a href="#Response">Response</a></li>
+            }
+        </ul>
+        <div class="border bd-default no-border-top p-2">
+            <div id="Details">
+                <div class="row">
+                    <div class="cell-md-9">
+                        <div id="PassengerTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/PassengerList.cshtml", Model.PassengerList)
+                        </div>
+                    </div>
+                    <div class="cell-md-3">
+                        <div id="AttachmentTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All BusinessTrip stops" data-position='auto'>
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/AttachmentList.cshtml", Model.AttachmentList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="TaxiDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/TaxiDetailList.cshtml", Model.TaxiList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="FlightDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/FlightDetailList.cshtml", Model.FlightList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="CarRentalDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/CarRentalDetailList.cshtml", Model.CarRentalList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="HotelDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelDetailList.cshtml", Model.HotelList)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Response">
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="TaxiResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/TaxiResponseList.cshtml", Model.TaxiList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="FlightResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/FlightResponseList.cshtml", Model.FlightList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="CarRentalResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/CarRentalResponseList.cshtml", Model.CarRentalList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="HotelResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelResponseList.cshtml", Model.HotelList)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+    <div data-overlay="true" data-width="400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttachmentDialog" name="AttachmentDialog" class="dialog" data-role="dialog"></div>
+    <div data-overlay="true" data-width="1100" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="TaxiDialog" name="TaxiDialog" class="dialog" data-role="dialog"></div>
+    <div data-overlay="true" data-width="1400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="FlightDialog" name="FlightDialog" class="dialog" data-role="dialog"></div>
+    <div data-overlay="true" data-width="1400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="CarRentalDialog" name="CarRentalDialog" class="dialog" data-role="dialog"></div>
+    <div data-overlay="true" data-width="1400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="HotelDialog" name="HotelDialog" class="dialog" data-role="dialog"></div>
+    <div data-overlay="true" data-width="1100" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="PassengerDialog" name="PassengerDialog" class="dialog" data-role="dialog"></div>
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderBusinessTrip" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+</body>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="RespondBusinessTrip" name="RespondBusinessTrip" class="dialog" data-role="dialog">
+    <div class="dialog-title">Respond</div>
+    <div class="dialog-content"> Are you sure you want to Respond to this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="RespondBusinessTrip()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#RespondBusinessTrip')"> No</button>
+    </div>
+</div>

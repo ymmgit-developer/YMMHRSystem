@@ -105,7 +105,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 throw ex;
             }
         }
-
         /// <summary>
         /// Load view with new/exisiting WorkerFile.
         /// </summary>
@@ -198,7 +197,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 throw ex;
             }
         }
-
         /// <summary>
         /// Removes a dismissal file. 
         /// </summary>
@@ -541,7 +539,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 return Content("false", "text/plain");
             }
         }
-
         /// <summary>
         /// Creates Worker Template and downloads it.
         /// </summary>

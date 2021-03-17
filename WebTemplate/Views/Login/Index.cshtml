@@ -40,7 +40,7 @@
     <script src="~/Scripts/Login.js"></script>-
     <title>Log In</title>
 </head>
-<body class="h-vh-100" style="background-image: url('@Url.Content("~/Content/Resources/yachiyo.jpg")'); background-repeat: round;">
+<body class="h-vh-100" style="background-size: cover; background-position: center;  background-repeat: no-repeat; background-image: url('@Url.Content("~/Content/Resources/yachiyo.jpg")');">
     <div class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateForm">
         @using (Html.BeginForm("LogIn", "Login", FormMethod.Post, new { }))
         {

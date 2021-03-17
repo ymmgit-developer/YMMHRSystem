@@ -83,14 +83,24 @@ namespace YMMHRSystemLogic
         /// Load multiple WorkerFile with fields.
         /// </summary>
         /// <returns>Load WorkerFile Dto</returns>
-        public List<DtoWorkerFile> LoadMultiple()
+        public List<DtoWorkerFile> LoadMultiple(int status = 0)
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoWorkerFile> workerfileList = new List<DtoWorkerFile>();
-
-                mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber FROM WorkerFiles ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                switch (status)
+                {
+                    case 0:
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        break;
+                    case 1:
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles WHERE Status = 1 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        break;
+                    default:
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles WHERE Status = 0 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        break;
+                }
                 workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoWorkerFile)renglon.Dto));
 
                 return workerfileList;
@@ -142,7 +152,7 @@ namespace YMMHRSystemLogic
                     item.DateAdded = DateTime.Now;
                     item.Status = true;
                     item.UserCreated = userCreated;
-                    mapping.dtoList.Add(new DBFrameworkDto(){ Dto = item, TableName = "WorkerFiles" });
+                    mapping.dtoList.Add(new DBFrameworkDto() { Dto = item, TableName = "WorkerFiles" });
                 });
 
                 mapping.Save();
@@ -155,10 +165,11 @@ namespace YMMHRSystemLogic
                     {
                         WorkerFileId = item.WorkerFileId,
                         Admission = item.AdmissionDate
-                    });                   
+                    });
                 }
 
-                admissionsList.ForEach(item => {
+                admissionsList.ForEach(item =>
+                {
                     mapping.dtoList.Add(new DBFrameworkDto() { Dto = item, TableName = "Admissions" });
                 });
 
@@ -260,7 +271,7 @@ namespace YMMHRSystemLogic
 
                 mapping.Save();
 
-                ChangeWorkerStatus(false, dtoDismissal.Rehirable, dtoDismissal.WorkerFileId);
+                ChangeWorkerStatus(false, dtoDismissal.Rehirable, dtoDismissal.WorkerFileId, dtoDismissal.Date);
 
                 return true;
             }
@@ -372,7 +383,7 @@ namespace YMMHRSystemLogic
         /// <param name="isActive"></param>
         /// <param name="isRehirable"></param>
         /// <param name="workerFileId"></param>
-        public void ChangeWorkerStatus(bool isActive, bool isRehirable, long workerFileId, DateTime? admissionDate = null)
+        public void ChangeWorkerStatus(bool isActive, bool isRehirable, long workerFileId, DateTime? date = null)
         {
             try
             {
@@ -382,16 +393,19 @@ namespace YMMHRSystemLogic
                     query = "UPDATE WorkerFiles SET AdmissionNumber = " + (GetWorkerAdmissions(workerFileId) + 1) + " WHERE WorkerFileId=" + workerFileId;
                     oDatabase.ExecuteNonQuery(query, "Increment Admission Number");
 
-                    if (admissionDate != null)
+                    if (date != null)
                     {
-                        query = "UPDATE WorkerFiles SET AdmissionDate = '" + admissionDate?.ToString("yyyyMMdd") + "' WHERE WorkerFileId = " + workerFileId;
+                        query = "UPDATE WorkerFiles SET AdmissionDate = '" + date?.ToString("yyyyMMdd") + "' WHERE WorkerFileId = " + workerFileId;
                         oDatabase.ExecuteNonQuery(query, "Updates worker Admission Date");
-                    }                   
+                    }
                 }
                 else
                 {
                     query = "UPDATE WorkerFiles SET DismissalNumber = " + (GetWorkerDismissals(workerFileId) + 1) + " WHERE WorkerFileId=" + workerFileId;
                     oDatabase.ExecuteNonQuery(query, "Increment Dismissal Number");
+
+                    query = "UPDATE WorkerFiles SET DismissalDate = '" + date?.ToString("yyyyMMdd") + "' WHERE WorkerFileId = " + workerFileId;
+                    oDatabase.ExecuteNonQuery(query, "Updates worker Dismissal Date");
                 }
 
                 query = "UPDATE WorkerFiles SET Status = " + (isActive ? 1 : 0) + ", Rehirable = " + (isRehirable ? 1 : 0) + " WHERE WorkerFileId=" + workerFileId;
@@ -827,6 +841,20 @@ namespace YMMHRSystemLogic
             {
                 log.WriteToErrorLog("HR System", "Delete Worker Photo", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DeleteWorkerPhoto");
                 return false;
+            }
+        }
+        /// <summary>
+        /// Get First half of year
+        /// </summary>
+        public string SetKiFirstHalfYear()
+        {
+            if (DateTime.Now.Month >= 4 && DateTime.Now.Month <= 12)
+            {
+                return DateTime.Now.Year.ToString();
+            }
+            else
+            {
+                return DateTime.Now.AddYears(-1).Year.ToString();
             }
         }
         #endregion

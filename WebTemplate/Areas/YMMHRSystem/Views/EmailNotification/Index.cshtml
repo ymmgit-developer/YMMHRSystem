@@ -1,0 +1,148 @@
+﻿@model DtoEmailNotification
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Email Notification";
+}
+<head>
+    <script src="~/Areas/YMMHRSystem/Scripts/EmailNotification.js"></script>
+    <script>
+        $SaveExtraDinerContacts = '@Url.Action("SaveExtraDinerContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveExtraTransportContacts = '@Url.Action("SaveExtraTransportContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveLegalRequirementContacts = '@Url.Action("SaveLegalRequirementContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveVehicleContacts = '@Url.Action("SaveVehicleContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveUtilityCarContacts = '@Url.Action("SaveUtilityCarContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveTranslationContacts = '@Url.Action("SaveTranslationContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveCoffeeBreakContacts = '@Url.Action("SaveCoffeeBreakContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveBusinessTripContacts = '@Url.Action("SaveBusinessTripContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveLegalAffairContacts = '@Url.Action("SaveLegalAffairContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+        $SaveGiftContacts = '@Url.Action("SaveGiftContacts", "EmailNotification", new { area = "YMMHRSystem" })';
+
+    </script>
+</head>
+
+<!----- BARRA  ---->
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Email Notification</h5>
+        <div class="ml-auto pr-5">
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span id="boton2"> Regresar</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span id="boton3"> Tip </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2" style="text-align:center">
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Extra Diner</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveExtraDinerContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="ExtraDinerContacts" value="@Model.ExtraDinerContacts" name="ExtraDinerContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Extra Transport</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveExtraTransportContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="ExtraTransportContacts" value="@Model.ExtraTransportContacts" name="ExtraTransportContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Legal Requirements</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveLegalRequirementContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="LegalRequirementContacts" value="@Model.LegalRequirementContacts" name="LegalRequirementContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Vehicle</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveVehicleContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="VehicleContacts" value="@Model.VehicleContacts" name="VehicleContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Utility Car</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveUtilityCarContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="UtilityCarContacts" value="@Model.UtilityCarContacts" name="UtilityCarContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Translations</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveTranslationContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="TranslationContacts" value="@Model.TranslationContacts" name="TranslationContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Coffee Break</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveCoffeeBreakContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="CoffeeBreakContacts" value="@Model.CoffeeBreakContacts" name="CoffeeBreakContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Business Trip</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveBusinessTripContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="BusinessTripContacts" value="@Model.BusinessTripContacts" name="BusinessTripContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Legal Affairs</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveLegalAffairContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="LegalAffairContacts" value="@Model.LegalAffairContacts" name="LegalAffairContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Gifts</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveGiftContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="GiftContacts" value="@Model.GiftContacts" name="GiftContacts" type="text" data-role="taginput">
+            </div>
+        </div>
+
+    </div>
+</body>
+
+
+<div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
+    <div class="dialog-content">
+        <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+        <span>Saving....</span>
+    </div>
+</div>

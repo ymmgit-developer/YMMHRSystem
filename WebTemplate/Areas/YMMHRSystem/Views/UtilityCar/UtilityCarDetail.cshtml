@@ -1,0 +1,290 @@
+﻿@model DtoUtilityCar
+@using YMMHRSystemLogic
+@{
+    ViewBag.Title = "Utility Car";
+    var fuelLevelList = new List<string> { "Full", "3/4", "1/2", "1/4", "Reserve" };
+    UtilityCar utilityCar = new UtilityCar();
+    var carList = utilityCar.LoadMultipleAvailableCars(Model.DepartureDate);
+}
+<script src="~/Areas/YMMHRSystem/Scripts/UtilityCar.js"></script>
+<script>
+        $SaveUtilityCar = '@Url.Action("SaveUtilityCar", "UtilityCar", new { area = "YMMHRSystem" })';
+        $StartUtilityCar = '@Url.Action("StartUtilityCar", "UtilityCar", new { area = "YMMHRSystem" })';
+        $EndUtilityCar = '@Url.Action("EndUtilityCar", "UtilityCar", new { area = "YMMHRSystem" })';
+        $LoadVehicles = '@Url.Action("LoadVehicles", "UtilityCar", new { area = "YMMHRSystem" })';
+        $UtilityCarIndex = '@Url.Action("Index", "UtilityCar", new { area = "YMMHRSystem" })';
+</script>
+<head>
+    <title>Utility Car Loan</title>
+</head>
+<body style="height: 100%">
+    <!-----------------------------------BARRA TITULO------------------------------>
+    <form id="UtilityCarForm" data-role="validator" data-on-validate-form="AddUtilityCar()" action="javascript:">
+        <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+            <h5 class="pl-5">Utility Car Loan</h5>
+            <div class="ml-auto pr-5">
+                @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                {
+                    if (HttpContext.Current.Session["CanSaveUtilityCar"].Equals(true))
+                    {
+                        if (Model.UtilityCarId != 0)
+                        {
+                            if (Model.Status == 1)
+                            {
+                                <a id="StartUtilityCar" onclick="StartUtilityCar()" class="button flat-button fg-white"><span class="mif-play"> Start</span></a>
+                            }
+                            if (Model.Status == 2)
+                            {
+                                <a id="EndUtilityCar" onclick="EndUtilityCar()" class="button flat-button fg-white"><span class="mif-stop"> End</span></a>
+                            }
+
+                        }
+                        if (Model.Status <= 1)
+                        {
+                            <button id="SaveUtilityCar" class="button flat-button fg-white"><span class="mif-floppy-disk"> Save</span></button>
+                        }
+                    }
+                }
+                else
+                {
+                    if (HttpContext.Current.Session["CanSaveUtilityCar"].Equals(true))
+                    {
+                        if (Model.Status <= 1)
+                        {
+                            <button id="SaveUtilityCar" class="button flat-button fg-white"><span class="mif-floppy-disk"> Save</span></button>
+                        }
+                    }
+                }
+                <a class="button flat-button" href="@Url.Action("Index", "UtilityCar", new { Area = "YMMHRSystem" })" style="color:white">
+                    <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+                </a>
+                <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                    <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+                </a>
+            </div>
+        </div>
+        <!-----------------------------------CONTAINER------------------------------>
+        <div class="container-fluid mt-2">
+            <div class="row mb-1">
+                <div class="cell-md-3">
+                    @if (Model.Status <= 1)
+                    {
+                        <input type="text" data-role="input" value="@Model.Passengers" data-validate="required" data-prepend="Passengers:" id="Passengers" name="Passengers">
+                    }
+                    else
+                    {
+                        <input type="text" readonly="readonly" data-role="input" value="@Model.Passengers" data-prepend="Passengers:" id="Passengers" name="Passengers">
+                    }
+
+                </div>
+                <div class="cell-md-5">
+                    @if (Model.Status <= 1)
+                    {
+                        <input type="text" name="Destination" id="Destination" data-role="input" data-prepend="Destination:" data-validate="required" autocomplete="off" value="@Model.Destination">
+                    }
+                    else
+                    {
+                        <input type="text" readonly="readonly" name="Destination" id="Destination" data-role="input" data-prepend="Destination:" autocomplete="off" value="@Model.Destination">
+                    }
+                </div>
+                <div class="cell-md-4">
+                    @if (Model.Status <= 1)
+                    {
+                        <input data-prepend="License Expiration:" data-min-date="@DateTime.Now" data-validate="required" id="LicenseExpiration" name="LicenseExpiration" value="@(Model.LicenseExpiration?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.LicenseExpiration?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                    }
+                    else
+                    {
+                        <input readonly="readonly" data-prepend="License Expiration:" id="LicenseExpiration" name="LicenseExpiration" value="@(Model.LicenseExpiration?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.LicenseExpiration?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="input" type="text">
+                    }
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="cell-md-3">
+                    @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        if (Model.Status <= 1)
+                        {
+                            <input data-prepend="Departure Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                        }
+                        else
+                        {
+                            <input type="text" readonly="readonly" data-prepend="Departure Date:" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="input">
+                        }
+                    }
+                    else
+                    {
+                        if (Model.Status <= 1)
+                        {
+                            <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                        }
+                        else
+                        {
+                            <input type="text" readonly="readonly" data-prepend="Departure Date:" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="input">
+                        }
+                    }
+                </div>
+                <div class="cell-md-3">
+                    <input style="font-size:8px;" data-role="timepicker" data-validate="required" data-seconds="false" data-value="@Model.DepartureTime" id="DepartureTime" name="DepartureTime">
+                </div>
+                <div class="cell-md-3">
+                    @if (Model.Status <= 1)
+                    {
+                        <input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" data-validate="required" id="ArrivalDate" name="ArrivalDate" value="@(Model.ArrivalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ArrivalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                    }
+                    else
+                    {
+                        <input type="text" data-prepend="Arrival Date:" readonly="readonly" data-role="input" id="ArrivalDate" name="ArrivalDate" value="@(Model.ArrivalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ArrivalDate?.ToString("dd-MM-yyyy"))" autocomplete="off">
+                    }
+                </div>
+                <div class="cell-md-3">
+                    <input style="font-size:8px;" data-validate="required" data-role="timepicker" data-seconds="false" data-value="@Model.ArrivalTime" id="ArrivalTime" name="ArrivalTime">
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="cell-md-12">
+                    @if (Model.Status <= 1)
+                    {
+                        <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value="@Model.Motive">@Model.Motive</textarea>
+                    }
+                    else
+                    {
+                        <textarea readonly="readonly" data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" autocomplete="off" value="@Model.Motive">@Model.Motive</textarea>
+                    }
+                </div>
+            </div>
+            @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+            {
+                <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+                <div class="row mb-1">
+                    <div class="cell-md-4">
+                        <select data-role="select" data-on-change="ModelSelected()" id="Model" name="Model" data-prepend="Vehicle:">
+                            @foreach (var item in carList)
+                            {
+                                if (Model.LicensePlate == item.LicensePlate)
+                                {
+                                    <option selected id="@item.LicensePlate" value="@item.Model">@item.Model</option>
+                                }
+                                else
+                                {
+                                    <option id="@item.LicensePlate" value="@item.Model">@item.Model</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="cell-md-4">
+                        <input type="text" readonly="readonly" name="LicensePlate" id="LicensePlate" data-role="input" data-prepend="License Plate:" autocomplete="off" value="@Model.LicensePlate">
+                    </div>
+                    <div class="cell-md-4">
+                        <select data-role="select" id="Card" name="Card" data-prepend="Fuel Card Used:">
+                            @if (Model.Card)
+                            {
+                                <option selected value="true">Yes</option>
+                                <option value="false">No</option>
+                            }
+                            else
+                            {
+                                <option value="true">Yes</option>
+                                <option selected value="false">No</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="cell-md-3">
+                        <input type="text" data-role="input" value="@Model.KMDeparture" data-prepend="KM Departure:" id="KMDeparture" name="KMDeparture">
+                    </div>
+                    <div class="cell-md-3">
+                        <input type="text" data-role="input" value="@Model.KMArrival" data-prepend="KM Arrival:" id="KMArrival" name="KMArrival">
+                    </div>
+                    <div class="cell-md-3">
+                        <select data-role="select" id="TankLevelDeparture" name="TankLevelDeparture" data-prepend="Tank Lvl Departure:">
+                            @foreach (var item in fuelLevelList)
+                            {
+                                if (Model.TankLevelDeparture == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="cell-md-3">
+                        <select data-role="select" id="TankLevelArrival" name="TankLevelArrival" data-prepend="Tank Lvl Arrival:">
+                            @foreach (var item in fuelLevelList)
+                            {
+                                if (Model.TankLevelArrival == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="cell-md-12">
+                        <textarea data-role="textarea" data-prepend="Observations:" name="Observations" id="Observations" autocomplete="off" value="@Model.Observations">@Model.Observations</textarea>
+                    </div>
+                </div>
+
+            }
+            @Html.Hidden("UtilityCar", Model.UtilityCar)
+            @Html.Hidden("Status", Model.Status)
+            @Html.Hidden("Associate", Model.Associate)
+            @Html.Hidden("DateAdded", Model.DateAdded)
+            @Html.Hidden("UtilityCarId", Model.UtilityCarId)
+        </div>
+    </form>
+    <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
+
+    <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloaderUtilityCar" class="dialog">
+        <div class="dialog-content">
+            <span id="preloaderSave" class="mif-2x mif-spinner4 ani-spin"></span>
+            <span>Saving....</span>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+
+        ModelSelected();
+
+        setInterval(function () {
+            $("#KMDeparture").val($("#KMDeparture").val().replace(/[^0-9,]/g, "").replace(/(,.*?),(.*,)?/, "$1"));
+            $("#KMArrival").val($("#KMArrival").val().replace(/[^0-9,]/g, "").replace(/(,.*?),(.*,)?/, "$1"));
+        }, 500);
+    });
+
+    function DateSelected() {
+        var date = $("#DepartureDate").val();
+        var VehicleSelect = Metro.getPlugin("#Model", 'select');
+
+        var output = [];
+
+        $.ajax({
+            type: 'POST',
+            url: $LoadVehicles,
+            data: { date: date },
+            success: function (response) {
+                if (!$.isArray(response) || !response.length) {
+                    Metro.toast.create("No cars available for this date.", null, null, "bg-red fg-white");
+                }
+                VehicleSelect.data([]);
+                var data = response;
+                $.each(data, function (key, val) {
+                    output.push("<option id='" + data[key].LicensePlate + "' value='" + data[key].Model + "'>" + data[key].Model + "</option>");
+                });
+                VehicleSelect.data(output.join(''));
+
+
+            },
+        });
+    }
+
+</script>

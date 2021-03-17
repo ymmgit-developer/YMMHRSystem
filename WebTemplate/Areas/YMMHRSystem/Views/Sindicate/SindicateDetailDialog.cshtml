@@ -1,0 +1,61 @@
+﻿@model DtoSindicate
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Sindicate</div>
+
+<div class="dialog-content">
+    <form id="SindicateForm" data-role="validator" data-on-validate-form="AddSindicate()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell-md-12">
+                <input type="text" name="Issue" id="Issue" data-role="input" data-prepend="Concept:" data-validate="required" autocomplete="off" value="@Model.Issue">
+                <span class="invalid_feedback">
+                    Enter a concept
+                </span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-12">
+                <input type="text" data-role="input" value="@Model.AdministrativeSupport" data-validate="required" data-prepend="Admin. Support: $" id="AdministrativeSupport" name="AdministrativeSupport">
+                <span class="invalid_feedback">
+                    Enter an amount
+                </span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-12">
+                <input type="text" name="UnionFee" id="UnionFee" data-role="input" data-prepend="Union Fee: $" data-validate="required" autocomplete="off" value="@Model.UnionFee">
+                <span class="invalid_feedback">
+                    Enter an amount
+                </span>
+            </div>
+        </div>
+
+        @Html.Hidden("CreatedBy", Model.CreatedBy)
+        @Html.Hidden("Date", Model.Date)
+        <div class="row">
+            <div class="row mt-2 mb-2">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveSindicate"].Equals(true))
+                    {
+                        <div><button id="SaveSindicate" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+
+        setInterval(function () {
+            $("#AdministrativeSupport").val($("#AdministrativeSupport").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+            $("#UnionFee").val($("#UnionFee").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+        }, 500);
+
+    });
+</script>
+
+

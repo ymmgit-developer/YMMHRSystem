@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "Record";
+}
+<head>
+    <script src="~/Areas/YMMHRSystem/Scripts/Record.js"></script>
+    <script>
+        $ExportWorkerRecord = '@Url.Action("ExportWorkerRecord", "Graph", new { area = "YMMHRSystem" })';
+        $ExportTranslations = '@Url.Action("ExportTranslations", "Graph", new { area = "YMMHRSystem" })';
+        $ExportDiners = '@Url.Action("ExportDiners", "Graph", new { area = "YMMHRSystem" })';
+        $ExportExtraDiners = '@Url.Action("ExportExtraDiners", "Graph", new { area = "YMMHRSystem" })';
+        $ExportTransports = '@Url.Action("ExportTransports", "Graph", new { area = "YMMHRSystem" })';
+        $ExportExtraTransports = '@Url.Action("ExportExtraTransports", "Graph", new { area = "YMMHRSystem" })';
+        $ExportLegalRequirements = '@Url.Action("ExportLegalRequirements", "Graph", new { area = "YMMHRSystem" })';
+    </script>
+</head>
+
+<!----- BARRA  ---->
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Records</h5>
+        <div class="ml-auto pr-5">
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span id="boton2"> Regresar</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span id="boton3"> Tip </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2" style="text-align:center">
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-12">
+                <h5>Worker Records</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="Status" name="Status" data-prepend="Status:">
+                    <option value="0">All</option>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportWorkerRecord()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Translations</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate2" name="StartDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate2" name="EndDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportTranslations()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Diner</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate3" name="StartDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate3" name="EndDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportDiners()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Extra Diner</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate4" name="StartDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate4" name="EndDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraDiners()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Transport</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate5" name="StartDate5" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate5" name="EndDate5" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportTransports()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Extra Transport</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro;" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate6" name="StartDate6" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate6" name="EndDate6" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraTransports()">Export</button>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center mt-2">
+            <div class="cell-md-12">
+                <h5>Legal Requirements</h5>
+            </div>
+        </div>
+        <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-3">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate7" name="StartDate7" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-3">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate7" name="EndDate7" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-2">
+                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportLegalRequirements()">Export</button>
+            </div>
+        </div>
+    </div>
+</body>

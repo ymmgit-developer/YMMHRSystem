@@ -1,0 +1,117 @@
+﻿@model DtoCoffeeBreak
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    var coffeeTypeList = new List<string> { "Basic", "Complete" };
+    Room room = new Room();
+    var roomList = room.LoadMultiple();
+}
+<div class="dialog-title">Coffee Break</div>
+
+<div class="dialog-content">
+    <form id="CoffeeBreakForm" data-role="validator" data-on-validate-form="AddCoffeeBreak()" action="javascript:">
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+                    @foreach (var item in coffeeTypeList)
+                    {
+                        if (Model.Type == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-6">
+                <select data-role="select" id="Room" name="Room" data-prepend="Room:">
+                    @foreach (var item in roomList)
+                    {
+                        if (Model.Room == item.Name)
+                        {
+                            <option selected value="@item.Name">@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Name">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input data-prepend="Start Date:" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-6">
+                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-6">
+                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <label>Number of Attendees:</label>
+                <input type="text" data-role="spinner" name="AttendeeQuantity" id="AttendeeQuantity" autocomplete="off" data-buttons-position="right" data-min-value="1" value="@Model.AttendeeQuantity">
+            </div>
+            <div class="cell-md-6">
+                <label>Number of Instructors:</label>
+                <input type="text" data-role="spinner" name="InstructorQuantity" id="InstructorQuantity" autocomplete="off" data-buttons-position="right" data-min-value="1" value="@Model.InstructorQuantity">
+            </div>
+        </div>
+        @Html.Hidden("Status", Model.Status)
+        @Html.Hidden("Responsable", Model.Responsable)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        @Html.Hidden("CoffeeBreakId", Model.CoffeeBreakId)
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="dialog-actions d-flex flex-justify-start">
+                    @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        if (HttpContext.Current.Session["CanSaveCoffeeBreak"].Equals(true))
+                        {
+                            if (Model.CoffeeBreakId != 0)
+                            {
+                                if (Model.Status == 1)
+                                {
+                                    <div><a id="StartCoffeeBreak" onclick="StartCoffeeBreak()" class="button bg-blue fg-white"><span class="mif-play"> Start</span></a></div>
+                                }
+                                if (Model.Status == 2)
+                                {
+                                    <div><a id="EndCoffeeBreak" onclick="EndCoffeeBreak()" class="button bg-green fg-white"><span class="mif-stop"> End</span></a></div>
+                                }
+
+                            }
+                            if (Model.Status <= 1)
+                            {
+                                <div><button id="SaveCoffeeBreak" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (HttpContext.Current.Session["CanSaveCoffeeBreak"].Equals(true))
+                        {
+                            if (Model.Status <= 1)
+                            {
+                                <div><button id="SaveCoffeeBreak" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                            }
+                        }
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

@@ -16,7 +16,7 @@ namespace YMMHRSystemLogic
         public TimeSpan Time { get; set; }
         public string Type { get; set; }
         public string Motive { get; set; }
-        public decimal Cost { get; set; }
+        public decimal TypeCost { get; set; }
         public bool Lading { get; set; }
         public decimal LadingCost { get; set; }
         public string UserCreated { get; set; }

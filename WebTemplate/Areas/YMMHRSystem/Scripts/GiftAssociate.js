@@ -96,7 +96,7 @@ function OpenGiftDialog(id, associate) {
         success: function (result) {
             var dialog = Metro.getPlugin('#GiftDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -110,7 +110,7 @@ function OpenGiftLogDialog(associate) {
         success: function (result) {
             var dialog = Metro.getPlugin('#GiftLogDialog', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

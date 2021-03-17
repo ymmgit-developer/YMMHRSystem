@@ -46,13 +46,13 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell">
-                        <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@(Model.StartDate == DateTime.MinValue ? DateTime.Now : Model.StartDate )" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@(Model.StartDate == DateTime.MinValue ? DateTime.Now : Model.StartDate )" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         <span class="invalid_feedback">
                             Enter a starting date
                         </span>
                     </div>
                     <div class="cell">
-                        <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@(Model.FinishDate == DateTime.MinValue ? DateTime.Now : Model.FinishDate )" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-input-format="%d/%m/%y">
+                        <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@(Model.FinishDate == DateTime.MinValue ? DateTime.Now : Model.FinishDate )" data-validate="required" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         <span class="invalid_feedback">
                             Enter a finishing date
                         </span>
@@ -69,7 +69,7 @@
             <div class="dialog-actions d-flex flex-justify-start w-100">
                 @if (HttpContext.Current.Session["CanSaveTransport"].Equals(true))
                 {
-                    <div><button id="SaveTransport" class="button my-control-colors"><span class="mif-floppy-disk"></span> Save </button></div>
+                    <div><button id="SaveTransport" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }
                 <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
             </div>

@@ -42,7 +42,7 @@ function FindingTypeDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#FindingTypeDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -61,7 +61,7 @@ function AddFindingType() {
         data: $("#FindingTypeForm").serialize(),
         success: function (result) {
             if (result === "true") {
-                Metro.toast.create("FindingType saved.", null, null, "bg-green fg-white");
+                Metro.toast.create("Finding Type saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#FindingTypeDetail');
                 setTimeout(function () {
                     location.reload();
@@ -94,12 +94,12 @@ function DeleteFindingType() {
         data: { findingTypeId: window.$findingTypeId },
         success: function (result) {
             if (result === "true") {
-                Metro.toast.create("FindingType deleted.", null, null, "bg-green fg-white");
+                Metro.toast.create("Finding Type deleted.", null, null, "bg-green fg-white");
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.toast.create("Error deleting findingType", null, null, "bg-red fg-white");
+                Metro.toast.create("Error deleting finding type", null, null, "bg-red fg-white");
             }
 
         }

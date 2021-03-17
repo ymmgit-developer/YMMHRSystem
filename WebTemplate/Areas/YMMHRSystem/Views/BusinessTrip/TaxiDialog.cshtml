@@ -1,0 +1,105 @@
+﻿@model DtoTaxiReservation
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    var typeList = new List<string> { "Support from Yachiyo", "Business Trip", "External Company" };
+    var whoPaysList = new List<string> { "YMM", "Others" };
+    var costCenterList = new List<string> { "", "1100 PFT BM Direct", "1200 PFT 2P Assy Direct", "1300 PFT Injection", "1500 PFT Semi Direct", "2100 SR Direct", "2200 SR Semi Direct", "6100 Quality", "6200 Maintenance", "6300 Production Control", "6400 New Model", "7100 Accounting", "7200 Purchasing", "7300 IT", "7400 HR", "7500 Staff Administration", "7600 EHS" };
+}
+<div class="dialog-title">Taxi</div>
+
+<div class="dialog-content">
+    <form id="TaxiForm" data-role="validator" data-on-validate-form="AddTaxi()" action="javascript:">
+        @Html.Hidden("TaxiReservationId", Model.TaxiReservationId)
+        @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+        {
+            <div class="row mb-1">
+                <div class="cell-md-6">
+                    <input type="text" data-prepend="Quote No.:" name="QuoteNumber" id="QuoteNumber" value="@Model.QuoteNumber" data-role="input" data-validate="required" autocomplete="off">
+                </div>
+                <div class="cell-md-6">
+                    <input type="text" data-prepend="Driver:" name="DriverName" id="DriverName" value="@Model.DriverName" data-role="input" data-validate="required" autocomplete="off">
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="cell-md-6">
+                    <input type="text" data-prepend="License Plate:" name="LicensePlate" id="LicensePlate" value="@Model.LicensePlate" data-role="input" autocomplete="off">
+                </div>
+                <div class="cell-md-6">
+                    <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="Cost" name="Cost">
+                </div>
+            </div>
+        }
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input data-prepend="Pick up Date:" data-min-date="@DateTime.Now" data-validate="required" id="PickupDate" name="PickupDate" value="@(Model.PickupDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.PickupDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="Destination" id="Destination" data-role="input" data-prepend="Destination:" data-validate="required" autocomplete="off" value="@Model.Destination">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.PickupTime" id="PickupTime" name="PickupTime">
+            </div>
+            <div class="cell-md-6">
+                <input type="text" name="PickupPlace" id="PickupPlace" data-role="input" data-prepend="Pickup Place:" data-validate="required" autocomplete="off" value="@Model.PickupPlace">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-4">
+                <input type="text" name="FlightNumber" id="FlightNumber" data-role="input" data-prepend="Flight Number:" data-validate="required" autocomplete="off" value="@Model.FlightNumber">
+            </div>
+            <div class="cell-md-4">
+                <select data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
+                    @foreach (var item in whoPaysList)
+                    {
+                        if (Model.CompanyPaying == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-4">
+                <select data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
+                    @foreach (var item in costCenterList)
+                    {
+                        if (Model.CostCenter == item)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row mt-2 mb-1">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveBusinessTrip"].Equals(true))
+                    {
+                        <div><button id="SaveTaxi" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+
+        setInterval(function () {
+            $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+        }, 500);
+    });
+</script>

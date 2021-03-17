@@ -42,7 +42,7 @@ function ShiftDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#ShiftDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }

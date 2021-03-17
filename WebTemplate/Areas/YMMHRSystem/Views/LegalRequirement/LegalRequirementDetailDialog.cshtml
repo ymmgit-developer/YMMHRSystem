@@ -1,0 +1,60 @@
+﻿@model DtoLegalRequirement
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    LegalProcedure legalProcedure = new LegalProcedure();
+    var legalProcedureList = legalProcedure.LoadMultiple("HR");
+}
+<div class="dialog-title">Legal Requirement</div>
+
+<div class="dialog-content">
+    <form id="LegalRequirementForm" data-role="validator" data-on-validate-form="AddLegalRequirement()" action="javascript:">
+        <div class="row mb-2">
+            <div class="cell-md-6">
+                <select data-role="select" id="LegalProcedure" data-validate="required" name="LegalProcedure" data-prepend="Document:">
+                    @foreach (var item in legalProcedureList)
+                    {
+                        if (Model.LegalProcedure == item.Name)
+                        {
+                            <option selected value="@item.Name">@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Name">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-6">
+                <input type="text" data-role="input" data-validate="required" data-prepend="Institution:" id="Institution" name="Institution" value="@Model.Institution">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="cell-md-4">
+                <input data-prepend="Emission Date:" data-validate="required" id="EmissionDate" name="EmissionDate" value="@(Model.EmissionDate?.ToString("yyyy-MM-dd") == "0001-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.EmissionDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-4">
+                <input data-prepend="Expiration Date:" data-validate="required" id="ExpirationDate" name="ExpirationDate" value="@(Model.ExpirationDate?.ToString("yyyy-MM-dd") == "0001-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ExpirationDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-4">
+                <input data-prepend="Renewal Date:" data-validate="required" id="RenewalDate" name="RenewalDate" value="@(Model.RenewalDate?.ToString("yyyy-MM-dd") == "0001-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.RenewalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+        </div>
+
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        <div class="row">
+            <div class="row mt-2 mb-2">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveLegalRequirement"].Equals(true))
+                    {
+                        <div><button id="SaveLegalRequirement" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span></button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

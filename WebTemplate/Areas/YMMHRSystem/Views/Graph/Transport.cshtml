@@ -1,0 +1,239 @@
+﻿@using YMMHRSystemLogic;
+@{
+    ViewBag.Title = "Transport";
+    List<int> years = new List<int>();
+    for (int i = 2020; i < DateTime.Now.Year + 1; i++)
+    {
+        years.Add(i);
+    }
+    List<DtoGraph> months = new List<DtoGraph>() {
+new DtoGraph{ X="All", Y=0 },
+new DtoGraph{ X="January", Y=1 },
+new DtoGraph{ X="February", Y=2 },
+new DtoGraph{ X="March", Y=3 },
+new DtoGraph{ X="April", Y=4 },
+new DtoGraph{ X="May", Y=5 },
+new DtoGraph{ X="June", Y=6 },
+new DtoGraph{ X="July", Y=7 },
+new DtoGraph{ X="August", Y=8 },
+new DtoGraph{ X="September", Y=9 },
+new DtoGraph{ X="October", Y=10 },
+new DtoGraph{ X="November", Y=11 },
+new DtoGraph{ X="December", Y=12 },
+};
+
+
+}
+<head>
+    <script src="~/Areas/YMMHRSystem/Scripts/TransportGraph.js"></script>
+    <script>
+        $LoadTransportGraphs = '@Url.Action("LoadTransportGraphs", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshServicesByType = '@Url.Action("RefreshServicesByType", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshServicesByProcess = '@Url.Action("RefreshServicesByProcess", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshExtraTransportCostByProcess = '@Url.Action("RefreshExtraTransportCostByProcess", "Graph", new { area = "YMMHRSystem" })';
+        $RefreshTotalTransportCost = '@Url.Action("RefreshTotalTransportCost", "Graph", new { area = "YMMHRSystem" })';
+    </script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Transport</h5>
+        <div class="ml-auto pr-5">
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span id="boton2"> Regresar</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span id="boton3"> Tip </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2" style="text-align:center">
+        <div class="row mt-2">
+            <div class="cell-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        No. of Services by Type - Monthly
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="ServicesByTypeMonthly"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        No. of Services by Type - Accumulated
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="ServicesByTypeAccumulated"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="ServicesByTypeYear" name="ServicesByTypeYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshServicesByType()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        No. of Services by Process
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="ServicesByProcess"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="ServicesByProcessMonth" name="ServicesByProcessMonth" data-prepend="Month:">
+                    @foreach (var item in months)
+                    {
+                        if (item.Y == DateTime.Now.Month)
+                        {
+                            <option selected value="@item.Y">@item.X</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Y">@item.X</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-2">
+                <select data-role="select" id="ServicesByProcessYear" name="ServicesByProcessYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshServicesByProcess()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Extra Transport Cost by Process
+                    </div>
+                    <div class="card-content" style="height:55vh">
+                        <canvas id="ExtraTransportCostByProcess"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="ExtraTransportCostByProcessMonth" name="ExtraTransportCostByProcessMonth" data-prepend="Month:">
+                    @foreach (var item in months)
+                    {
+                        if (item.Y == DateTime.Now.Month)
+                        {
+                            <option selected value="@item.Y">@item.X</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Y">@item.X</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-2">
+                <select data-role="select" id="ExtraTransportCostByProcessYear" name="ExtraTransportCostByProcessYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshExtraTransportCostByProcess()">Graph</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        Total Transport Cost - Monthly
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="TotalTransportCostMonthly"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cell-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        Total Transport Cost - Accumulated
+                    </div>
+                    <div class="card-content p-1" style="height:55vh">
+                        <canvas id="TotalTransportCostAccumulated"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: rgb(54, 54, 54);" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell-md-2">
+                <select data-role="select" id="TotalTransportCostYear" name="TotalTransportCostYear" data-prepend="Ki:">
+                    @foreach (var item in years)
+                    {
+                        if (item == Convert.ToInt32(Session["KiFirstHalfYear"]))
+                        {
+                            <option selected value="@item">@item - @(item + 1)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item - @(item + 1)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="cell-md-1">
+                <button class="flat-button button my-control-colors" style="color:white; border-color:white" onclick="RefreshTotalTransportCost()">Graph</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    GenerateGraph();
+</script>
+
+

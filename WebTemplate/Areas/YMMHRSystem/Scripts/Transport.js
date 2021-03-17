@@ -74,7 +74,7 @@ function TransportDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#TransportDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
@@ -150,7 +150,7 @@ function ExtraordinaryTransportDetailDialog(id) {
         success: function (result) {
             var dialog = Metro.getPlugin('#ExtraordinaryTransportDetail', 'dialog');
             dialog.setContent(result);
-            dialog.open();
+            setTimeout(function () { dialog.open(); }, 100);
         }
     });
 }
