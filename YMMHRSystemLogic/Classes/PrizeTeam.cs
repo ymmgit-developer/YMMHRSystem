@@ -58,7 +58,6 @@ namespace YMMHRSystemLogic
             {
                 if (prizeTeam.PrizeTeamId == 0)
                 {
-                    prizeTeam.CreatedBy = user.GetUserName(SQLTools.userId.ToString());
                     prizeTeam.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();

@@ -55,8 +55,9 @@ namespace YMMHRSystemLogic
 
                 if (legalRequirement.LegalRequirementId == 0)
                 {
-                    legalRequirement.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     legalRequirement.DateAdded = DateTime.Now;
+                    legalRequirement.ExpirationEmailSent = false;
+                    legalRequirement.RenewalEmailSent = false;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = legalRequirement, TableName = "LegalRequirements" });
@@ -80,7 +81,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoLegalRequirement> legalRequirementList = new List<DtoLegalRequirement>();
 
-                mapping.Load<DtoLegalRequirement>("SELECT LegalRequirementId, LegalProcedure, Institution, EmissionDate, ExpirationDate, RenewalDate, UserCreated, DateAdded FROM LegalRequirements ORDER BY LegalRequirementId", "LegalRequirements", new DtoLegalRequirement());
+                mapping.Load<DtoLegalRequirement>("SELECT LegalRequirementId, LegalProcedure, Institution, EmissionDate, ExpirationDate, RenewalDate, UserCreated, DateAdded, RenewalEmailSent, ExpirationEmailSent FROM LegalRequirements ORDER BY LegalRequirementId", "LegalRequirements", new DtoLegalRequirement());
                 legalRequirementList.AddRange(mapping.dtoList.Select(renglon => (DtoLegalRequirement)renglon.Dto));
 
                 return legalRequirementList;
@@ -104,7 +105,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoLegalRequirement> legalRequirementList = new List<DtoLegalRequirement>();
 
-                mapping.Load<DtoLegalRequirement>("SELECT LegalRequirementId, LegalProcedure, Institution, EmissionDate, ExpirationDate, RenewalDate, UserCreated, DateAdded FROM LegalRequirements WHERE DateAdded BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY LegalRequirementId", "LegalRequirements", new DtoLegalRequirement());
+                mapping.Load<DtoLegalRequirement>("SELECT LegalRequirementId, LegalProcedure, Institution, EmissionDate, ExpirationDate, RenewalDate, UserCreated, DateAdded, ExpirationEmailSent, RenewalEmailSent FROM LegalRequirements WHERE DateAdded BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY LegalRequirementId", "LegalRequirements", new DtoLegalRequirement());
                 legalRequirementList.AddRange(mapping.dtoList.Select(renglon => (DtoLegalRequirement)renglon.Dto));
 
                 return legalRequirementList;
@@ -230,6 +231,40 @@ namespace YMMHRSystemLogic
             {
                 log.WriteToErrorLog("HR System", "Delete Attachment", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DeleteAttachment");
                 return false;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="legalRequirementId"></param>
+        public void UpdateRenewalEmailFlag(bool flag, long legalRequirementId)
+        {
+            try
+            {
+                string query = "UPDATE LegalRequirements SET RenewalEmailSent = " + ( flag ? "1" : "0" ) + "  WHERE LegalRequirementId =" + legalRequirementId;
+                oDatabase.ExecuteNonQuery(query, "Update Legal Requirement Flag");
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Renewal Email Flag", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateRenewalEmailFlag");
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="legalRequirementId"></param>
+        public void UpdateExpirationEmailFlag(bool flag, long legalRequirementId)
+        {
+            try
+            {
+                string query = "UPDATE LegalRequirements SET ExpirationEmailSent = " + (flag ? "1" : "0") + "  WHERE LegalRequirementId =" + legalRequirementId;
+                oDatabase.ExecuteNonQuery(query, "Update Legal Requirement Flag");
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Expiration Email Flag", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateExpirationEmailFlag");
             }
         }
         #endregion

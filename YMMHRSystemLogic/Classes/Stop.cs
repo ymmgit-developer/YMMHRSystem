@@ -51,7 +51,6 @@ namespace YMMHRSystemLogic
 
                 if (Stop.StopId == 0)
                 {
-                    Stop.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     Stop.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();

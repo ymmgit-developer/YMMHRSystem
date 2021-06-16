@@ -13,6 +13,7 @@ namespace YMMHRSystemLogic
         public string Process { get; set; }
         public DateTime DateAdded { get; set; }
         public string UserCreated { get; set; }
+        public long CreatedBy { get; set; }
         public int Status { get; set; }
         public List<DtoPassengerDetail> PassengerList { get; set; } = new List<DtoPassengerDetail>();
         public List<DtoTaxiReservation> TaxiList { get; set; } = new List<DtoTaxiReservation>();

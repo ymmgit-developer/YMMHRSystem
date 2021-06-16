@@ -118,9 +118,9 @@ h5 {
 .table.cell-border td,
 .table.cell-border th {
     text-align: center;
-}*/
-/*===================*/
-/*div.dataTables_scroll {
+}
+===================
+div.dataTables_scroll {
     flex-grow: 2;
 }
 

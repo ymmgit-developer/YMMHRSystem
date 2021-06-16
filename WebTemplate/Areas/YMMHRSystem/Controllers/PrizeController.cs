@@ -12,6 +12,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
     {
         // GET: YMMHRSystem/Prize
         Prize prize = new Prize();
+        SendEmail sendEmail = new SendEmail();
 
         public ActionResult Index()
         {
@@ -94,7 +95,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 }
 
                 dtoPrize.Status = true;
-                prize.Save(dtoPrize);
+                prize.Save(dtoPrize, Convert.ToInt64(Session["UserId"]));
 
                 DtoPrizeLog dtoPrizeLog = new DtoPrizeLog
                 {
@@ -166,6 +167,25 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     };
 
                     prize.SavePrizeLog(dtoPrizeLog);
+                    try
+                    {
+                        if (dtoPrize.Quantity <= dtoPrize.Minimum)
+                        {
+                            User user = new User();
+                            List<string> contacts = new List<string> { user.GetUserEmail(dtoPrize.CreatedBy) };
+                            sendEmail.SendEmailTemplate("YMM HR System: Prize Minimum Stock Limit", "TemplatePrizeMinimumStock", new[,]
+                            {
+                                {"$PRIZE$", dtoPrize.Name},
+                                {"$QTY$", dtoPrize.Quantity.ToString()},
+                                {"$LIMIT$", dtoPrize.Minimum.ToString()}
+                            }, sendEmail.GetAdminEmail(), contacts);
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
 
                     return Json("true", JsonRequestBehavior.AllowGet);
                 }

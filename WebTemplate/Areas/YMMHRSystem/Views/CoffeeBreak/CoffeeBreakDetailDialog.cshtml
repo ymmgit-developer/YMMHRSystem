@@ -3,8 +3,17 @@
 @{
     Layout = null;
     var coffeeTypeList = new List<string> { "Basic", "Complete" };
+    CoffeeBreak coffeeBreak = new CoffeeBreak();
     Room room = new Room();
-    var roomList = room.LoadMultiple();
+    List<DtoRoom> roomList;
+    if (Model.Status < 1)
+    {
+        roomList = coffeeBreak.LoadMultipleAvailableRooms(DateTime.Now);
+    }
+    else
+    {
+        roomList = room.LoadMultiple();
+    }
 }
 <div class="dialog-title">Coffee Break</div>
 
@@ -12,7 +21,23 @@
     <form id="CoffeeBreakForm" data-role="validator" data-on-validate-form="AddCoffeeBreak()" action="javascript:">
         <div class="row mb-1">
             <div class="cell-md-6">
-                <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+                <input data-prepend="Start Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-6">
+                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+            </div>
+            <div class="cell-md-6">
+                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <select class="notranslate" data-role="select" id="Type" name="Type" data-prepend="Type:">
                     @foreach (var item in coffeeTypeList)
                     {
                         if (Model.Type == item)
@@ -27,35 +52,26 @@
                 </select>
             </div>
             <div class="cell-md-6">
-                <select data-role="select" id="Room" name="Room" data-prepend="Room:">
-                    @foreach (var item in roomList)
-                    {
-                        if (Model.Room == item.Name)
+                @if (Model.Status <= 1)
+                {
+                    <select data-role="select" id="Room" name="Room" data-prepend="Room:">
+                        @foreach (var item in roomList)
                         {
-                            <option selected value="@item.Name">@item.Name</option>
+                            if (Model.Room == item.Name)
+                            {
+                                <option selected value="@item.Name">@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Name">@item.Name</option>
+                            }
                         }
-                        else
-                        {
-                            <option value="@item.Name">@item.Name</option>
-                        }
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="row mb-1">
-            <div class="cell-md-6">
-                <input data-prepend="Start Date:" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-            </div>
-            <div class="cell-md-6">
-                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
-            </div>
-        </div>
-        <div class="row mb-1">
-            <div class="cell-md-6">
-                <input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-            </div>
-            <div class="cell-md-6">
-                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+                    </select>
+                }
+                else
+                {
+                    <input type="text" name="Room" id="Room" data-role="input" readonly="readonly" data-prepend="Room:" autocomplete="off" value="@Model.Room">
+                }
             </div>
         </div>
         <div class="row mb-1">
@@ -113,5 +129,26 @@
         </div>
     </form>
 </div>
+<script>
+    function DateSelected() {
+        var startDate = $("#StartDate").val();
+        var rooms = Metro.getPlugin("#Room", 'select');
 
+        var output = [];
+
+        $.ajax({
+            type: 'POST',
+            url: $LoadRooms,
+            data: { date: startDate },
+            success: function (response) {
+                rooms.data([]);
+                var data = response;
+                $.each(data, function (key, val) {
+                    output.push("<option value='" + data[key].Name + "'>" + data[key].Name + "</option>");
+                });
+                rooms.data(output.join(''));
+            },
+        });
+    }
+</script>
 

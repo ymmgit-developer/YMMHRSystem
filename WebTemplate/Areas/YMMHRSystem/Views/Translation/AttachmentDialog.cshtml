@@ -5,16 +5,13 @@
 }
 <div class="dialog-title">Attachment</div>
 <div class="dialog-content">
-    <form id="TranslationAttachmentForm" data-role="validator" data-on-validate-form="AddAttachment()" action="javascript:">
+    <form id="TranslationAttachmentForm" data-role="validator" accept-charset="utf-8" data-on-validate-form="AddAttachment()" action="javascript:">
        
         <div class="row mb-2">
             @if ((Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) && Convert.ToBoolean(Session["IsTranslated"]))
             {
                 <div class="cell-md-10">
                     <input type="file" id="file" name="file" data-role="file" data-validate="required" data-button-title="<span class='mif-folder mif-2x'></span>">
-                    <span class="invalid_feedback">
-                        Upload a file
-                    </span>
                 </div>
 
                 <div class="cell-md-2">
@@ -25,9 +22,6 @@
             {
                 <div class="cell-md-12">
                     <input type="file" id="file" name="file" data-role="file" data-validate="required" data-button-title="<span class='mif-folder mif-2x'></span>">
-                    <span class="invalid_feedback">
-                        Upload a file
-                    </span>
                 </div>
             }
         </div>

@@ -24,8 +24,11 @@ namespace YMMHRSystemLogic
         public DateTime? InvoiceDate { get; set; }
         public DateTime? AnnualFee { get; set; }
         public DateTime? NextVerification { get; set; }
-        public string Status { get; set; }
+        public string VerificationStatus { get; set; }
+        public int Status { get; set; }
         public string PolicyNumber { get; set; }
         public DateTime DateAdded { get; set; }
+        public bool ServiceEmailSent { get; set; }
+        public bool VerificationEmailSent { get; set; }
     }
 }

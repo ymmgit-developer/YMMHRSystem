@@ -74,7 +74,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-
+                dtoSindicate.CreatedBy = Session["UserName"].ToString();
                 sindicate.Save(dtoSindicate);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

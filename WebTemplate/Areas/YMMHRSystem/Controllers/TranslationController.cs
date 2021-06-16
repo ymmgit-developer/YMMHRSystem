@@ -26,7 +26,14 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
                     HttpContext.Session["CanDeleteTranslation"] = Permission.QueryPermission("TRANSLATION.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
-                    return View("~/Areas/YMMHRSystem/Views/Translation/Index.cshtml", translation.LoadMultiple());
+                    if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Translation/Index.cshtml", translation.LoadMultiple());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Translation/Index.cshtml", translation.LoadMultiple(Session["UserName"].ToString()));
+                    }
                 }
                 else
                 {
@@ -69,8 +76,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             try
             {
                 dtoTranslation.TranslationId = Convert.ToInt64(Session["LoadedTranslationId"]);
-
-                translation.Save(dtoTranslation);
+                if (dtoTranslation.TranslationId == 0)
+                {
+                    dtoTranslation.Associate = Session["UserName"].ToString();
+                }              
+                translation.Save(dtoTranslation, Convert.ToInt64(Session["UserId"]));
                 Session["LoadedTranslationId"] = dtoTranslation.TranslationId;
                 string data = dtoTranslation.TranslationId.ToString() + "|" + dtoTranslation.Associate + "|" + dtoTranslation.Status + "|" + dtoTranslation.DateAdded;
                 return Json(data, JsonRequestBehavior.AllowGet);
@@ -150,6 +160,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     }
                     if (translation.AddAttachment(dtoTranslationAttachment))
                     {
+                        translation.UpdateTranslationAttachmentJapaneseFields(dtoTranslationAttachment.FileName, dtoTranslationAttachment.TranslationAttachmentId);
                         DtoTranslation dtoTranslation = translation.Load(dtoTranslationAttachment.TranslationId);
                         if (dtoTranslationAttachment.IsTranslated)
                         {
@@ -219,15 +230,19 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
                 dtoTranslation.AssignedTo = Session["UserName"].ToString();
                 dtoTranslation.Status = 2;
                 translation.Save(dtoTranslation);
+
+                List<string> contacts = emailNotification.GetTranslationContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoTranslation.CreatedBy));
                 sendEmail.SendEmailTemplate("YMM HR System: Translation Start", "TemplateTranslationStart", new[,]
                     {
                         {"$APPLICANT$", dtoTranslation.Associate},
                         {"$ISSUE$", dtoTranslation.Issue},
                         {"$DATE$", dtoTranslation.Deadline?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetTranslationContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -244,17 +259,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
                 var translationsList = translation.LoadMultipleAttachments(dtoTranslation.TranslationId, true, true);
                 if (translationsList.Count > 0)
                 {
                     dtoTranslation.Status = 3;
                     translation.Save(dtoTranslation);
+                    List<string> contacts = emailNotification.GetTranslationContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(dtoTranslation.CreatedBy));
                     sendEmail.SendEmailTemplate("YMM HR System: Translation Complete", "TemplateTranslationFinish", new[,]
                     {
                         {"$APPLICANT$", dtoTranslation.Associate},
                         {"$ISSUE$", dtoTranslation.Issue},
                         {"$DATE$", dtoTranslation.Deadline?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetTranslationContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 }
                 else
                 {

@@ -13,6 +13,7 @@ namespace YMMHRSystemLogic
         Log log = new Log();
         SQLTools oDatabase = new SQLTools();
         SendEmail sendEmail = new SendEmail();
+        User user = new User();
         EmailNotification emailNotification = new EmailNotification();
 
         #region Standard Methods
@@ -53,18 +54,22 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="businessTrip"></param>
         /// <returns>BusinessTrip registered</returns>
-        public void Save(DtoBusinessTrip businessTrip)
+        public void Save(DtoBusinessTrip businessTrip, long userId = 0)
         {
             try
             {
                 if (businessTrip.BusinessTripId == 0)
                 {
+                    businessTrip.CreatedBy = userId;
+                    List<string> contacts = emailNotification.GetBusinessTripContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(userId));
+
                     sendEmail.SendEmailTemplate("YMM HR System: Business Trip Request", "TemplateBusinessTripRequest", new[,]
 {
                         {"$APPLICANT$", businessTrip.UserCreated},
                         {"$PROCESS$", businessTrip.Process},
                         {"$DATE$", businessTrip.DateAdded.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetBusinessTripContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = businessTrip, TableName = "BusinessTrips" });
@@ -81,14 +86,21 @@ namespace YMMHRSystemLogic
         /// Load multiple BusinessTrip with fields.
         /// </summary>
         /// <returns>Load BusinessTrip Dto</returns>
-        public List<DtoBusinessTrip> LoadMultiple()
+        public List<DtoBusinessTrip> LoadMultiple(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoBusinessTrip> workerfileList = new List<DtoBusinessTrip>();
-
-                mapping.Load<DtoBusinessTrip>("SELECT BusinessTripId, Associate, Process, DateAdded, Status, UserCreated FROM BusinessTrips ORDER BY BusinessTripId", "BusinessTrips", new DtoBusinessTrip());
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoBusinessTrip>("SELECT BusinessTripId, Associate, Process, DateAdded, Status, UserCreated, CreatedBy FROM BusinessTrips ORDER BY BusinessTripId", "BusinessTrips", new DtoBusinessTrip());
+                }
+                else
+                {
+                    mapping.Load<DtoBusinessTrip>("SELECT BusinessTripId, Associate, Process, DateAdded, Status, UserCreated, CreatedBy FROM BusinessTrips WHERE Associate = '" + userFilter + "' ORDER BY BusinessTripId", "BusinessTrips", new DtoBusinessTrip());
+                }
+               
                 workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoBusinessTrip)renglon.Dto));
 
                 return workerfileList;

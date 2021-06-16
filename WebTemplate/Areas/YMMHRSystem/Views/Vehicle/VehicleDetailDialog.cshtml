@@ -46,7 +46,7 @@
         </div>
         <div class="row mb-2">
             <div class="cell">
-                <select data-role="select" data-on-change="TypeSelected()" id="Type" name="Type" data-prepend="Type:">
+                <select class="notranslate" data-role="select" data-on-change="TypeSelected()" id="Type" name="Type" data-prepend="Type:">
                     @foreach (var item in typeList)
                     {
                         if (Model.Type == item)
@@ -80,10 +80,10 @@
         </div>
         <div class="row">
             <div class="cell">
-                <select data-role="select" id="Status" name="Status" data-prepend="Status:">
+                <select class="notranslate" data-role="select" id="VerificationStatus" name="VerificationStatus" data-prepend="Verification Status:">
                     @foreach (var item in statusList)
                     {
-                        if (Model.Status == item)
+                        if (Model.VerificationStatus == item)
                         {
                             <option selected value="@item">@item</option>
                         }
@@ -99,6 +99,8 @@
             </div>
         </div>
         @Html.Hidden("DateAdded", Model.DateAdded)
+        @Html.Hidden("VerificationEmailSent", Model.VerificationEmailSent)
+        @Html.Hidden("ServiceEmailSent", Model.ServiceEmailSent)
         <div class="row">
             <div class="cell-md-12">
                 <div class="dialog-actions d-flex flex-justify-start">

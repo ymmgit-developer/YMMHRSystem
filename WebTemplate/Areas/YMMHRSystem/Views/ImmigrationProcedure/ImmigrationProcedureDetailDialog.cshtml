@@ -24,7 +24,7 @@
                 <a class="button my-button-colors w-100" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
             </div>
             <div class="cell-md-4">
-                <select data-role="select" id="ProcedureType" name="ProcedureType" data-prepend="Procedure:">
+                <select class="notranslate" data-role="select" id="ProcedureType" name="ProcedureType" data-prepend="Procedure:">
                     @foreach (var item in procedureTypeList)
                     {
                         if (Model.ProcedureType == item)
@@ -41,7 +41,7 @@
         </div>
         <div class="row mb-2">
             <div class="cell-md-4">
-                <select data-role="select" id="DocumentType" name="DocumentType" data-prepend="Document:">
+                <select class="notranslate" data-role="select" id="DocumentType" name="DocumentType" data-prepend="Document:">
                     @foreach (var item in legalProcedureList)
                     {
                         if (Model.DocumentType == item.Name)
@@ -56,7 +56,7 @@
                 </select>
             </div>
             <div class="cell-md-4">
-                <select data-role="select" id="Motive" name="Motive" data-prepend="Motive:">
+                <select class="notranslate" data-role="select" id="Motive" name="Motive" data-prepend="Motive:">
                     <option selected value="Job Requirement">Job Requirement</option>
                     <option value="Training">Training</option>
                     <option value="Supplier Visit">Supplier Visit</option>

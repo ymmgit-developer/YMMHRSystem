@@ -51,7 +51,6 @@ namespace YMMHRSystemLogic
 
                 if (legalProcedure.LegalProcedureId == 0)
                 {
-                    legalProcedure.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     legalProcedure.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();

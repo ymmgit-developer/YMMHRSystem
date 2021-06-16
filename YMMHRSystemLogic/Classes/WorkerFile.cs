@@ -83,7 +83,7 @@ namespace YMMHRSystemLogic
         /// Load multiple WorkerFile with fields.
         /// </summary>
         /// <returns>Load WorkerFile Dto</returns>
-        public List<DtoWorkerFile> LoadMultiple(int status = 0)
+        public List<DtoWorkerFile> LoadMultiple(int status = 2)
         {
             try
             {
@@ -92,13 +92,13 @@ namespace YMMHRSystemLogic
                 switch (status)
                 {
                     case 0:
-                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender, Route, Stop FROM WorkerFiles WHERE Status = 0 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
                         break;
                     case 1:
-                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles WHERE Status = 1 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender, Route, Stop FROM WorkerFiles WHERE Status = 1 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
                         break;
                     default:
-                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender FROM WorkerFiles WHERE Status = 0 ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                        mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, DismissalDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Gender, Route, Stop FROM WorkerFiles ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
                         break;
                 }
                 workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoWorkerFile)renglon.Dto));
@@ -122,7 +122,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoWorkerFile> workerfileList = new List<DtoWorkerFile>();
 
-                mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber FROM WorkerFiles WHERE Type <> 'Staff' AND Status = " + (status ? 1 : 0) + " ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Route, Stop, Shift FROM WorkerFiles WHERE Type <> 'Staff' AND Status = " + (status ? 1 : 0) + " ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
                 workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoWorkerFile)renglon.Dto));
 
                 return workerfileList;
@@ -230,6 +230,56 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 log.WriteToErrorLog("HR System", "Get WorkerFile Id", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetWorkerFileId");
+                throw ex;
+            }
+
+        }
+        /// <summary>
+        /// Get WorkerFile Route
+        /// </summary>
+        /// <param name="workerId"></param>
+        /// <returns></returns>
+        public string GetWorkerFileRoute(string names)
+        {
+            try
+            {
+                DataRow dataRow = null;
+                string sqlString = "SELECT Route FROM WorkerFiles WHERE Names = '" + names + "'";
+
+                dataRow = oDatabase.GetRow(sqlString, "Get WorkerFile Route");
+
+                if (dataRow == null) return "";
+
+                return dataRow["Route"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get WorkerFile Route", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetWorkerFileRoute");
+                throw ex;
+            }
+
+        }
+        /// <summary>
+        /// Get WorkerFile Stop
+        /// </summary>
+        /// <param name="workerId"></param>
+        /// <returns></returns>
+        public string GetWorkerFileStop(string names)
+        {
+            try
+            {
+                DataRow dataRow = null;
+                string sqlString = "SELECT Stop FROM WorkerFiles WHERE Names = '" + names + "'";
+
+                dataRow = oDatabase.GetRow(sqlString, "Get WorkerFile Stop");
+
+                if (dataRow == null) return "";
+
+                return dataRow["Stop"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get WorkerFile Stop", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetWorkerFileStop");
                 throw ex;
             }
 

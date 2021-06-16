@@ -58,6 +58,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     isNew = false;
                 }
 
+                dtoPrizeTeam.CreatedBy = Session["UserName"].ToString();
                 prizeTeam.Save(dtoPrizeTeam);
                 if (isNew)
                 {

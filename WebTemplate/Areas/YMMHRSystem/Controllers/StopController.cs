@@ -62,26 +62,21 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// <returns></returns>
         public ActionResult SaveStop(DtoStop dtoStop)
         {
-            DtoStop dtoStops = new DtoStop();
-
             try
             {
 
-                dtoStops.StopId = Convert.ToInt64(Session["LoadedStopId"]);
-                if (dtoStops.StopId == 0)
+                dtoStop.StopId = Convert.ToInt64(Session["LoadedStopId"]);
+                if (dtoStop.StopId == 0)
                 {
                     if (stop.GetStopId(dtoStop.Name) != 0)
                     {
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
+                dtoStop.UserCreated = Session["UserName"].ToString();
 
-                dtoStops.Name = dtoStop.Name;
-                dtoStops.Reference = dtoStop.Reference;
-                dtoStops.UserCreated = dtoStop.UserCreated;
-                dtoStops.DateAdded = dtoStop.DateAdded;
 
-                stop.Save(dtoStops);
+                stop.Save(dtoStop);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }

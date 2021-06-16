@@ -42,7 +42,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="ExtraDinerContacts" value="@Model.ExtraDinerContacts" name="ExtraDinerContacts" type="text" data-role="taginput">
+                <input id="ExtraDinerContacts" value="@Model.ExtraDinerContacts" name="ExtraDinerContacts" data-on-before-tag-add="onBeforeTagAdd" type="text" data-role="taginput">
             </div>
         </div>
 
@@ -52,7 +52,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="ExtraTransportContacts" value="@Model.ExtraTransportContacts" name="ExtraTransportContacts" type="text" data-role="taginput">
+                <input id="ExtraTransportContacts" value="@Model.ExtraTransportContacts" name="ExtraTransportContacts" data-on-before-tag-add="onBeforeTagAdd" type="text" data-role="taginput">
             </div>
         </div>
 
@@ -62,7 +62,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="LegalRequirementContacts" value="@Model.LegalRequirementContacts" name="LegalRequirementContacts" type="text" data-role="taginput">
+                <input id="LegalRequirementContacts" value="@Model.LegalRequirementContacts" name="LegalRequirementContacts" data-on-before-tag-add="onBeforeTagAdd" type="text" data-role="taginput">
             </div>
         </div>
 
@@ -72,7 +72,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="VehicleContacts" value="@Model.VehicleContacts" name="VehicleContacts" type="text" data-role="taginput">
+                <input id="VehicleContacts" value="@Model.VehicleContacts" name="VehicleContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -82,7 +82,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="UtilityCarContacts" value="@Model.UtilityCarContacts" name="UtilityCarContacts" type="text" data-role="taginput">
+                <input id="UtilityCarContacts" value="@Model.UtilityCarContacts" name="UtilityCarContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -92,7 +92,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="TranslationContacts" value="@Model.TranslationContacts" name="TranslationContacts" type="text" data-role="taginput">
+                <input id="TranslationContacts" value="@Model.TranslationContacts" name="TranslationContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -102,7 +102,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="CoffeeBreakContacts" value="@Model.CoffeeBreakContacts" name="CoffeeBreakContacts" type="text" data-role="taginput">
+                <input id="CoffeeBreakContacts" value="@Model.CoffeeBreakContacts" name="CoffeeBreakContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -112,7 +112,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="BusinessTripContacts" value="@Model.BusinessTripContacts" name="BusinessTripContacts" type="text" data-role="taginput">
+                <input id="BusinessTripContacts" value="@Model.BusinessTripContacts" name="BusinessTripContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -122,7 +122,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="LegalAffairContacts" value="@Model.LegalAffairContacts" name="LegalAffairContacts" type="text" data-role="taginput">
+                <input id="LegalAffairContacts" value="@Model.LegalAffairContacts" name="LegalAffairContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -132,7 +132,7 @@
         </div>
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
-                <input id="GiftContacts" value="@Model.GiftContacts" name="GiftContacts" type="text" data-role="taginput">
+                <input id="GiftContacts" value="@Model.GiftContacts" name="GiftContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 
@@ -146,3 +146,16 @@
         <span>Saving....</span>
     </div>
 </div>
+<script>
+    function onBeforeTagAdd(val) {
+
+        var regex = /^[a-zA-Z0-9._-]+@@yachiyo.com.mx\s*$/;
+        if (regex.test(val)) {
+            return true;
+        } else {
+            Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
+            return false;
+        }
+
+    }
+</script>

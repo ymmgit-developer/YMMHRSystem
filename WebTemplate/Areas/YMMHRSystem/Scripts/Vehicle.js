@@ -80,17 +80,17 @@ function AddVehicle() {
 
 }
 
-function ConfirmDeleteVehicle(vehicleId) {
-    var dialog = Metro.getPlugin('#DeleteVehicle', 'dialog');
+function ConfirmCancelVehicle(vehicleId) {
+    var dialog = Metro.getPlugin('#CancelVehicle', 'dialog');
     dialog.open();
     window.$vehicleId = vehicleId;
 }
 
-function DeleteVehicle() {
+function CancelVehicle() {
 
     $.ajax({
         method: "POST",
-        url: window.$DeleteVehicle,
+        url: window.$CancelVehicle,
         data: { vehicleId: window.$vehicleId },
         success: function (result) {
             if (result === "true") {

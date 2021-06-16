@@ -62,13 +62,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// <returns></returns>
         public ActionResult SaveProcess(DtoProcess dtoProcess)
         {
-            DtoProcess dtoProcesses = new DtoProcess();
-
             try
             {
 
-                dtoProcesses.ProcessId = Convert.ToInt64(Session["LoadedProcessId"]);
-                if (dtoProcesses.ProcessId == 0)
+                dtoProcess.ProcessId = Convert.ToInt64(Session["LoadedProcessId"]);
+                if (dtoProcess.ProcessId == 0)
                 {
                     if (process.GetProcessId(dtoProcess.Name) != 0)
                     {
@@ -76,12 +74,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     }
                 }
 
-                dtoProcesses.Name = dtoProcess.Name;
-                dtoProcesses.Code = dtoProcess.Code;
-                dtoProcesses.UserCreated = dtoProcess.UserCreated;
-                dtoProcesses.DateAdded = dtoProcess.DateAdded;
+                dtoProcess.UserCreated = Session["UserName"].ToString();
 
-                process.Save(dtoProcesses);
+                process.Save(dtoProcess);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }

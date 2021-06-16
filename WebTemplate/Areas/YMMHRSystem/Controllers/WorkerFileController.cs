@@ -557,7 +557,13 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             worksheet.Cells["E3"].Value = "RFC";
             worksheet.Cells["F3"].Value = "CURP";
             worksheet.Cells["G3"].Value = "Job Title";
-
+            worksheet.Cells["H3"].Value = "Process";
+            worksheet.Cells["I3"].Value = "Date of Birth";
+            worksheet.Cells["J3"].Value = "Email";
+            worksheet.Cells["K3"].Value = "Telephone";
+            worksheet.Cells["L3"].Value = "Civil Status";
+            worksheet.Cells["M3"].Value = "Education Level";
+            worksheet.Cells["N3"].Value = "Worker Type";
 
             worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
             //Save the workbook to disk in xlsx format
@@ -673,11 +679,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return null;
                     }
 
-                    if (worksheet.Cells[4, 1].Value != null && worksheet.Cells[4, 2].Value != null && worksheet.Cells[4, 3].Value != null && worksheet.Cells[4, 4].Value != null && worksheet.Cells[4, 5].Value != null && worksheet.Cells[4, 6].Value != null && worksheet.Cells[4, 7].Value != null)
+                    if (worksheet.Cells[4, 1].Value != null && worksheet.Cells[4, 2].Value != null && worksheet.Cells[4, 3].Value != null && worksheet.Cells[4, 4].Value != null && worksheet.Cells[4, 5].Value != null && worksheet.Cells[4, 6].Value != null && worksheet.Cells[4, 7].Value != null && worksheet.Cells[4, 8].Value != null && worksheet.Cells[4, 9].Value != null && worksheet.Cells[4, 10].Value != null && worksheet.Cells[4, 11].Value != null && worksheet.Cells[4, 12].Value != null && worksheet.Cells[4, 13].Value != null && worksheet.Cells[4, 14].Value != null)
                     {
                         for (int row = 4; row <= rowCount; row++)
                         {
-                            if (worksheet.Cells[row, 1].Value != null && worksheet.Cells[row, 2].Value != null && worksheet.Cells[row, 3].Value != null && worksheet.Cells[row, 4].Value != null && worksheet.Cells[row, 5].Value != null && worksheet.Cells[row, 6].Value != null && worksheet.Cells[row, 7].Value != null)
+                            if (worksheet.Cells[row, 1].Value != null && worksheet.Cells[row, 2].Value != null && worksheet.Cells[row, 3].Value != null && worksheet.Cells[row, 4].Value != null && worksheet.Cells[row, 5].Value != null && worksheet.Cells[row, 6].Value != null && worksheet.Cells[row, 7].Value != null && worksheet.Cells[row, 8].Value != null && worksheet.Cells[row, 9].Value != null && worksheet.Cells[row, 12].Value != null && worksheet.Cells[row, 13].Value != null && worksheet.Cells[row, 14].Value != null)
                             {
                                 workers.Add(new DtoWorkerFile()
                                 {
@@ -687,7 +693,14 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                                     NSS = worksheet.Cells[row, 4].Value.ToString().Trim(),
                                     RFC = worksheet.Cells[row, 5].Value.ToString().Trim(),
                                     CURP = worksheet.Cells[row, 6].Value.ToString().Trim(),
-                                    Job = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(worksheet.Cells[row, 7].Value.ToString().Trim().ToLower())
+                                    Job = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(worksheet.Cells[row, 7].Value.ToString().Trim().ToLower()),
+                                    Process = worksheet.Cells[row, 8].Value.ToString().Trim(),
+                                    DoB = Convert.ToDateTime(worksheet.Cells[row, 9].Value.ToString().Trim()),
+                                    Email = worksheet.Cells[row, 10].Value == null ? "" : worksheet.Cells[row, 10].Value.ToString().Trim(),
+                                    Telephone = worksheet.Cells[row, 11].Value == null ? "" : worksheet.Cells[row, 11].Value.ToString().Trim(),
+                                    CivilStatus = worksheet.Cells[row, 12].Value.ToString().Trim(),
+                                    Education = worksheet.Cells[row, 13].Value.ToString().Trim(),
+                                    Type = worksheet.Cells[row, 14].Value.ToString().Trim(),
                                 });
                             }
                             else
@@ -706,6 +719,25 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+        /// <summary>
+        /// Loads Route's stop list
+        /// </summary>
+        /// <param name="routeId"></param>
+        /// <returns></returns>
+        public ActionResult LoadStops(long routeId)
+        {
+            try
+            {
+                Route route = new Route();
+                var stopList = route.GetRouteStopList(routeId);
+
+                return Json(stopList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
     }

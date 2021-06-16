@@ -62,8 +62,8 @@
         </div>
     </div>
     <!-----------------------------------CONTAINER------------------------------>
-    <div class="container-fluid mt-2" style="font-size: 0.8em;" id="FormDetail">
-        <div class="d-flex flex-justify-start flex-align-center">
+    <div class="container-fluid mt-2" style="font-size: 0.8em;" id="FormDetail" data-step="2" data-intro="Multiple tables for business trip request and response information" data-position='auto'>
+        <div class="d-flex flex-justify-start flex-align-center" data-step="1" data-intro="General information" data-position='auto'>
             <div class="cell-md-4">
                 <input type="text" style="background-color: gainsboro" readonly="readonly" name="Associate" id="Associate" data-role="input" data-prepend="Applicator:" autocomplete="off" value="@Model.Associate">
             </div>
@@ -101,7 +101,7 @@
         @Html.Hidden("BusinessTripId", Model.BusinessTripId)
         @Html.Hidden("Status", Model.Status)
         <hr style="height:1px;border:none;color:#333;background-color:#333;" />
-        <ul data-role="tabs" data-on-tab="RefreshTables()" data-expand="true">
+        <ul data-role="tabs" data-on-tab="RefreshTables()" data-expand="true" data-step="3" data-intro="Detail Tab for requests and Response Tab for confirmation" data-position='auto'>
             <li><a href="#Details">Details</a></li>
             @if (Model.Status <= 1)
             {
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <div class="cell-md-3">
-                        <div id="AttachmentTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All BusinessTrip stops" data-position='auto'>
+                        <div id="AttachmentTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
                             @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/AttachmentList.cshtml", Model.AttachmentList)
                         </div>
                     </div>
@@ -138,6 +138,13 @@
                     <div class="cell-md-12">
                         <div id="TaxiDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
                             @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/TaxiDetailList.cshtml", Model.TaxiList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="HotelDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelDetailList.cshtml", Model.HotelList)
                         </div>
                     </div>
                 </div>
@@ -155,19 +162,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="cell-md-12">
-                        <div id="HotelDetailTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
-                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelDetailList.cshtml", Model.HotelList)
-                        </div>
-                    </div>
-                </div>
             </div>
             <div id="Response">
                 <div class="row">
                     <div class="cell-md-12">
                         <div id="TaxiResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
                             @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/TaxiResponseList.cshtml", Model.TaxiList)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-md-12">
+                        <div id="HotelResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
+                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelResponseList.cshtml", Model.HotelList)
                         </div>
                     </div>
                 </div>
@@ -182,13 +189,6 @@
                     <div class="cell-md-12">
                         <div id="CarRentalResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
                             @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/CarRentalResponseList.cshtml", Model.CarRentalList)
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="cell-md-12">
-                        <div id="HotelResponseTable" style="display:none; height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black">
-                            @Html.Partial("~/Areas/YMMHRSystem/Views/BusinessTrip/HotelResponseList.cshtml", Model.HotelList)
                         </div>
                     </div>
                 </div>

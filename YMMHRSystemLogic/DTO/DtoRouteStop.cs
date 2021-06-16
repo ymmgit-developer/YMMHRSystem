@@ -13,6 +13,5 @@ namespace YMMHRSystemLogic
         public long StopId { get; set; }
         public string StopName { get; set; }
         public string Reference { get; set; }
-        public TimeSpan Time { get; set; }
     }
 }

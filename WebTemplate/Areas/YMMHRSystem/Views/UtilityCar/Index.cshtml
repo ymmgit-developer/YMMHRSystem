@@ -20,7 +20,7 @@
         <div class="ml-auto pr-5">
             @if (HttpContext.Current.Session["CanSaveUtilityCar"].Equals(true))
             {
-                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' @*onclick="UtilityCarDetailDialog(0)"*@href="@Url.Action("LoadUtilityCar", "UtilityCar", new { Area = "YMMHRSystem" , nMR4z = 0 })"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' @*onclick="UtilityCarDetailDialog(0)"*@ href="@Url.Action("LoadUtilityCar", "UtilityCar", new { Area = "YMMHRSystem" , nMR4z = 0 })"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
             }
             <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
                 <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
@@ -86,7 +86,11 @@
 
                             <td style="text-align: center">
                                 <a class="button bg-black fg-white" style="cursor: pointer;" href="@Url.Action("LoadUtilityCar", "UtilityCar", new { Area = "YMMHRSystem" , nMR4z = item.UtilityCarId })" @*onclick="UtilityCarDetailDialog(@item.UtilityCarId)"*@><span class="mif-eye"></span><span class="actionButton"> View</span></a>
-                                @if (HttpContext.Current.Session["CanDeleteUtilityCar"].Equals(true))
+                                @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteUtilityCar(@item.UtilityCarId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                                else if (HttpContext.Current.Session["CanDeleteUtilityCar"].Equals(true) && item.Status == 1)
                                 {
                                     <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteUtilityCar(@item.UtilityCarId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
                                 }

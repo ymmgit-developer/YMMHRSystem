@@ -1,0 +1,62 @@
+﻿@model List<DtoWorkerFile>
+@using YMMHRSystemLogic;
+@{
+    Layout = null;
+}
+<div class="dialog-title">Associate Importer</div>
+
+<div class="dialog-content">
+    <div class="container-fluid">
+        <div id="AssociateTable">
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttAssociates" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Names</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr id="@item.WorkerFileId">
+
+                            <td style="text-align: center">
+                                <span> @item.Names </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Process </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a id="Select" class="button my-control-colors fg-white" style="cursor: pointer;" onclick="SelectAssociates('@item.Names', '@item.Process', @item.WorkerFileId)"><span class="mif-plus"></span><span class="actionButton"> Add</span></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dialog-actions d-flex flex-justify-end w-100">
+    <a class="button my-control-colors fg-white" onclick="Metro.dialog.close('#MultiSelectAssociateImporter')"><span class="mif-checkmark"> Finish</span></a>
+</div>
+<script>
+    var tableAssociates;
+    $(document).ready(function () {
+
+        tableAssociates = $('#dttAssociates').DataTable({
+            responsive: true,
+            retrieve: true,
+            searching: true,
+            info: false,
+            compact: true,
+            paging: false,
+            ordering: false,
+            scrollY: "50vh",
+            scrollCollapse: true,
+        });
+    });
+</script>

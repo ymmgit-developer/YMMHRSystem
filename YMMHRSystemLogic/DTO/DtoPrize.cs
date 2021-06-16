@@ -15,6 +15,7 @@ namespace YMMHRSystemLogic
         public DateTime Date { get; set; }
         public int Minimum { get; set; }
         public bool Status { get; set; }
+        public long CreatedBy { get; set; }
 
         public List<DtoPrizeLog> PrizeLogList { get; set; } = new List<DtoPrizeLog>();
     }

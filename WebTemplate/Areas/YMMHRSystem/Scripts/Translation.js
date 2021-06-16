@@ -184,7 +184,7 @@ function AddAttachment() {
                 }
 
             } else {
-                Metro.toast.create("Error: Please attach PDF file only or Translation is complete", null, null, "bg-red fg-white");
+                Metro.toast.create("Error: Translation is complete", null, null, "bg-red fg-white");
             }
 
         }

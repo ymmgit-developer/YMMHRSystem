@@ -73,7 +73,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-
+                dtoRoom.UserCreated = Session["UserName"].ToString();
                 room.Save(dtoRoom);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

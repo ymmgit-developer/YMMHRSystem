@@ -51,7 +51,7 @@
                 <input type="text" name="FlightNumber" id="FlightNumber" data-role="input" data-prepend="Flight Number:" data-validate="required" autocomplete="off" value="@Model.FlightNumber">
             </div>
             <div class="cell-md-4">
-                <select data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
+                <select class="notranslate" data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
                     @foreach (var item in whoPaysList)
                     {
                         if (Model.CompanyPaying == item)
@@ -66,7 +66,7 @@
                 </select>
             </div>
             <div class="cell-md-4">
-                <select data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
+                <select class="notranslate" data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
                     @foreach (var item in costCenterList)
                     {
                         if (Model.CostCenter == item)

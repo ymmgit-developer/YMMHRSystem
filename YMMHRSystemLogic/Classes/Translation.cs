@@ -51,28 +51,34 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="translation"></param>
         /// <returns>Translation registered</returns>
-        public void Save(DtoTranslation translation)
+        public void Save(DtoTranslation translation, long userId = 0)
         {
             try
             {
                 User user = new User();
                 if (translation.TranslationId == 0)
                 {
-                    translation.Associate = user.GetUserName(SQLTools.userId.ToString());
                     translation.DateAdded = DateTime.Now;
                     translation.Status = 1;
+                    translation.CreatedBy = userId;
+
+                    List<string> contacts = emailNotification.GetTranslationContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(userId));
+
                     sendEmail.SendEmailTemplate("YMM HR System: Translation Request", "TemplateTranslationRequest", new[,]
                     {
                         {"$APPLICANT$", translation.Associate},
                         {"$ISSUE$", translation.Issue},
                         {"$DATE$", translation.Deadline?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetTranslationContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 }
 
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = translation, TableName = "Translations" });
 
                 mapping.Save();
+                UpdateTranslationJapaneseFields(translation.Issue, translation.Description, translation.TranslationId);
+
             }
             catch (Exception ex)
             {
@@ -84,14 +90,22 @@ namespace YMMHRSystemLogic
         /// Load multiple Translation with fields.
         /// </summary>
         /// <returns>Load Translation Dto</returns>
-        public List<DtoTranslation> LoadMultiple()
+        public List<DtoTranslation> LoadMultiple(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoTranslation> translationList = new List<DtoTranslation>();
 
-                mapping.Load<DtoTranslation>("SELECT TranslationId, Associate, Issue, Description, ComplexityLevel, Status, AssignedTo, Deadline, FinalDate, DateAdded FROM Translations ORDER BY TranslationId", "Translations", new DtoTranslation());
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoTranslation>("SELECT TranslationId, Associate, Issue, Description, ComplexityLevel, Status, AssignedTo, Deadline, FinalDate, DateAdded, CreatedBy FROM Translations ORDER BY TranslationId", "Translations", new DtoTranslation());
+                }
+                else
+                {
+                    mapping.Load<DtoTranslation>("SELECT TranslationId, Associate, Issue, Description, ComplexityLevel, Status, AssignedTo, Deadline, FinalDate, DateAdded, CreatedBy FROM Translations WHERE Associate = '" + userFilter + "' ORDER BY TranslationId", "Translations", new DtoTranslation());
+                }
+                
                 translationList.AddRange(mapping.dtoList.Select(renglon => (DtoTranslation)renglon.Dto));
 
                 return translationList;
@@ -115,7 +129,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoTranslation> translationList = new List<DtoTranslation>();
 
-                mapping.Load<DtoTranslation>("SELECT TranslationId, Associate, Issue, Description, ComplexityLevel, Status, AssignedTo, Deadline, FinalDate, DateAdded FROM Translations WHERE DateAdded BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY TranslationId", "Translations", new DtoTranslation());
+                mapping.Load<DtoTranslation>("SELECT TranslationId, Associate, Issue, Description, ComplexityLevel, Status, AssignedTo, Deadline, FinalDate, DateAdded, CreatedBy FROM Translations WHERE DateAdded BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY TranslationId", "Translations", new DtoTranslation());
                 translationList.AddRange(mapping.dtoList.Select(renglon => (DtoTranslation)renglon.Dto));
 
                 return translationList;
@@ -129,6 +143,37 @@ namespace YMMHRSystemLogic
         #endregion
 
         #region General Methods    
+        public void UpdateTranslationJapaneseFields(string issue, string description, long translationId)
+        {
+            try
+            {
+                string sqlString = "UPDATE Translations SET Issue = N'" + issue + "',Description = N'" + description + "' WHERE TranslationId = " + translationId;
+                oDatabase.ExecuteNonQuery(sqlString, "Update Japanese Fields");
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Translation Japanese Fields", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateTranslationJapaneseFields");
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="translationAttachmentId"></param>
+        public void UpdateTranslationAttachmentJapaneseFields(string fileName, long translationAttachmentId)
+        {
+            try
+            {
+                string sqlString = "UPDATE TranslationAttachments SET FileName = N'" + fileName + "' WHERE TranslationAttachmentId = " + translationAttachmentId;
+                oDatabase.ExecuteNonQuery(sqlString, "Update Japanese Fields");
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Translation Attachment Japanese Fields", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateTranslationAttachmentJapaneseFields");
+                throw ex;
+            }
+        }
         /// <summary>
         /// Deletes a Translation. 
         /// </summary>

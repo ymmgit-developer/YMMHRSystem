@@ -7,7 +7,7 @@
 <div class="dialog-title">Translation</div>
 
 <div class="dialog-content">
-    <form id="TranslationForm" data-role="validator" data-on-validate-form="AddTranslation()" action="javascript:">
+    <form id="TranslationForm" accept-charset="utf-8" data-role="validator" data-on-validate-form="AddTranslation()" action="javascript:">
         <div class="row mb-1">
             <div class="cell">
                 <input type="text" autocomplete="off" data-role="input" data-validate="required" data-prepend="Issue:" id="Issue" name="Issue" value="@Model.Issue">
@@ -66,6 +66,7 @@
         @Html.Hidden("AssignedTo", Model.AssignedTo)
         @Html.Hidden("Associate", Model.Associate)
         @Html.Hidden("DateAdded", Model.DateAdded)
+        @Html.Hidden("CreatedBy", Model.CreatedBy)
         @Html.Hidden("TranslationId", Model.TranslationId)
         <div class="row">
             <div class="cell-md-12">

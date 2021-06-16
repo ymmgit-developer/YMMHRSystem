@@ -51,7 +51,6 @@ namespace YMMHRSystemLogic
 
                 if (dtoRoute.RouteId == 0)
                 {
-                    dtoRoute.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     dtoRoute.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
@@ -89,7 +88,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoRoute> shiftList = new List<DtoRoute>();
 
-                mapping.Load<DtoRoute>("SELECT RouteId, Name, Shift, Cost, Extraordinary, UserCreated, DateAdded FROM Routes ORDER BY RouteId", "Routes", new DtoRoute());
+                mapping.Load<DtoRoute>("SELECT RouteId, Name, Cost, UserCreated, DateAdded FROM Routes ORDER BY RouteId", "Routes", new DtoRoute());
                 shiftList.AddRange(mapping.dtoList.Select(renglon => (DtoRoute)renglon.Dto));
 
                 return shiftList;
@@ -162,7 +161,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoRouteStop> routeStopList = new List<DtoRouteStop>();
 
-                mapping.Load<DtoRouteStop>("SELECT RouteStopId, RouteId, StopId, StopName, Reference, Time FROM RouteStops WHERE RouteId = " + routeId + " ORDER BY RouteId", "Routes", new DtoRouteStop());
+                mapping.Load<DtoRouteStop>("SELECT RouteStopId, RouteId, StopId, StopName, Reference FROM RouteStops WHERE RouteId = " + routeId + " ORDER BY RouteId", "Routes", new DtoRouteStop());
                 routeStopList.AddRange(mapping.dtoList.Select(renglon => (DtoRouteStop)renglon.Dto));
 
                 return routeStopList;

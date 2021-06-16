@@ -28,7 +28,15 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     HttpContext.Session["CanSaveBusinessTrip"] = Permission.QueryPermission("BUSINESS.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
                     HttpContext.Session["CanDeleteBusinessTrip"] = Permission.QueryPermission("BUSINESS.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
                     Session["LoadedBusinessTripId"] = null;
-                    return View("~/Areas/YMMHRSystem/Views/BusinessTrip/Index.cshtml", businessTrip.LoadMultiple());
+                    if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/BusinessTrip/Index.cshtml", businessTrip.LoadMultiple());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/BusinessTrip/Index.cshtml", businessTrip.LoadMultiple(Session["UserName"].ToString()));
+                    }
+                   
                 }
                 else
                 {
@@ -51,7 +59,8 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
 
                 dtoBusinessTrip.BusinessTripId = Convert.ToInt64(Session["LoadedBusinessTripId"]);
-                businessTrip.Save(dtoBusinessTrip);
+                dtoBusinessTrip.UserCreated = Session["UserName"].ToString();
+                businessTrip.Save(dtoBusinessTrip, Convert.ToInt64(Session["UserId"]));
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -74,7 +83,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 dtoBusinessTrip.DateAdded = DateTime.Now;
                 dtoBusinessTrip.Status = 1;
                 dtoBusinessTrip.UserCreated = Session["UserName"].ToString();
-                businessTrip.Save(dtoBusinessTrip);
+                businessTrip.Save(dtoBusinessTrip, Convert.ToInt64(Session["UserId"]));
                 Session["LoadedBusinessTripId"] = dtoBusinessTrip.BusinessTripId;
 
                 return RedirectToAction("LoadBusinessTrip", new { nMR4z = dtoBusinessTrip.BusinessTripId });
@@ -598,14 +607,18 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
                 dtoBusinessTrip.Status = 2;
                 businessTrip.Save(dtoBusinessTrip);
+                List<string> contacts = emailNotification.GetBusinessTripContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoBusinessTrip.CreatedBy));
+
                 sendEmail.SendEmailTemplate("YMM HR System: Business Trip Response", "TemplateBusinessTripResponse", new[,]
 {
                         {"$APPLICANT$", dtoBusinessTrip.UserCreated},
                         {"$PROCESS$", dtoBusinessTrip.Process},
                         {"$DATE$", dtoBusinessTrip.DateAdded.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetBusinessTripContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -759,7 +772,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     row++;
                 }
                 row--;
-                range = worksheet.Cells[checkpointRow, 2, row, 11];
+                range = worksheet.Cells[row, 2, checkpointRow, 11];
                 range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -809,7 +822,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     row++;
                 }
                 row--;
-                range = worksheet.Cells[checkpointRow, 2, row, 12];
+                range = worksheet.Cells[row, 2, checkpointRow, 12];
                 range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -857,7 +870,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     row++;
                 }
                 row--;
-                range = worksheet.Cells[checkpointRow, 2, row, 11];
+                range = worksheet.Cells[row, 2, checkpointRow, 11];
                 range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 range.Style.Border.Right.Style = ExcelBorderStyle.Thin;

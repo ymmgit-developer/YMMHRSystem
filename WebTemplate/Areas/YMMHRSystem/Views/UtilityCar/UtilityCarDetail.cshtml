@@ -22,7 +22,7 @@
     <form id="UtilityCarForm" data-role="validator" data-on-validate-form="AddUtilityCar()" action="javascript:">
         <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
             <h5 class="pl-5">Utility Car Loan</h5>
-            <div class="ml-auto pr-5">
+            <div class="ml-auto pr-5" data-step="1" data-intro="These buttons allow the user to save/start/end a request" data-position='auto'>
                 @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     if (HttpContext.Current.Session["CanSaveUtilityCar"].Equals(true))
@@ -64,7 +64,7 @@
             </div>
         </div>
         <!-----------------------------------CONTAINER------------------------------>
-        <div class="container-fluid mt-2">
+        <div class="container-fluid mt-2" data-step="2" data-intro="Request Information" data-position='auto'>
             <div class="row mb-1">
                 <div class="cell-md-3">
                     @if (Model.Status <= 1)
@@ -175,7 +175,7 @@
                         <input type="text" readonly="readonly" name="LicensePlate" id="LicensePlate" data-role="input" data-prepend="License Plate:" autocomplete="off" value="@Model.LicensePlate">
                     </div>
                     <div class="cell-md-4">
-                        <select data-role="select" id="Card" name="Card" data-prepend="Fuel Card Used:">
+                        <select class="notranslate" data-role="select" id="Card" name="Card" data-prepend="Fuel Card Used:">
                             @if (Model.Card)
                             {
                                 <option selected value="true">Yes</option>
@@ -197,7 +197,7 @@
                         <input type="text" data-role="input" value="@Model.KMArrival" data-prepend="KM Arrival:" id="KMArrival" name="KMArrival">
                     </div>
                     <div class="cell-md-3">
-                        <select data-role="select" id="TankLevelDeparture" name="TankLevelDeparture" data-prepend="Tank Lvl Departure:">
+                        <select class="notranslate" data-role="select" id="TankLevelDeparture" name="TankLevelDeparture" data-prepend="Tank Lvl Departure:">
                             @foreach (var item in fuelLevelList)
                             {
                                 if (Model.TankLevelDeparture == item)
@@ -212,7 +212,7 @@
                         </select>
                     </div>
                     <div class="cell-md-3">
-                        <select data-role="select" id="TankLevelArrival" name="TankLevelArrival" data-prepend="Tank Lvl Arrival:">
+                        <select class="notranslate" data-role="select" id="TankLevelArrival" name="TankLevelArrival" data-prepend="Tank Lvl Arrival:">
                             @foreach (var item in fuelLevelList)
                             {
                                 if (Model.TankLevelArrival == item)
@@ -238,6 +238,7 @@
             @Html.Hidden("Status", Model.Status)
             @Html.Hidden("Associate", Model.Associate)
             @Html.Hidden("DateAdded", Model.DateAdded)
+            @Html.Hidden("CreatedBy", Model.CreatedBy)
             @Html.Hidden("UtilityCarId", Model.UtilityCarId)
         </div>
     </form>

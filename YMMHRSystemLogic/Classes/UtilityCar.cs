@@ -48,23 +48,27 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="utilityCar"></param>
         /// <returns>UtilityCar registered</returns>
-        public void Save(DtoUtilityCar utilityCar)
+        public void Save(DtoUtilityCar utilityCar, long userId = 0)
         {
             try
             {
                 User user = new User();
                 if (utilityCar.UtilityCarId == 0)
                 {
-                    utilityCar.Associate = user.GetUserName(SQLTools.userId.ToString());
                     utilityCar.DateAdded = DateTime.Now;
                     utilityCar.Status = 1;
+                    utilityCar.CreatedBy = userId;
+
+                    List<string> contacts = emailNotification.GetUtilityCarContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(userId));
+
                     sendEmail.SendEmailTemplate("YMM HR System: Utility Car Request", "TemplateUtilityCarRequest", new[,]
                     {
                         {"$APPLICANT$", utilityCar.Associate},
                         {"$PASSENGERS$", utilityCar.Passengers.ToString()},
                         {"$DESTINATION$", utilityCar.Destination },
                         {"$DATE$", utilityCar.DepartureDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetUtilityCarContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 }
 
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
@@ -82,14 +86,21 @@ namespace YMMHRSystemLogic
         /// Load multiple Utility Car with fields.
         /// </summary>
         /// <returns>Load Utility Car Dto</returns>
-        public List<DtoUtilityCar> LoadMultiple()
+        public List<DtoUtilityCar> LoadMultiple(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoUtilityCar> utilityCarList = new List<DtoUtilityCar>();
-
-                mapping.Load<DtoUtilityCar>("SELECT UtilityCarId, UtilityCar, LicensePlate, Associate, Destination, Passengers, Motive, Observations, DepartureDate, ArrivalDate, DepartureTime, ArrivalTime, LicenseExpiration, Card, KMDeparture, KMArrival, TankLevelDeparture, TankLevelArrival, Status, DateAdded FROM UtilityCars ORDER BY UtilityCarId", "UtilityCars", new DtoUtilityCar());
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoUtilityCar>("SELECT UtilityCarId, UtilityCar, LicensePlate, Associate, Destination, Passengers, Motive, Observations, DepartureDate, ArrivalDate, DepartureTime, ArrivalTime, LicenseExpiration, Card, KMDeparture, KMArrival, TankLevelDeparture, TankLevelArrival, Status, DateAdded FROM UtilityCars ORDER BY UtilityCarId", "UtilityCars", new DtoUtilityCar());
+                }
+                else
+                {
+                    mapping.Load<DtoUtilityCar>("SELECT UtilityCarId, UtilityCar, LicensePlate, Associate, Destination, Passengers, Motive, Observations, DepartureDate, ArrivalDate, DepartureTime, ArrivalTime, LicenseExpiration, Card, KMDeparture, KMArrival, TankLevelDeparture, TankLevelArrival, Status, DateAdded FROM UtilityCars WHERE Associate = '" + userFilter + "' ORDER BY UtilityCarId", "UtilityCars", new DtoUtilityCar());
+                }
+               
                 utilityCarList.AddRange(mapping.dtoList.Select(renglon => (DtoUtilityCar)renglon.Dto));
 
                 return utilityCarList;

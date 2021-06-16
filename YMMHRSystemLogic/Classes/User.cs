@@ -185,6 +185,31 @@ namespace YMMHRSystemLogic
 
         }
         /// <summary>
+        /// Recupera el correo del usuario deseado.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public string GetUserEmail(long userId)
+        {
+            try
+            {
+                DataRow drUser = null;
+                string sqlString = "SELECT Email FROM Users WHERE UserId=" + userId;
+
+                drUser = oDatabase.GetRow(sqlString, "Get User Email");
+
+                if (drUser == null) return "";
+
+                return drUser["Email"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get User Email", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetUserEmail");
+                throw ex;
+            }
+
+        }
+        /// <summary>
         /// Recupera el nombre del usuario deseado.
         /// </summary>
         /// <param name="userId"></param>
@@ -409,6 +434,29 @@ namespace YMMHRSystemLogic
                 log.WriteToErrorLog("HR System", "Updates Modified By Field", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "ModifiedBy");
                 throw ex;
             }
+        }
+        /// <summary>
+        /// Method in charge of asking if a user has the determined process
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>Process</returns>
+        public static string QueryProcess(long userId)
+        {
+            try
+            {
+                SQLTools oBD = new SQLTools();
+                DataRow dr;
+                dr = oBD.GetRow("select Process FROM Users u WHERE u.UserId =" + userId, "");
+
+                return dr["Process"].ToString();
+            }
+            catch (Exception ex)
+            {
+                Log log = new Log();
+                log.WriteToErrorLog("HR System", "Query Process", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "QueryProcess");
+                throw ex;
+            }
+
         }
         #endregion
     }

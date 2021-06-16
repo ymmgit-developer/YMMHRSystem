@@ -67,7 +67,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             try
             {
                 dtoLegalRequirement.LegalRequirementId = Convert.ToInt64(Session["LoadedLegalRequirementId"]);
-
+                dtoLegalRequirement.UserCreated = Session["UserName"].ToString();
                 legalRequirement.Save(dtoLegalRequirement);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

@@ -51,7 +51,6 @@ namespace YMMHRSystemLogic
 
                 if (process.ProcessId == 0)
                 {
-                    process.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     process.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
@@ -111,6 +110,31 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 log.WriteToErrorLog("HR System", "Get Process Id", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetProcessId");
+                throw ex;
+            }
+
+        }
+        /// <summary>
+        /// Get Process name
+        /// </summary>
+        /// <param name="processId"></param>
+        /// <returns></returns>
+        public string GetProcessName(long processId)
+        {
+            try
+            {
+                DataRow dataRow = null;
+                string sqlString = "SELECT Name FROM Processes WHERE ProcessId = " + processId;
+
+                dataRow = oDatabase.GetRow(sqlString, "Get Process Id");
+
+                if (dataRow == null) return "";
+
+                return dataRow["Name"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get Process Name", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetProcessName");
                 throw ex;
             }
 

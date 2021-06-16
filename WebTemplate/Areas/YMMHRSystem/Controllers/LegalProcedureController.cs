@@ -61,13 +61,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// <returns></returns>
         public ActionResult SaveLegalProcedure(DtoLegalProcedure dtoLegalProcedure)
         {
-            DtoLegalProcedure dtoLegalProcedurees = new DtoLegalProcedure();
-
             try
             {
 
-                dtoLegalProcedurees.LegalProcedureId = Convert.ToInt64(Session["LoadedLegalProcedureId"]);
-                if (dtoLegalProcedurees.LegalProcedureId == 0)
+                dtoLegalProcedure.LegalProcedureId = Convert.ToInt64(Session["LoadedLegalProcedureId"]);
+                if (dtoLegalProcedure.LegalProcedureId == 0)
                 {
                     if (legalProcedure.GetLegalProcedureId(dtoLegalProcedure.Name) != 0)
                     {
@@ -75,12 +73,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     }
                 }
 
-                dtoLegalProcedurees.Name = dtoLegalProcedure.Name;
-                dtoLegalProcedurees.Process = dtoLegalProcedure.Process;
-                dtoLegalProcedurees.UserCreated = dtoLegalProcedure.UserCreated;
-                dtoLegalProcedurees.DateAdded = dtoLegalProcedure.DateAdded;
+                dtoLegalProcedure.UserCreated = Session["UserName"].ToString();
 
-                legalProcedure.Save(dtoLegalProcedurees);
+                legalProcedure.Save(dtoLegalProcedure);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }

@@ -181,7 +181,6 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\ImmigrationProcedureController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\LegalRequirementController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\SindicateController.cs" />
-    <Compile Include="Areas\YMMHRSystem\Controllers\ShiftController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\StopController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\DinerController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\TransportController.cs" />
@@ -226,7 +225,6 @@
     <Content Include="Areas\YMMHRSystem\Scripts\PrizeAssociate.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\BusinessTrip.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\WorkerFile.js" />
-    <Content Include="Areas\YMMHRSystem\Scripts\Shift.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Route.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\Stop.js" />
     <Content Include="Content\Chart.css" />
@@ -247,17 +245,15 @@
     <Content Include="Content\metro.css" />
     <Content Include="Content\metro.min.css" />
     <Content Include="Content\Resources\default-user.png" />
+    <Content Include="Content\Resources\Desk2.jpg" />
     <Content Include="Content\Resources\lock.jpg" />
     <Content Include="Content\Resources\whitey.png" />
-    <Content Include="Content\Resources\yachiyo.jpg" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\webTemplate.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Areas\YMMHRSystem\Views\web.config" />
     <Content Include="Areas\YMMHRSystem\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\YMMHRSystem\Views\Shift\Index.cshtml" />
-    <Content Include="Areas\YMMHRSystem\Views\Shift\ShiftDetailDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Stop\Index.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Stop\StopDetailDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Process\Index.cshtml" />
@@ -388,6 +384,10 @@
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\chartjs-plugin-datalabels.min.js" />
+    <Content Include="Areas\YMMHRSystem\Views\Transport\ExtraordinaryTransportAddDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Shared\MultiSelectAssociateList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Diner\ExtraordinaryDinerAddDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Diner\GuestExtraordinaryDinerAddDialog.cshtml" />
     <None Include="Properties\PublishProfiles\HRSystem.pubxml" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -409,6 +409,11 @@
     <Content Include="Scripts\Role.js" />
     <Content Include="Scripts\AdminRole.js" />
     <Content Include="Scripts\User.js" />
+    <Content Include="Templates\TemplateExtraDinerConfirmation.html" />
+    <Content Include="Templates\TemplateExtraTransportConfirmation.html" />
+    <Content Include="Templates\TemplatePrizeMinimumStock.html" />
+    <Content Include="Templates\TemplateExtraDinerCancellation.html" />
+    <Content Include="Templates\TemplateExtraTransportCancellation.html" />
     <Content Include="Templates\TemplateGiftAnniversary.html" />
     <Content Include="Templates\TemplateLegalRequirementRenewal.html" />
     <Content Include="Templates\TemplateLegalRequirementExpiration.html" />

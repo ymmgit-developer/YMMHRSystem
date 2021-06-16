@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -69,7 +70,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 dtoTransport.TransportId = Convert.ToInt64(Session["LoadedTransportId"]);
                 if (dtoTransport.TransportId == 0)
                 {
-                    if (transport.GetTransportId(dtoTransport.Route, dtoTransport.Shift, dtoTransport.StartDate, dtoTransport.FinishDate) != 0)
+                    if (transport.GetTransportId(dtoTransport.Route, dtoTransport.StartDate, dtoTransport.FinishDate) != 0)
                     {
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
@@ -85,7 +86,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     dtoTransport.Cost = dtoTransport.Cost * totalDays;
                 }
-
+                dtoTransport.UserCreated = Session["UserName"].ToString();
                 transport.Save(dtoTransport);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
@@ -123,9 +124,15 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     HttpContext.Session["CanSaveExtraordinaryTransport"] = Permission.QueryPermission("EXTRATRANSPORT.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
-                    HttpContext.Session["CanDeleteExtraordinaryTransport"] = Permission.QueryPermission("EXTRATRANSPORT.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
-
-                    return View("~/Areas/YMMHRSystem/Views/Transport/ExtraordinaryTransport.cshtml", transport.LoadMultipleExtra());
+                    HttpContext.Session["CanCancelExtraordinaryTransport"] = Permission.QueryPermission("EXTRATRANSPORT.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
+                    if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Transport/ExtraordinaryTransport.cshtml", transport.LoadMultipleExtra());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Transport/ExtraordinaryTransport.cshtml", transport.LoadMultipleExtra(Session["UserName"].ToString()));
+                    }
                 }
                 else
                 {
@@ -158,6 +165,24 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
         }
         /// <summary>
+        /// Add view Transport.
+        /// </summary>
+        /// <param name="extraordinaryTransportId"></param>
+        /// <returns></returns>
+        public ActionResult AddExtraordinaryTransport()
+        {
+            try
+            {
+                DtoExtraordinaryTransport dtoExtraordinaryTransport = new DtoExtraordinaryTransport();
+
+                return View("~/Areas/YMMHRSystem/Views/Transport/ExtraordinaryTransportAddDialog.cshtml", dtoExtraordinaryTransport);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
         /// Saves a Transport.
         /// </summary>
         /// <param name="dtoExtraTransport"></param>
@@ -166,22 +191,151 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
-                DateTime startDateTime = Convert.ToDateTime(dtoExtraTransport.StartDate + dtoExtraTransport.StartTime);
-                if (startDateTime.Subtract(DateTime.Now).TotalHours < 4)
-                {
-                    return Json("false", JsonRequestBehavior.AllowGet);
-                }
-
                 dtoExtraTransport.ExtraordinaryTransportId = Convert.ToInt64(Session["LoadedExtraTransportId"]);
                 if (dtoExtraTransport.ExtraordinaryTransportId == 0)
                 {
-                    if (transport.GetExtraTransportId(dtoExtraTransport.AssociateName, dtoExtraTransport.Route, dtoExtraTransport.Shift, dtoExtraTransport.StartDate, dtoExtraTransport.FinishDate) != 0)
+                    if (dtoExtraTransport.WorkerList.Count <= 0)
                     {
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
+                if (dtoExtraTransport.FinishDate != null)
+                {
+                    if (dtoExtraTransport.StartDate != null)
+                    {
+                        if (dtoExtraTransport.StartDate > dtoExtraTransport.FinishDate)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
 
-                transport.SaveExtra(dtoExtraTransport);
+                }
+                if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                {
+                    if (dtoExtraTransport.FinishDate != null)
+                    {
+                        DateTime finishDateTime = Convert.ToDateTime(dtoExtraTransport.FinishDate + dtoExtraTransport.FinishTime);
+                        if (finishDateTime.Subtract(DateTime.Now).TotalHours < 4 || finishDateTime < DateTime.Now)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+
+                        if (finishDateTime.Subtract(DateTime.Now).Days == 1)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+
+                        if ((finishDateTime.DayOfWeek == DayOfWeek.Saturday || finishDateTime.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+
+                        if (finishDateTime.Day == DateTime.Now.Day)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                    }
+
+                    if (dtoExtraTransport.StartDate != null)
+                    {
+                        DateTime startDateTime = Convert.ToDateTime(dtoExtraTransport.StartDate + dtoExtraTransport.StartTime);
+                        if (startDateTime.Subtract(DateTime.Now).TotalHours < 4 || startDateTime < DateTime.Now)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+
+                        if (startDateTime.Subtract(DateTime.Now).Days == 1)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+
+                        if ((startDateTime.DayOfWeek == DayOfWeek.Saturday || startDateTime.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+
+                        if (startDateTime.Day == DateTime.Now.Day)
+                        {
+                            TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
+                            if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                            {
+                                return Json("false", JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                    }
+
+                }
+                if (dtoExtraTransport.WorkerList.Count > 0)
+                {
+                    List<DtoExtraordinaryTransport> transportList = new List<DtoExtraordinaryTransport>();
+                    WorkerFile workerFile = new WorkerFile();
+
+                    foreach (var item in dtoExtraTransport.WorkerList)
+                    {
+                        if (transport.GetExtraTransportId(item.Names, dtoExtraTransport.StartDate, dtoExtraTransport.FinishDate) == 0)
+                        {
+                            transportList.Add(new DtoExtraordinaryTransport()
+                            {
+                                AssociateName = item.Names,
+                                Process = item.Process,
+                                StartDate = dtoExtraTransport.StartDate,
+                                StartTime = dtoExtraTransport.StartTime,
+                                FinishDate = dtoExtraTransport.FinishDate,
+                                FinishTime = dtoExtraTransport.FinishTime,
+                                Route = workerFile.GetWorkerFileRoute(item.Names),
+                                Stop = workerFile.GetWorkerFileStop(item.Names),
+                                UserCreated = Session["UserName"].ToString(),
+                                Motive = dtoExtraTransport.Motive,
+                                Cost = dtoExtraTransport.Cost,
+                                Contacts = dtoExtraTransport.Contacts,
+                                ShiftChange = dtoExtraTransport.ShiftChange
+                            });
+                        }
+                    }
+                    transport.SaveMultipleExtra(transportList, Convert.ToInt64(Session["UserId"]));
+                }
+                else
+                {
+
+                    if (dtoExtraTransport.ExtraordinaryTransportId == 0)
+                    {
+                        if (transport.GetExtraTransportId(dtoExtraTransport.AssociateName, dtoExtraTransport.StartDate, dtoExtraTransport.FinishDate) != 0)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    if (dtoExtraTransport.ExtraordinaryTransportId == 0)
+                    {
+                        dtoExtraTransport.UserCreated = Session["UserName"].ToString();
+                    }
+                    else
+                    {
+                        dtoExtraTransport.UserModified = Session["UserName"].ToString();
+                    }
+
+                    transport.SaveExtra(dtoExtraTransport);
+                }
+
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -192,40 +346,35 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="extraordinaryTransportId"></param>
+        /// <returns></returns>
+        public ActionResult ConfirmExtraordinaryTransport(long extraordinaryTransportId)
+        {
+            Session["LoadedExtraTransportId"] = extraordinaryTransportId;
+
+            transport.ConfirmExtraordinaryTransport(extraordinaryTransportId, Convert.ToInt64(Session["UserId"]));
+
+            return RedirectToAction("ExtraordinaryTransport");
+        }
+        /// <summary>
         /// Removes a Transport. 
         /// </summary>
         /// <param name="extraordinaryTransportId"></param>
         /// <returns></returns>
-        public string DeleteExtraordinaryTransport(long extraordinaryTransportId)
+        public string CancelExtraordinaryTransport(long extraordinaryTransportId)
         {
             try
             {
-                return transport.DeleteExtraTransport(extraordinaryTransportId) ? "true" : "false";
+                return transport.CancelExtraTransport(extraordinaryTransportId) ? "true" : "false";
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        /// <summary>
-        /// Loads Route's stop list
-        /// </summary>
-        /// <param name="routeId"></param>
-        /// <returns></returns>
-        public ActionResult LoadStops(long routeId)
-        {
-            try
-            {
-                Route route = new Route();
-                var stopList = route.GetRouteStopList(routeId);
 
-                return Json(stopList, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(false, JsonRequestBehavior.AllowGet);
-            }
-        }
 
 
     }

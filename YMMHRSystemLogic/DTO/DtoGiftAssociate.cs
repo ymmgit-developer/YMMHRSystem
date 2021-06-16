@@ -14,5 +14,6 @@ namespace YMMHRSystemLogic
         public string Process { get; set; }
         public string Month { get; set; }
         public int Day { get; set; }
+        public bool EmailSent { get; set; }
     }
 }

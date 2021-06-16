@@ -33,7 +33,7 @@
                     <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FlightTime" id="FlightTime" name="FlightTime">
                 </div>
                 <div class="cell-md-4">
-                    <select data-role="select" id="Class" name="Class" data-prepend="Flight Class:">
+                    <select class="notranslate" data-role="select" id="Class" name="Class" data-prepend="Flight Class:">
                         @foreach (var item in flightClassList)
                         {
                             if (Model.Class == item)
@@ -61,7 +61,7 @@
             </div>
             <div class="row mb-1">
                 <div class="cell-md-4">
-                    <select data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
+                    <select class="notranslate" data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
                         @foreach (var item in whoPaysList)
                         {
                             if (Model.CompanyPaying == item)
@@ -76,7 +76,7 @@
                     </select>
                 </div>
                 <div class="cell-md-4">
-                    <select data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
+                    <select class="notranslate" data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
                         @foreach (var item in costCenterList)
                         {
                             if (Model.CostCenter == item)
@@ -91,7 +91,7 @@
                     </select>
                 </div>
                 <div class="cell-md-4">
-                    <select data-role="select" id="FlightType" name="FlightType" data-prepend="Flight Type:">
+                    <select class="notranslate" data-role="select" id="FlightType" name="FlightType" data-prepend="Flight Type:">
                         @foreach (var item in typeList)
                         {
                             if (Model.FlightType == item)

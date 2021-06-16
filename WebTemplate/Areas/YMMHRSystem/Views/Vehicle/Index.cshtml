@@ -9,7 +9,7 @@
     <script>
         $SaveVehicle = '@Url.Action("SaveVehicle", "Vehicle", new { area = "YMMHRSystem" })';
         $LoadVehicle = '@Url.Action("LoadVehicle", "Vehicle", new { area = "YMMHRSystem" })';
-        $DeleteVehicle = '@Url.Action("DeleteVehicle", "Vehicle", new { area = "YMMHRSystem" })';
+        $CancelVehicle = '@Url.Action("CancelVehicle", "Vehicle", new { area = "YMMHRSystem" })';
     </script>
     <script src="~/Areas/YMMHRSystem/Scripts/Vehicle.js"></script>
 </head>
@@ -44,50 +44,55 @@
                         <th style="text-align: center">Associate</th>
                         <th style="text-align: center">Policy End</th>
                         <th style="text-align: center">Next Service</th>
+                        <th style="text-align: center">Status</th>
                         <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting" data-position='auto'>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                    <tr>
 
-                            <td style="text-align: center">
-                                <span> @item.Model </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @item.Model </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @item.Year </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @item.Year </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @item.LicensePlate </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @item.LicensePlate </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @item.Type </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @item.Type </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @item.Associate </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @item.Associate </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @(item.PolicyEnd?.ToShortDateString()) </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @(item.PolicyEnd?.ToShortDateString()) </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <span> @(item.NextService?.ToShortDateString()) </span>
-                            </td>
+                        <td style="text-align: center">
+                            <span> @(item.NextService?.ToShortDateString()) </span>
+                        </td>
 
-                            <td style="text-align: center">
-                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="VehicleDetailDialog(@item.VehicleId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
-                                @if (HttpContext.Current.Session["CanDeleteVehicle"].Equals(true))
-                                {
-                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteVehicle(@item.VehicleId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
-                                }
-                            </td>
-                        </tr>
+                        <td style="text-align: center">
+                            <span> @(item.Status == 1 ? "Active" : "Inactive") </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <a class="button bg-black fg-white" style="cursor: pointer;" onclick="VehicleDetailDialog(@item.VehicleId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                            @if (HttpContext.Current.Session["CanCancelVehicle"].Equals(true))
+                            {
+                                <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelVehicle(@item.VehicleId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
+                            }
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>
@@ -110,12 +115,12 @@
         </div>
     </div>
 
-    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteVehicle" name="DeleteVehicle" class="dialog" data-role="dialog">
-        <div class="dialog-title">Delete</div>
-        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="CancelVehicle" name="CancelVehicle" class="dialog" data-role="dialog">
+        <div class="dialog-title">Cancel</div>
+        <div class="dialog-content"> Are you sure you want to cancel this item?</div>
         <div class="dialog-actions ml-auto">
-            <button class="button my-control-colors" onclick="DeleteVehicle()"> Yes</button>
-            <button class="button alert" onclick="Metro.dialog.close('#DeleteVehicle')"> No</button>
+            <button class="button my-control-colors" onclick="CancelVehicle()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#CancelVehicle')"> No</button>
         </div>
     </div>
 </body>

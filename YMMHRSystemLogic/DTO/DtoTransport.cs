@@ -10,7 +10,6 @@ namespace YMMHRSystemLogic
     {
         public long TransportId { get; set; }
         public string Route { get; set; }
-        public string Shift { get; set; }
         public DateTime Date { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }

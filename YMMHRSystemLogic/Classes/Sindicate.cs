@@ -55,7 +55,6 @@ namespace YMMHRSystemLogic
 
                 if (sindicate.SindicateId == 0)
                 {
-                    sindicate.CreatedBy = user.GetUserName(SQLTools.userId.ToString());
                     sindicate.Date = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();

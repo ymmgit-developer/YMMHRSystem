@@ -19,6 +19,7 @@ namespace YMMHRSystemLogic
         public DateTime? Deadline { get; set; }
         public DateTime? FinalDate { get; set; }
         public DateTime? DateAdded { get; set; }
+        public long CreatedBy { get; set; }
         public List<DtoTranslationAttachment> AttachmentList { get; set; } = new List<DtoTranslationAttachment>();
         public List<DtoTranslationAttachment> TranslatedList { get; set; } = new List<DtoTranslationAttachment>();
     }

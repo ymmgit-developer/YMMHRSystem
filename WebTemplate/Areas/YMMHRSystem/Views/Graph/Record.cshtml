@@ -37,9 +37,9 @@
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-2">
                 <select data-role="select" id="Status" name="Status" data-prepend="Status:">
-                    <option value="0">All</option>
+                    <option value="0">Inactive</option>
                     <option value="1">Active</option>
-                    <option value="2">Inactive</option>
+                    <option value="2">All</option>
                 </select>
             </div>
             <div class="cell-md-2">
@@ -53,10 +53,10 @@
         </div>
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate2" name="StartDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate2" name="StartDate2" value="" type="text" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate2" name="EndDate2" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate2" name="EndDate2" value="" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportTranslations()">Export</button>
@@ -69,10 +69,10 @@
         </div>
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate3" name="StartDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate3" name="StartDate3" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate3" name="EndDate3" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate3" name="EndDate3" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportDiners()">Export</button>
@@ -85,10 +85,10 @@
         </div>
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate4" name="StartDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate4" name="StartDate4" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate4" name="EndDate4" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate4" name="EndDate4" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraDiners()">Export</button>
@@ -101,10 +101,10 @@
         </div>
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate5" name="StartDate5" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate5" name="StartDate5" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate5" name="EndDate5" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate5" name="EndDate5" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportTransports()">Export</button>
@@ -117,10 +117,10 @@
         </div>
         <div style="background-color: gainsboro;" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate6" name="StartDate6" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate6" name="StartDate6" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate6" name="EndDate6" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate6" name="EndDate6" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraTransports()">Export</button>
@@ -133,10 +133,10 @@
         </div>
         <div style="background-color: gainsboro" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell-md-3">
-                <input data-prepend="Start Date:" autocomplete="off" id="StartDate7" name="StartDate7" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Start Date:" autocomplete="off" id="StartDate7" name="StartDate7" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-3">
-                <input data-prepend="End Date:" autocomplete="off" id="EndDate7" name="EndDate7" value="@DateTime.Now" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="End Date:" autocomplete="off" id="EndDate7" name="EndDate7" data-role="calendarpicker" data-cls-calendar="compact">
             </div>
             <div class="cell-md-2">
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportLegalRequirements()">Export</button>

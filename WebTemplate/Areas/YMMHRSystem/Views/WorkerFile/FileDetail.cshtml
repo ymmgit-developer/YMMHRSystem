@@ -6,11 +6,15 @@
     List<string> jobList = new List<string> { "Associate Production", "Team Leader", "Coordinator", "Assistant Manager", "Manager", "Senior Manager", "Vice President", "President", "Intern", "Senior Technical Staff" };
     List<string> civilStatusList = new List<string> { "Single", "Married", "Free Union", "Divorced", "Widower" };
     List<string> workerTypeList = new List<string> { "Union Worker", "Staff" };
+    YMMHRSystemLogic.Route route = new YMMHRSystemLogic.Route();
+    var routeList = route.LoadMultiple();
+    var stopList = route.GetRouteStopList(route.GetRouteId(Model.Route));
     Process process = new Process();
     var processList = process.LoadMultiple();
 }
 <script src="~/Areas/YMMHRSystem/Scripts/WorkerFile.js"></script>
 <script>
+    $LoadStops = '@Url.Action("LoadStops", "WorkerFile", new { area = "YMMHRSystem" })';
     $SaveWorkerFile = '@Url.Action("SaveWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" })';
     $GetDismissalPDF = '@Url.Action("GetDismissalPDF", "WorkerFile", new { area = "YMMHRSystem" })';
     $GetAttachmentPDF = '@Url.Action("GetAttachmentPDF", "WorkerFile", new { area = "YMMHRSystem" })';
@@ -33,187 +37,223 @@
 </head>
 <body style="height: 100%">
     <!-----------------------------------BARRA TITULO------------------------------>
-    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
-        <h5 class="pl-5">Edit Record</h5>
-        <div class="ml-auto pr-5">
-            @if (HttpContext.Current.Session["CanSaveWorkerFile"].Equals(true))
-            {
-                <a class="button flat-button" style="color:white" onclick="SaveWorkerFile()" data-step="1" data-intro="Save changes" data-position='bottom'>
-                    <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+    <form id="WorkerForm" data-role="validator" data-on-validate-form="SaveWorkerFile()" action="javascript:">
+        <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+            <h5 class="pl-5">Edit Record</h5>
+            <div class="ml-auto pr-5">
+                @if (HttpContext.Current.Session["CanSaveWorkerFile"].Equals(true))
+                {
+                    <button class="button flat-button" style="color:white" data-step="1" data-intro="Save changes" data-position='bottom'>
+                        <span class="mif-floppy-disk"></span><span class="actionButton"> Save</span>
+                    </button>
+                }
+                <a class="button flat-button" href="@Url.Action("Index", "WorkerFile", new { Area = "YMMHRSystem" })" style="color:white">
+                    <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
                 </a>
-            }
-            <a class="button flat-button" href="@Url.Action("Index", "WorkerFile", new { Area = "YMMHRSystem" })" style="color:white">
-                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
-            </a>
-            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
-                <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
-            </a>
+                <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()">
+                    <span class="mif-clipboard"></span><span class="actionButton"> Help</span>
+                </a>
+            </div>
         </div>
-    </div>
-    <!-----------------------------------CONTAINER------------------------------>
-    <div class="container-fluid mt-2" id="FormDetail">
-        <div class="row">
-            <div class="cell-md-10 mb-0 pb-0">
-                <!----------------------------------- SUB ROW------------------------------>
-                <div class="row mb-1">
-                    <div class="cell">
-                        <input type="text" name="Names" id="Names" data-role="input" data-prepend="Names:" class="WorkerFile" autocomplete="off" value="@Model.Names">
+        <!-----------------------------------CONTAINER------------------------------>
+        <div class="container-fluid mt-2" data-step="2" data-intro="Worker informtation" data-position='auto'>
+            <div class="row">
+                <div class="cell-md-10 mb-0 pb-0">
+                    <!----------------------------------- SUB ROW------------------------------>
+                    <div class="row mb-1">
+                        <div class="cell">
+                            <input type="text" data-validate="required" name="Names" id="Names" data-role="input" data-prepend="Names:" autocomplete="off" value="@Model.Names">
+                        </div>
+                        <div class="cell">
+                            <input type="text" data-validate="required" name="WorkerId" id="WorkerId" data-role="input" data-prepend="Worker ID:" autocomplete="off" value="@Model.WorkerId">
+                        </div>
+                        <div class="cell">
+                            @if (Model.WorkerFileId == 0)
+                            {
+                                <input data-prepend="Admission Date:" data-validate="required" id="GetAdmissionDate" name="GetAdmissionDate" value="@(Model.AdmissionDate?.ToShortDateString())" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            }
+                            else
+                            {
+                                <input type="text" name="GetAdmissionDate" id="GetAdmissionDate" data-role="input" readonly="readonly" data-prepend="Admission Date:" autocomplete="off" value="@(Model.AdmissionDate?.ToShortDateString())">
+                            }
+                            @Html.Hidden("AdmissionDate", Model.AdmissionDate)
+                        </div>
                     </div>
-                    <div class="cell">
-                        <input type="text" name="WorkerId" id="WorkerId" data-role="input" data-prepend="Worker ID:" class="WorkerFile" autocomplete="off" value="@Model.WorkerId">
+                    <!----------------------------------- SUB ROW------------------------------>
+                    <div class="row mb-1">
+                        <div class="cell">
+                            <input data-prepend="Date of Birth:" data-validate="required" id="GetDoB" name="GetDoB" value="@Model.DoB" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            @Html.Hidden("DoB", Model.DoB)
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="Process" name="Process" data-prepend="Process:">
+                                @foreach (var item in processList)
+                                {
+                                    if (Model.Process == item.Name)
+                                    {
+                                        <option selected value="@item.Name">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Name">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="Job" name="Job" data-prepend="Job Title:">
+                                @foreach (var item in jobList)
+                                {
+                                    if (Model.Job == item)
+                                    {
+                                        <option selected value="@item">@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
                     </div>
-                    <div class="cell">
-                        @if (Model.WorkerFileId == 0)
+                    <!----------------------------------- SUB ROW------------------------------>
+                    <div class="row mb-1">
+                        <div class="cell">
+                            <input type="email" name="Email" id="Email" data-role="input" data-prepend="Email:" autocomplete="off" value="@Model.Email">
+                        </div>
+                        <div class="cell">
+                            <input type="text" name="Telephone" id="Telephone" data-role="input" data-prepend="Telephone:" autocomplete="off" value="@Model.Telephone">
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="CivilStatus" name="CivilStatus" data-prepend="Civil Status:">
+                                @foreach (var item in civilStatusList)
+                                {
+                                    if (Model.CivilStatus == item)
+                                    {
+                                        <option selected value="@item">@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <!----------------------------------- SUB ROW------------------------------>
+                    <div class="row mb-1">
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="Education" name="Education" data-prepend="Education Level:">
+                                @foreach (var item in educationList)
+                                {
+                                    if (Model.Education == item)
+                                    {
+                                        <option selected value="@item">@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="Type" name="Type" data-prepend="Worker Type:">
+                                @foreach (var item in workerTypeList)
+                                {
+                                    if (Model.Type == item)
+                                    {
+                                        <option selected value="@item">@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="cell">
+                            <input type="text" name="Rehirable" id="Rehirable" data-role="input" readonly="readonly" data-prepend="Rehirable:" autocomplete="off" value="@(Model.Rehirable ? "Yes" : "No" )">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="cell">
+                            <input type="text" data-validate="required length=18" name="CURP" id="CURP" data-role="input" data-prepend="CURP:" class="WorkerFile" autocomplete="off" value="@Model.CURP">
+                        </div>
+                        <div class="cell">
+                            <input type="text" data-validate="required length=13" name="RFC" id="RFC" data-role="input" data-prepend="RFC:" class="WorkerFile" autocomplete="off" value="@Model.RFC">
+                        </div>
+                        <div class="cell">
+                            <input type="text" data-validate="required digits length=11" name="NSS" id="NSS" data-role="input" data-prepend="NSS:" class="WorkerFile" autocomplete="off" value="@Model.NSS">
+                        </div>                       
+                    </div>
+                </div>
+                <div class="cell-md-2 flex-justify-center mb-0 pb-0">
+                    <div class="img-container" style="width:150px; margin:auto;">
+                        @if (!string.IsNullOrEmpty(Model.WorkerPhoto))
                         {
-                            <input data-prepend="Admission Date:" id="GetAdmissionDate" name="GetAdmissionDate" value="@(Model.AdmissionDate?.ToShortDateString())" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <img id="Photo" onclick="$('#Url').trigger('click'); return true;" src="@Url.Content(Model.WorkerPhoto)">
                         }
                         else
                         {
-                            <input type="text" name="GetAdmissionDate" id="GetAdmissionDate" data-role="input" readonly="readonly" data-prepend="Admission Date:" class="WorkerFile" autocomplete="off" value="@(Model.AdmissionDate?.ToShortDateString())">
+                            <img id="Photo" onclick="$('#Url').trigger('click'); return true;" style="opacity: 0.4" src="~/Content/Resources/default-user.png">
                         }
-                        @Html.Hidden("AdmissionDate", Model.AdmissionDate)
                     </div>
                 </div>
-                <!----------------------------------- SUB ROW------------------------------>
-                <div class="row mb-1">
-                    <div class="cell">
-                        <input data-prepend="Date of Birth:" id="GetDoB" name="GetDoB" value="@Model.DoB" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-                        @Html.Hidden("DoB", Model.DoB)
-                    </div>
-                    <div class="cell">
-                        <select class="WorkerFile" data-role="select" id="Process" name="Process" data-prepend="Process:">
-                            @foreach (var item in processList)
-                            {
-                                if (Model.Process == item.Name)
-                                {
-                                    <option selected value="@item.Name">@item.Name</option>
-                                }
-                                else
-                                {
-                                    <option value="@item.Name">@item.Name</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                    <div class="cell">
-                        <select class="WorkerFile" data-role="select" id="Job" name="Job" data-prepend="Job Title:">
-                            @foreach (var item in jobList)
-                            {
-                                if (Model.Job == item)
-                                {
-                                    <option selected value="@item">@item</option>
-                                }
-                                else
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>
-                <!----------------------------------- SUB ROW------------------------------>
-                <div class="row mb-1">
-                    <div class="cell">
-                        <input type="email" name="Email" id="Email" data-role="input" data-prepend="Email:" class="WorkerFile" autocomplete="off" value="@Model.Email">
-                    </div>
-                    <div class="cell">
-                        <input type="text" name="Telephone" id="Telephone" data-role="input" data-prepend="Telephone:" class="WorkerFile" autocomplete="off" value="@Model.Telephone">
-                    </div>
-                    <div class="cell">
-                        <select class="WorkerFile" data-role="select" id="CivilStatus" name="CivilStatus" data-prepend="Civil Status:">
-                            @foreach (var item in civilStatusList)
-                            {
-                                if (Model.CivilStatus == item)
-                                {
-                                    <option selected value="@item">@item</option>
-                                }
-                                else
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>
-                <!----------------------------------- SUB ROW------------------------------>
-                <div class="row">
-                    <div class="cell">
-                        <select class="WorkerFile" data-role="select" id="Education" name="Education" data-prepend="Education Level:">
-                            @foreach (var item in educationList)
-                            {
-                                if (Model.Education == item)
-                                {
-                                    <option selected value="@item">@item</option>
-                                }
-                                else
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                    <div class="cell">
-                        <select class="WorkerFile" data-role="select" id="Type" name="Type" data-prepend="Worker Type:">
-                            @foreach (var item in workerTypeList)
-                            {
-                                if (Model.Type == item)
-                                {
-                                    <option selected value="@item">@item</option>
-                                }
-                                else
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                    <div class="cell">
-                        <input type="text" name="Rehirable" id="Rehirable" data-role="input" readonly="readonly" data-prepend="Rehirable:" class="WorkerFile" autocomplete="off" value="@(Model.Rehirable ? "Yes" : "No" )">
-                    </div>
-                </div>
+                <input type="file" style="display:none" class="hide" name="Url" id="Url" data-role="file" data-on-select="ChangePhoto()" data-button-title="Select" data-prepend="" autocomplete="off" value="@Model.WorkerPhoto">
             </div>
-            <div class="cell-md-2 flex-justify-center mb-0 pb-0">
-                <div class="img-container" style="width:150px; margin:auto;">
-                    @if (!string.IsNullOrEmpty(Model.WorkerPhoto))
+            <div class="row">
+                <div class="cell-md-10 mt-0 pt-0">
+                    <div class="row">
+                        <div class="cell">
+                            <select class="notranslate" data-on-change="RouteSelected()" data-role="select" id="RouteSelect" name="RouteSelect" data-prepend="Route:">
+                                @foreach (var item in routeList)
+                                {
+                                    if (Model.Route == item.Name)
+                                    {
+                                        <option selected value="@item.RouteId">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.RouteId">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="Stop" name="Stop" data-prepend="Stop:">
+                                @foreach (var item in stopList)
+                                {
+                                    if (Model.Stop == item.StopName)
+                                    {
+                                        <option selected value="@item.StopName">@item.StopName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.StopName">@item.StopName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cell-md-2 flex-justify-center">
+                    @if (Model.Gender)
                     {
-                        <img id="Photo" onclick="$('#Url').trigger('click'); return true;" src="@Url.Content(Model.WorkerPhoto)">
+                        <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Male">
+                        <input type="radio" class="genderCheck" id="Female" name="GenderRadio" data-role="radio" data-style="2" data-caption="Female">
                     }
                     else
                     {
-                        <img id="Photo" onclick="$('#Url').trigger('click'); return true;" style="opacity: 0.4" src="~/Content/Resources/default-user.png">
+                        <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" data-role="radio" data-style="2" data-caption="Male">
+                        <input type="radio" class="genderCheck" id="Female" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Female">
                     }
                 </div>
             </div>
-            <input type="file" style="display:none" class="hide" name="Url" id="Url" data-role="file" data-on-select="ChangePhoto()" data-button-title="Select" data-prepend="" autocomplete="off" value="@Model.WorkerPhoto">
-        </div>
-        <div class="row">
-            <div class="cell-md-10 mt-0 pt-0">
-                <div class="row">
-                    <div class="cell">
-                        <input type="text" name="CURP" id="CURP" data-role="input" data-prepend="CURP:" class="WorkerFile" autocomplete="off" value="@Model.CURP">
-                    </div>
-                    <div class="cell">
-                        <input type="text" name="RFC" id="RFC" data-role="input" data-prepend="RFC:" class="WorkerFile" autocomplete="off" value="@Model.RFC">
-                    </div>
-                    <div class="cell">
-                        <input type="text" name="NSS" id="NSS" data-role="input" data-prepend="NSS:" class="WorkerFile" autocomplete="off" value="@Model.NSS">
-                    </div>
-                </div>
-            </div>
-            <div class="cell-md-2 flex-justify-center">
-                @if (Model.Gender)
-                {
-                    <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Male">
-                    <input type="radio" class="genderCheck" id="Female" name="GenderRadio" data-role="radio" data-style="2" data-caption="Female">
-                }
-                else
-                {
-                    <input type="radio" class="ml-5 genderCheck" id="Male" name="GenderRadio" data-role="radio" data-style="2" data-caption="Male">
-                    <input type="radio" class="genderCheck" id="Female" name="GenderRadio" checked data-role="radio" data-style="2" data-caption="Female">
-                }
-            </div>
-        </div>
 
+        </div>
+        @Html.Hidden("Route", Model.Route, new { @class = "WorkerFile" })
         @Html.Hidden("Status", Model.Status, new { @class = "WorkerFile" })
         @Html.Hidden("Gender", Model.Gender, new { @class = "WorkerFile" })
         @Html.Hidden("UserCreated", Model.UserCreated, new { @class = "WorkerFile" })
@@ -221,38 +261,39 @@
         @Html.Hidden("WorkerPhoto", Model.WorkerPhoto, new { @class = "WorkerFile" })
         @Html.Hidden("DismissalNumber", Model.DismissalNumber, new { @class = "WorkerFile" })
         @Html.Hidden("AdmissionNumber", Model.AdmissionNumber, new { @class = "WorkerFile" })
-        <!-----------------------------------STOP PANEL------------------------------>
-        <div class="row">
-            <div class="cell-md-10">
-                <div id="DismissalTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
-                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerDismissalList.cshtml", Model.DismissalList)
-                </div>
-            </div>
-            <div class="cell-md-2">
-                <div id="AdmissionTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All WorkerFile stops" data-position='auto'>
-                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAdmissionList.cshtml", Model.AdmissionList)
-                </div>
+    </form>
+    <!-----------------------------------STOP PANEL------------------------------>
+    <div class="row">
+        <div class="cell-md-10">
+            <div id="DismissalTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="Worker Dismissals" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerDismissalList.cshtml", Model.DismissalList)
             </div>
         </div>
-        <div class="row">
-            <div class="cell-md-6">
-                <div id="TrajectoryTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
-                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerTrajectoryList.cshtml", Model.TrajectoryList)
-                </div>
-            </div>
-            <div class="cell-md-6">
-                <div id="FileTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All WorkerFile stops" data-position='auto'>
-                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAttachmentList.cshtml", Model.AttachmentList)
-                </div>
+        <div class="cell-md-2">
+            <div id="AdmissionTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="Worker Admissions" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAdmissionList.cshtml", Model.AdmissionList)
             </div>
         </div>
-        <div class="row">
-            <div class="cell-md-12">
-                <div id="WarningTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All WorkerFile stops" data-position='auto'>
-                    @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerWarningList.cshtml", Model.WarningList)
-                </div>
+    </div>
+    <div class="row">
+        <div class="cell-md-6">
+            <div id="TrajectoryTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="Worker Trajectory" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerTrajectoryList.cshtml", Model.TrajectoryList)
             </div>
         </div>
+        <div class="cell-md-6">
+            <div id="FileTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="Worker Attachments" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerAttachmentList.cshtml", Model.AttachmentList)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell-md-12">
+            <div id="WarningTable" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="7" data-intro="Worker Warnings" data-position='auto'>
+                @Html.Partial("~/Areas/YMMHRSystem/Views/WorkerFile/WorkerWarningList.cshtml", Model.WarningList)
+            </div>
+        </div>
+    </div>
     </div>
     <!------------------------------------------------------------PRELOADER DIALOG----------------------------------------------------------->
     <div data-overlay="true" data-width="300" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AttachmentDialog" name="AttachmentDialog" class="dialog" data-role="dialog">
@@ -271,7 +312,7 @@
     <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
         <div class="dialog-title">Error</div>
         <div class="dialog-content">
-            <p>- WorkerFile already exists</p>
+            <p>- Worker File already exists</p>
         </div>
         <div class="dialog-actions ml-auto">
             <div><button id="SaveStop" class="button my-control-colors"><span class="mif-floppy-disk"></span> Import </button></div>
@@ -292,5 +333,28 @@
                 }
             }
         });
+
+        //RouteSelected();
     });
+
+    function RouteSelected() {
+        var routeId = $("#RouteSelect option:selected").val();
+        var StopSelect = Metro.getPlugin("#Stop", 'select');
+
+        var output = [];
+
+        $.ajax({
+            type: 'POST',
+            url: $LoadStops,
+            data: { routeId: routeId },
+            success: function (response) {
+                StopSelect.data([]);
+                var data = response;
+                $.each(data, function (key, val) {
+                    output.push("<option value='" + data[key].StopName + "'>" + data[key].StopName + "</option>");
+                });
+                StopSelect.data(output.join(''));
+            },
+        });
+    }
 </script>

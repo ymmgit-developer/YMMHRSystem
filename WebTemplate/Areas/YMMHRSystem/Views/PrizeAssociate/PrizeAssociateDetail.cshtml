@@ -33,12 +33,12 @@
     <!-----------------------------------BARRA TITULO------------------------------>
     <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
         <h5 class="pl-5">@Model.Associate</h5>
-        <div class="ml-auto pr-5">
+        <div class="ml-auto pr-5" data-step="1" data-intro="These buttons allow the user to save changes, adjust and configure associate points" data-position='auto'>
             <a class="button flat-button" style="color:white" onclick="PrizeAssociatePointLogDialog(@Model.PrizeAssociateId)"><span class="mif-assignment"></span> <span class="actionButton"> Adjustment Log</span></a>
             @if (HttpContext.Current.Session["CanSavePrizeAssociate"].Equals(true))
             {
                 <a class="button flat-button" style="color:white" onclick="AdjustmentDialog()"><span class="mif-tab"></span><span class="actionButton"> Point Adjustment</span></a>
-                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()">
                     <span class="mif-cogs"></span><span class="actionButton"> Point Configuration</span>
                 </a>
             }
@@ -55,31 +55,31 @@
         <!-----------------------------------STOP PANEL------------------------------>
         <div class="row">
             <div class="cell-md-6">
-                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="All PrizeAssociate stops" data-position='auto'>
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="Associate Attendance table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AttendanceList.cshtml", Model.AttendanceList)
                 </div>
             </div>
             <div class="cell-md-6">
-                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All PrizeAssociate stops" data-position='auto'>
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="Associate of the Month table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AssociateMonthList.cshtml", Model.AssociateMonthList)
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="cell-md-6">
-                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All PrizeAssociate stops" data-position='auto'>
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="Associate of the Year table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/AssociateYearList.cshtml", Model.AssociateYearList)
                 </div>
             </div>
             <div class="cell-md-6">
-                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="All PrizeAssociate stops" data-position='auto'>
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="Associate Findings table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/FindingList.cshtml", Model.FindingList)
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="cell-md-12">
-                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="All PrizeAssociate stops" data-position='auto'>
+                <div id="" style="height: 30vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="Associate prizes table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeAssociate/PrizeList.cshtml", Model.PrizeList)
                 </div>
             </div>

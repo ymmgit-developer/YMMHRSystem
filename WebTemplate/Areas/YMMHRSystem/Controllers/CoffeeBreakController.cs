@@ -25,8 +25,14 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     HttpContext.Session["CanSaveCoffeeBreak"] = Permission.QueryPermission("COFFEEBREAK.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
                     HttpContext.Session["CanDeleteCoffeeBreak"] = Permission.QueryPermission("COFFEEBREAK.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
-
-                    return View("~/Areas/YMMHRSystem/Views/CoffeeBreak/Index.cshtml", coffeeBreak.LoadMultiple());
+                    if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/CoffeeBreak/Index.cshtml", coffeeBreak.LoadMultiple());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/CoffeeBreak/Index.cshtml", coffeeBreak.LoadMultiple(Session["UserName"].ToString()));
+                    }
                 }
                 else
                 {
@@ -68,9 +74,17 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
             try
             {
+                if (coffeeBreak.LoadMultipleAvailableRooms(dtoCoffeeBreak.StartDate).Count == 0)
+                {
+                    return Json("false", JsonRequestBehavior.AllowGet);
+                }
+                if (dtoCoffeeBreak.FinishDate < dtoCoffeeBreak.StartDate)
+                {
+                    return Json("false", JsonRequestBehavior.AllowGet);
+                }
                 dtoCoffeeBreak.CoffeeBreakId = Convert.ToInt64(Session["LoadedCoffeeBreakId"]);
-
-                coffeeBreak.Save(dtoCoffeeBreak);
+                dtoCoffeeBreak.Responsable = Session["UserName"].ToString();
+                coffeeBreak.Save(dtoCoffeeBreak, Convert.ToInt64(Session["UserId"]));
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -106,13 +120,17 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 dtoCoffeeBreak.Status = 2;
                 coffeeBreak.Save(dtoCoffeeBreak);
+
+                User user = new User();
+                List<string> contacts = emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoCoffeeBreak.CreatedBy));
                 sendEmail.SendEmailTemplate("YMM HR System: Coffee Break Approval", "TemplateCoffeeBreakStart", new[,]
                     {
                         {"$APPLICANT$", dtoCoffeeBreak.Responsable},
                         {"$TYPE$", dtoCoffeeBreak.Type},
                         {"$ROOM$", dtoCoffeeBreak.Room},
                         {"$DATE$", dtoCoffeeBreak.StartDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -129,21 +147,44 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
                 dtoCoffeeBreak.Status = 3;
                 coffeeBreak.Save(dtoCoffeeBreak);
+
+                List<string> contacts = emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoCoffeeBreak.CreatedBy));
+
                 sendEmail.SendEmailTemplate("YMM HR System: Coffee Break Complete", "TemplateCoffeeBreakFinish", new[,]
 {
                         {"$APPLICANT$", dtoCoffeeBreak.Responsable},
                         {"$TYPE$", dtoCoffeeBreak.Type},
                         {"$ROOM$", dtoCoffeeBreak.Room},
                         {"$DATE$", dtoCoffeeBreak.StartDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
                 return Json("false", JsonRequestBehavior.AllowGet);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public ActionResult GetAvailableRooms(DateTime date)
+        {
+            try
+            {
+                var roomList = coffeeBreak.LoadMultipleAvailableRooms(date);
+
+                return Json(roomList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
     }

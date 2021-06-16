@@ -25,6 +25,7 @@ namespace YMMHRSystemLogic
         public int RoleId { get; set; }
         public string RoleName { get; set; }
         public bool FirstLogIn { get; set; }
+        public string Process { get; set; }
 
         #endregion
     }

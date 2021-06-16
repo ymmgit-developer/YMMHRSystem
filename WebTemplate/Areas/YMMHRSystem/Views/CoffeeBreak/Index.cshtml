@@ -12,6 +12,7 @@
         $StartCoffeeBreak = '@Url.Action("StartCoffeeBreak", "CoffeeBreak", new { area = "YMMHRSystem" })';
         $EndCoffeeBreak = '@Url.Action("EndCoffeeBreak", "CoffeeBreak", new { area = "YMMHRSystem" })';
         $DeleteCoffeeBreak = '@Url.Action("DeleteCoffeeBreak", "CoffeeBreak", new { area = "YMMHRSystem" })';
+        $LoadRooms = '@Url.Action("GetAvailableRooms", "CoffeeBreak", new { area = "YMMHRSystem" })';
     </script>
     <script src="~/Areas/YMMHRSystem/Scripts/CoffeeBreak.js"></script>
 </head>
@@ -53,44 +54,48 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                    <tr>
+                        <tr>
 
-                        <td style="text-align: center">
-                            <span> @item.Responsable </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @item.Responsable </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @(item.StartDate?.ToShortDateString()) </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @(item.StartDate?.ToShortDateString()) </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @(item.FinishDate?.ToShortDateString()) </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @(item.FinishDate?.ToShortDateString()) </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @item.StartTime </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @item.StartTime </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @item.FinishTime </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @item.FinishTime </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @item.Room </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @item.Room </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <span> @(item.Status == 3 ? "Complete" : item.Status == 2 ? "In Progress" : "New") </span>
-                        </td>
+                            <td style="text-align: center">
+                                <span> @(item.Status == 3 ? "Complete" : item.Status == 2 ? "In Progress" : "New") </span>
+                            </td>
 
-                        <td style="text-align: center">
-                            <a class="button bg-black fg-white" style="cursor: pointer;" onclick="CoffeeBreakDetailDialog(@item.CoffeeBreakId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
-                            @if (HttpContext.Current.Session["CanDeleteCoffeeBreak"].Equals(true))
-                            {
-                                <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteCoffeeBreak(@item.CoffeeBreakId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
-                            }
-                        </td>
-                    </tr>
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="CoffeeBreakDetailDialog(@item.CoffeeBreakId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteCoffeeBreak(@item.CoffeeBreakId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                                else if (HttpContext.Current.Session["CanDeleteCoffeeBreak"].Equals(true) && item.Status == 1)
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteCoffeeBreak(@item.CoffeeBreakId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

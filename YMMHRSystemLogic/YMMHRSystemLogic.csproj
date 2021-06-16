@@ -127,7 +127,6 @@
     <Compile Include="Classes\Route.cs" />
     <Compile Include="Classes\SendEmail.cs" />
     <Compile Include="Classes\SessionExpireFilterAttribute.cs" />
-    <Compile Include="Classes\Shift.cs" />
     <Compile Include="Classes\Stop.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="DTO\DtoEmailNotification.cs" />
@@ -194,7 +193,6 @@
     <Compile Include="DTO\DtoRole.cs" />
     <Compile Include="DTO\DtoRoute.cs" />
     <Compile Include="DTO\DtoRouteStop.cs" />
-    <Compile Include="DTO\DtoShift.cs" />
     <Compile Include="DTO\DtoStop.cs" />
     <Compile Include="DTO\DtoTask.cs" />
     <Compile Include="DTO\DtoTrajectory.cs" />

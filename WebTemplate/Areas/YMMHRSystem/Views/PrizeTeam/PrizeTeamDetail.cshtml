@@ -36,11 +36,11 @@
     <!-----------------------------------BARRA TITULO------------------------------>
     <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
         <h5 class="pl-5">@Model.Name</h5>
-        <div class="ml-auto pr-5">
+        <div class="ml-auto pr-5" data-step="1" data-intro="These buttons allow the user to save changes, adjust and configure associate points" data-position='auto'>
             <a class="button flat-button" style="color:white" onclick="PrizeTeamPointLogDialog(@Model.PrizeTeamId)"><span class="mif-assignment"></span> <span class="actionButton"> Point Log</span></a>
             @if (HttpContext.Current.Session["CanSavePrizeTeam"].Equals(true))
             {
-                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()" data-step="1" data-intro="Save changes" data-position='bottom'>
+                <a class="button flat-button" style="color:white" onclick="OpenPointConfigurationDialog()">
                     <span class="mif-cogs"></span><span class="actionButton"> Point Configuration</span>
                 </a>
             }
@@ -57,29 +57,34 @@
         <!-----------------------------------STOP PANEL------------------------------>
         <div class="row">
             <div class="cell-md-4">
-                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="All PrizeTeam stops" data-position='auto'>
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="2" data-intro="Team Attendance table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/AttendanceList.cshtml", Model.AttendanceList)
                 </div>
             </div>
             <div class="cell-md-4">
-                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="All PrizeTeam stops" data-position='auto'>
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="3" data-intro="Team Members" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/AssociateList.cshtml", Model.AssociateList)
                 </div>
             </div>
             <div class="cell-md-4">
-                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="All PrizeTeam stops" data-position='auto'>
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="4" data-intro="Team Productivity table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/ProductivityList.cshtml", Model.ProductivityList)
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="cell-md-6">
-                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="All PrizeTeam stops" data-position='auto'>
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="5" data-intro="Team Security Cross Table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/SecurityCrossList.cshtml", Model.SecurityCrossList)
                 </div>
             </div>
-            <div class="cell-md-6">
-                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="All PrizeTeam stops" data-position='auto'>
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="6" data-intro="Team Scrap table" data-position='auto'>
+                    @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/ScrapList.cshtml", Model.ScrapList)
+                </div>
+            </div>
+            <div class="cell-md-4">
+                <div id="" style="height: 37vh; overflow-y: auto; border-top: 2px solid black; border-bottom: 1px solid black" data-step="7" data-intro="Team Dock Audit table" data-position='auto'>
                     @Html.Partial("~/Areas/YMMHRSystem/Views/PrizeTeam/DockAuditList.cshtml", Model.DockAuditList)
                 </div>
             </div>

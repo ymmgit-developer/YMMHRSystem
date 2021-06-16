@@ -50,7 +50,7 @@ function UtilityCarDetailDialog(id) {
 function AddUtilityCar() {
 
     Metro.dialog.open('#preloaderUtilityCar');
-    $("#UtilityCar").val($("#LicensePlate option:selected").text());
+    $("#UtilityCar").val($("#Model option:selected").text());
     $.ajax({
         method: "POST",
         url: window.$SaveUtilityCar,
@@ -64,7 +64,7 @@ function AddUtilityCar() {
                     window.location.replace(window.$UtilityCarIndex);
                 }, 1000);
             } else {
-                Metro.toast.create("Error saving utility car loan.", null, null, "bg-red fg-white");
+                Metro.toast.create("Departure - License Expiration dates are not correct / No available cars at the moment", null, null, "bg-red fg-white");
             }
         }
     });

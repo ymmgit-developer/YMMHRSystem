@@ -54,7 +54,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoGraphInt> transports = new List<DtoGraphInt>();
 
-                mapping.Load<DtoGraphInt>("SELECT DATEPART(YEAR, StartDate) Year, DATEPART(MONTH, StartDate) as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) GROUP BY DATEPART(YEAR, StartDate), DATEPART(MONTH, StartDate) ORDER BY YEAR(StartDate), MONTH(StartDate)", "Transports", new DtoGraphInt());
+                mapping.Load<DtoGraphInt>("SELECT DATEPART(YEAR, StartDate) Year, DATEPART(MONTH, StartDate) as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 AND Status = 1 GROUP BY DATEPART(YEAR, StartDate), DATEPART(MONTH, StartDate) ORDER BY YEAR(StartDate), MONTH(StartDate)", "Transports", new DtoGraphInt());
 
                 transports.AddRange(mapping.dtoList.Select(renglon => (DtoGraphInt)renglon.Dto));
 
@@ -105,7 +105,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 DtoGraph extraTransport = new DtoGraph();
 
-                mapping.Load<DtoGraph>("SELECT 'Extra' as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31)", "ExtraordinaryTransports", new DtoGraph());
+                mapping.Load<DtoGraph>("SELECT 'Extra' as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 AND Status = 1", "ExtraordinaryTransports", new DtoGraph());
                 extraTransport = (DtoGraph)mapping.dtoList.FirstOrDefault().Dto;
 
                 return extraTransport;
@@ -132,11 +132,11 @@ namespace YMMHRSystemLogic
                 List<DtoGraph> transports = new List<DtoGraph>();
                 if (!month.Equals("0"))
                 {
-                    mapping.Load<DtoGraph>("SELECT Process as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND MONTH(StartDate) = " + month + " GROUP BY Process", "ExtraTransports", new DtoGraph());
+                    mapping.Load<DtoGraph>("SELECT Process as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND MONTH(StartDate) = " + month + " AND AND ShiftChange = 0 AND Status = 1 GROUP BY Process", "ExtraTransports", new DtoGraph());
                 }
                 else
                 {
-                    mapping.Load<DtoGraph>("SELECT Process as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) GROUP BY Process", "ExtraTransports", new DtoGraph());
+                    mapping.Load<DtoGraph>("SELECT Process as X, Count(ExtraordinaryTransportId) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 AND Status = 1 GROUP BY Process", "ExtraTransports", new DtoGraph());
                 }
 
                 transports.AddRange(mapping.dtoList.Select(renglon => (DtoGraph)renglon.Dto));
@@ -165,11 +165,11 @@ namespace YMMHRSystemLogic
                 List<DtoGraphStringDecimal> transports = new List<DtoGraphStringDecimal>();
                 if (!month.Equals("0"))
                 {
-                    mapping.Load<DtoGraphStringDecimal>("SELECT Process as X, SUM(Cost) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND MONTH(StartDate) = " + month + " GROUP BY Process", "ExtraTransports", new DtoGraphStringDecimal());
+                    mapping.Load<DtoGraphStringDecimal>("SELECT Process as X, SUM(Cost) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND MONTH(StartDate) = " + month + " AND ShiftChange = 0 AND Status = 1 GROUP BY Process", "ExtraTransports", new DtoGraphStringDecimal());
                 }
                 else
                 {
-                    mapping.Load<DtoGraphStringDecimal>("SELECT Process as X, SUM(Cost) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) GROUP BY Process", "ExtraTransports", new DtoGraphStringDecimal());
+                    mapping.Load<DtoGraphStringDecimal>("SELECT Process as X, SUM(Cost) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 AND Status = 1 GROUP BY Process", "ExtraTransports", new DtoGraphStringDecimal());
                 }
 
                 transports.AddRange(mapping.dtoList.Select(renglon => (DtoGraphStringDecimal)renglon.Dto));
@@ -196,7 +196,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoGraphDecimal> transports = new List<DtoGraphDecimal>();
 
-                mapping.Load<DtoGraphDecimal>("SELECT DATEPART(YEAR, StartDate) Year, DATEPART(MONTH, StartDate) as X, SUM(COST) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) GROUP BY DATEPART(YEAR, StartDate), DATEPART(MONTH, StartDate) ORDER BY YEAR(StartDate), MONTH(StartDate)", "Transports", new DtoGraphDecimal());
+                mapping.Load<DtoGraphDecimal>("SELECT DATEPART(YEAR, StartDate) Year, DATEPART(MONTH, StartDate) as X, SUM(COST) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 GROUP BY DATEPART(YEAR, StartDate), DATEPART(MONTH, StartDate) ORDER BY YEAR(StartDate), MONTH(StartDate)", "Transports", new DtoGraphDecimal());
 
                 transports.AddRange(mapping.dtoList.Select(renglon => (DtoGraphDecimal)renglon.Dto));
 
@@ -273,7 +273,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 DtoGraphStringDecimal transports = new DtoGraphStringDecimal();
 
-                mapping.Load<DtoGraphStringDecimal>("SELECT 'Extra' as X, SUM(COST) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31)", "ExtraTransports", new DtoGraphStringDecimal());
+                mapping.Load<DtoGraphStringDecimal>("SELECT 'Extra' as X, SUM(COST) AS Y FROM ExtraordinaryTransports WHERE StartDate BETWEEN DATEFROMPARTS(" + firstHalf + ", 4, 1) AND DATEFROMPARTS(" + (firstHalf + 1) + ", 3, 31) AND ShiftChange = 0 AND Status = 1", "ExtraTransports", new DtoGraphStringDecimal());
                 transports = (DtoGraphStringDecimal)mapping.dtoList.FirstOrDefault().Dto;
 
                 return transports;
@@ -295,7 +295,7 @@ namespace YMMHRSystemLogic
             DBFrameworkMapping mapping = new DBFrameworkMapping();
             List<DtoGraph> diner = new List<DtoGraph>();
 
-            mapping.Load<DtoGraph>("SELECT Type as X, Count(DinerId) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type UNION SELECT Type as X, Count(ExtraordinaryDinerId) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type", "Diner", new DtoGraph());
+            mapping.Load<DtoGraph>("SELECT Type as X, Count(DinerId) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type UNION SELECT Type as X, Count(ExtraordinaryDinerId) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' AND Status = 1 GROUP BY Type", "Diner", new DtoGraph());
             diner.AddRange(mapping.dtoList.Select(renglon => (DtoGraph)renglon.Dto));
 
             return diner;
@@ -311,7 +311,7 @@ namespace YMMHRSystemLogic
             DBFrameworkMapping mapping = new DBFrameworkMapping();
             List<DtoGraphStringDecimal> diner = new List<DtoGraphStringDecimal>();
 
-            mapping.Load<DtoGraphStringDecimal>("SELECT Type as X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type UNION SELECT Type as X, SUM(TypeCost + LadingCost) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type", "Diner", new DtoGraphStringDecimal());
+            mapping.Load<DtoGraphStringDecimal>("SELECT Type as X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Type UNION SELECT Type as X, SUM(TypeCost + LadingCost) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' AND Status = 1 GROUP BY Type", "Diner", new DtoGraphStringDecimal());
             diner.AddRange(mapping.dtoList.Select(renglon => (DtoGraphStringDecimal)renglon.Dto));
 
             return diner;
@@ -327,7 +327,7 @@ namespace YMMHRSystemLogic
             DBFrameworkMapping mapping = new DBFrameworkMapping();
             List<DtoGraphStringDecimal> diner = new List<DtoGraphStringDecimal>();
 
-            mapping.Load<DtoGraphStringDecimal>("SELECT Type as X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' AND (TYPE = 'YMM' OR TYPE = 'Associate') GROUP BY Type UNION SELECT 'YMM' as X, SUM(TypeCost + LadingCost) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' UNION SELECT 'YMM' AS X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' AND Type = 'Saturday'", "Diner", new DtoGraphStringDecimal());
+            mapping.Load<DtoGraphStringDecimal>("SELECT Type as X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' AND (TYPE = 'YMM' OR TYPE = 'Associate') GROUP BY Type UNION SELECT 'YMM' as X, SUM(TypeCost + LadingCost) AS Y FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' AND Status = 1 UNION SELECT 'YMM' AS X, SUM(Total) AS Y FROM Diner WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' AND Type = 'Saturday'", "Diner", new DtoGraphStringDecimal());
             diner.AddRange(mapping.dtoList.Select(renglon => (DtoGraphStringDecimal)renglon.Dto));
 
             return diner;
@@ -343,7 +343,7 @@ namespace YMMHRSystemLogic
             DBFrameworkMapping mapping = new DBFrameworkMapping();
             List<DtoGraphXYZ> diner = new List<DtoGraphXYZ>();
 
-            mapping.Load<DtoGraphXYZ>("SELECT Process AS X, Type AS Y, Count(ExtraordinaryDinerId) AS Z FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY Process, Type", "Diner", new DtoGraphXYZ());
+            mapping.Load<DtoGraphXYZ>("SELECT Process AS X, Type AS Y, Count(ExtraordinaryDinerId) AS Z FROM ExtraordinaryDiner WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' AND Status = 1 GROUP BY Process, Type", "Diner", new DtoGraphXYZ());
             diner.AddRange(mapping.dtoList.Select(renglon => (DtoGraphXYZ)renglon.Dto));
 
             return diner;

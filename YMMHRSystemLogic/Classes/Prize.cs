@@ -46,7 +46,7 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="prize"></param>
         /// <returns>Prize registered</returns>
-        public void Save(DtoPrize prize)
+        public void Save(DtoPrize prize, long userId = 0)
         {
             try
             {
@@ -55,6 +55,7 @@ namespace YMMHRSystemLogic
                 if (prize.PrizeId == 0)
                 {
                     prize.Date = DateTime.Now;
+                    prize.CreatedBy = userId;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = prize, TableName = "Prizes" });
@@ -197,7 +198,7 @@ namespace YMMHRSystemLogic
             try
             {
                 DataRow dataRow = null;
-                string sqlString = "SELECT PrizeId FROM Prizes WHERE Name = '" + name + "'";
+                string sqlString = "SELECT PrizeId FROM Prizes WHERE Name = '" + name + "' AND Status = 1";
 
                 dataRow = oDatabase.GetRow(sqlString, "Get PrizeId");
 

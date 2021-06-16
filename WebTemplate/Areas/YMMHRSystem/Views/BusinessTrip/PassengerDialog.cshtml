@@ -22,7 +22,7 @@
                 <input type="text" name="Purpose" id="Purpose" data-role="input" data-prepend="Purpose:" data-validate="required" autocomplete="off" value="@Model.Purpose">
             </div>
             <div class="cell-md-6">
-                <select data-role="select" id="Type" name="Type" data-prepend="Type:">
+                <select class="notranslate" data-role="select" id="Type" name="Type" data-prepend="Type:">
                     @foreach (var item in typeList)
                     {
                         if (Model.Type == item)

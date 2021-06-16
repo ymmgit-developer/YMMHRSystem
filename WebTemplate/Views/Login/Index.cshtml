@@ -40,7 +40,7 @@
     <script src="~/Scripts/Login.js"></script>-
     <title>Log In</title>
 </head>
-<body class="h-vh-100" style="background-size: cover; background-position: center;  background-repeat: no-repeat; background-image: url('@Url.Content("~/Content/Resources/yachiyo.jpg")');">
+<body class="h-vh-100" style="background-size: 100vw 100vh;  background-repeat: no-repeat; background-image: url('@Url.Content("~/Content/Resources/Desk2.jpg")');">
     <div class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateForm">
         @using (Html.BeginForm("LogIn", "Login", FormMethod.Post, new { }))
         {
@@ -67,9 +67,9 @@
             <form data-role="validator" action="javascript:" data-on-validate-form="SendEmailPasswordRecovery()">
                 <p>Enter your credentials to send the password recovery form.</p>
                 <input type="email" name="UserPasswordRecovery" id="UserPasswordRecovery" data-role="input" data-prepend="<span class='mif-user'>" placeholder="Worker ID or Email" data-validate="required" autocomplete="off">
-                <div class="dialog-actions">
-                    <button id="SendEmail" class="button primary"><span class="mif-paper-plane"></span> Send</button>
-                    <span id="preloaderEmail" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                <div class="dialog-actions d-flex flex-justify-between">
+                    <button id="SendEmail" class="button primary"><span class="mif-paper-plane"> Send</span></button>
+                    <div><span id="preloaderEmail" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
                 </div>
             </form>
         </div>

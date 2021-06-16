@@ -39,32 +39,27 @@
 });
 
 function SaveWorkerFile() {
-    if ($("#Names").val() !== "" && $("#WorkerId").val() !== "" && $("#Email").val() !== "" && $("#Telephone").val() !== "" && $("#CURP").val() !== "" && $("#RFC").val() !== "" && $("#NSS").val() !== "") {
         $("#AdmissionDate").val($("#GetAdmissionDate").val());
         $("#DoB").val($("#GetDoB").val());
-
-        var data = $('#FormDetail').find('select, input').serialize();
+        $("#Route").val($("#RouteSelect option:selected").text());
 
         var dialog = Metro.getPlugin('#preloaderWorkerFile', 'dialog');
-        setTimeout(function () { dialog.open(); }, 100);
+        dialog.open();
 
         $.ajax({
             method: "POST",
             url: window.$SaveWorkerFile,
             cache: false,
-            data: data,
+            data: $('#WorkerForm').serialize(),
             success: function (result) {
+                dialog.close();
                 if (result === "true") {
                     Metro.toast.create("Worker file saved.", null, null, "bg-green fg-white");
                 } else {
                     Metro.dialog.open('#Error')
                 }
-                Metro.dialog.close('#preloaderWorkerFile');
             }
         });
-    } else {
-        Metro.toast.create("Please enter all fields.", null, null, "bg-red fg-white");
-    }
 }
 
 function DismissWorkerFile(id) {

@@ -18,7 +18,7 @@
                     <input type="text" data-prepend="Reservation Number:" name="ReservationNumber" id="ReservationNumber" value="@Model.ReservationNumber" data-role="input" data-validate="required" autocomplete="off">
                 </div>
                 <div class="cell-md-4">
-                    <select data-role="select" id="CarType" name="CarType" data-prepend="Car Type:">
+                    <select class="notranslate" data-role="select" id="CarType" name="CarType" data-prepend="Car Type:">
                         @foreach (var item in carTypeList)
                         {
                             if (Model.CarType == item)
@@ -38,7 +38,7 @@
             </div>
             <div class="row mb-1">
                 <div class="cell-md-6">
-                    <select data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
+                    <select class="notranslate" data-role="select" id="CostCenter" name="CostCenter" data-prepend="Cost Center:">
                         @foreach (var item in costCenterList)
                         {
                             if (Model.CostCenter == item)
@@ -53,7 +53,7 @@
                     </select>
                 </div>
                 <div class="cell-md-6">
-                    <select data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
+                    <select class="notranslate" data-role="select" id="CompanyPaying" name="CompanyPaying" data-prepend="Cost Company:">
                         @foreach (var item in whoPaysList)
                         {
                             if (Model.CompanyPaying == item)

@@ -57,7 +57,6 @@ namespace YMMHRSystemLogic
                 {
                     immigrationProcedure.Date = DateTime.Now;
                     immigrationProcedure.Status = 1;
-                    immigrationProcedure.CreatedBy = user.GetUserName(SQLTools.userId.ToString());
 
                     sendEmail.SendEmailTemplate("YMM HR System: Immigration Procedure Request", "TemplateImmigrationProcedureRequest", new[,]
                     {
@@ -83,14 +82,21 @@ namespace YMMHRSystemLogic
         /// Load multiple ImmigrationProcedure with fields.
         /// </summary>
         /// <returns>Load ImmigrationProcedure Dto</returns>
-        public List<DtoImmigrationProcedure> LoadMultiple()
+        public List<DtoImmigrationProcedure> LoadMultiple(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoImmigrationProcedure> immigrationProcedureList = new List<DtoImmigrationProcedure>();
-
-                mapping.Load<DtoImmigrationProcedure>("SELECT ImmigrationProcedureId, Associate, Process, DocumentType, Motive, ProcedureType, ExpirationDate, Justification, RejectionMotive, Date, CreatedBy, Status FROM ImmigrationProcedures ORDER BY ImmigrationProcedureId", "ImmigrationProcedure", new DtoImmigrationProcedure());
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoImmigrationProcedure>("SELECT ImmigrationProcedureId, Associate, Process, DocumentType, Motive, ProcedureType, ExpirationDate, Justification, RejectionMotive, Date, CreatedBy, Status FROM ImmigrationProcedures ORDER BY ImmigrationProcedureId", "ImmigrationProcedure", new DtoImmigrationProcedure());
+                }
+                else
+                {
+                    mapping.Load<DtoImmigrationProcedure>("SELECT ImmigrationProcedureId, Associate, Process, DocumentType, Motive, ProcedureType, ExpirationDate, Justification, RejectionMotive, Date, CreatedBy, Status FROM ImmigrationProcedures WHERE CreatedBy = '" + userFilter + "' ORDER BY ImmigrationProcedureId", "ImmigrationProcedure", new DtoImmigrationProcedure());
+                }
+                
                 immigrationProcedureList.AddRange(mapping.dtoList.Select(renglon => (DtoImmigrationProcedure)renglon.Dto));
 
                 return immigrationProcedureList;

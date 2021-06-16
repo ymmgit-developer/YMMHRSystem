@@ -25,8 +25,14 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     HttpContext.Session["CanSaveUtilityCar"] = Permission.QueryPermission("UTILITYCAR.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
                     HttpContext.Session["CanDeleteUtilityCar"] = Permission.QueryPermission("UTILITYCAR.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
-
-                    return View("~/Areas/YMMHRSystem/Views/UtilityCar/Index.cshtml", utilityCar.LoadMultiple());
+                    if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/UtilityCar/Index.cshtml", utilityCar.LoadMultiple());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/UtilityCar/Index.cshtml", utilityCar.LoadMultiple(Session["UserName"].ToString()));
+                    }
                 }
                 else
                 {
@@ -68,8 +74,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
             try
             {
+                if (dtoUtilityCar.LicenseExpiration <= dtoUtilityCar.DepartureDate)
+                {
+                    return Json("false", JsonRequestBehavior.AllowGet);
+                }
+                if (utilityCar.LoadMultipleAvailableCars(dtoUtilityCar.DepartureDate).Count == 0)
+                {
+                    return Json("false", JsonRequestBehavior.AllowGet);
+                }
                 dtoUtilityCar.UtilityCarId = Convert.ToInt64(Session["LoadedUtilityCarId"]);
-                utilityCar.Save(dtoUtilityCar);
+                if (dtoUtilityCar.UtilityCarId == 0)
+                {
+                    dtoUtilityCar.Associate = Session["UserName"].ToString();
+                }
+                utilityCar.Save(dtoUtilityCar, Convert.ToInt64(Session["UserId"]));
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -103,15 +121,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
+
                 dtoUtilityCar.Status = 2;
                 utilityCar.Save(dtoUtilityCar);
+
+                List<string> contacts = emailNotification.GetUtilityCarContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoUtilityCar.CreatedBy));
                 sendEmail.SendEmailTemplate("YMM HR System: Utility Car Approval", "TemplateUtilityCarStart", new[,]
                     {
                         {"$APPLICANT$", dtoUtilityCar.Associate},
                         {"$PASSENGERS$", dtoUtilityCar.Passengers.ToString()},
                         {"$DESTINATION$", dtoUtilityCar.Destination },
                         {"$DATE$", dtoUtilityCar.DepartureDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetUtilityCarContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -128,15 +151,19 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                User user = new User();
                 dtoUtilityCar.Status = 3;
                 utilityCar.Save(dtoUtilityCar);
+
+                List<string> contacts = emailNotification.GetUtilityCarContacts(1).Split(',').ToList();
+                contacts.Add(user.GetUserEmail(dtoUtilityCar.CreatedBy));
                 sendEmail.SendEmailTemplate("YMM HR System: Utility Car Complete", "TemplateUtilityCarFinish", new[,]
      {
                         {"$APPLICANT$", dtoUtilityCar.Associate},
                         {"$PASSENGERS$", dtoUtilityCar.Passengers.ToString()},
                         {"$DESTINATION$", dtoUtilityCar.Destination },
                         {"$DATE$", dtoUtilityCar.DepartureDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetUtilityCarContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

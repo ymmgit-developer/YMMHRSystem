@@ -53,6 +53,8 @@ namespace YMMHRSystemLogic
                 if (vehicle.VehicleId == 0)
                 {
                     vehicle.DateAdded = DateTime.Now;
+                    vehicle.ServiceEmailSent = false;
+                    vehicle.VerificationEmailSent = false;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = vehicle, TableName = "Vehicles" });
@@ -79,16 +81,16 @@ namespace YMMHRSystemLogic
                 {
                     if (isUtility)
                     {
-                        mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, Status FROM Vehicles WHERE Type = 'Utility Car' ORDER BY VehicleId", "Vehicle", new DtoVehicle());
+                        mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, VerificationStatus, Status, VerificationEmailSent, ServiceEmailSent FROM Vehicles WHERE Type = 'Utility Car' ORDER BY VehicleId", "Vehicle", new DtoVehicle());
                     }
                     else
                     {
-                        mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, Status FROM Vehicles WHERE Type <> 'Utility Car' ORDER BY VehicleId", "Vehicle", new DtoVehicle());
+                        mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, VerificationStatus, Status, VerificationEmailSent, ServiceEmailSent FROM Vehicles WHERE Type <> 'Utility Car' ORDER BY VehicleId", "Vehicle", new DtoVehicle());
                     }
                 }
                 else
                 {
-                    mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, Status FROM Vehicles ORDER BY VehicleId", "Vehicle", new DtoVehicle());
+                    mapping.Load<DtoVehicle>("SELECT VehicleId, Model, EngineNumber, VIN, Color, Type, Associate, Year, LicensePlate, PolicyNumber, PolicyStart, PolicyEnd, NextService, NextVerification, AnnualFee, InvoiceDate, DateAdded, VerificationStatus, Status, ServiceEmailSent, VerificationEmailSent FROM Vehicles ORDER BY VehicleId", "Vehicle", new DtoVehicle());
                 }
                
                 vehicleList.AddRange(mapping.dtoList.Select(renglon => (DtoVehicle)renglon.Dto));
@@ -130,16 +132,16 @@ namespace YMMHRSystemLogic
 
         }
         /// <summary>
-        /// Deletes a Vehicle. 
+        /// Cancel a Vehicle. 
         /// </summary>
         /// <param name="vehicleId"></param>
         /// <returns></returns>
-        public bool DeleteVehicle(long vehicleId)
+        public bool CancelVehicle(long vehicleId)
         {
             try
             {
-                string query = "DELETE Vehicles WHERE VehicleId =" + vehicleId;
-                oDatabase.ExecuteNonQuery(query, "Remove Vehicle");
+                string query = "UPDATE Vehicles SET Status = 2 WHERE VehicleId =" + vehicleId;
+                oDatabase.ExecuteNonQuery(query, "Cancel Vehicle");
                 return true;
             }
             catch (Exception ex)
@@ -148,6 +150,42 @@ namespace YMMHRSystemLogic
                 return false;
             }
 
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="vehicleId"></param>
+        public void UpdateVerificationEmailFlag(bool flag, long vehicleId)
+        {
+            try
+            {
+                string query = "UPDATE Vehicles SET VerificationEmailSent = " + (flag ? "1" : "0") + " WHERE VehicleId =" + vehicleId;
+                oDatabase.ExecuteNonQuery(query, "Update Vehicle Email Flag");
+
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Verification Email Flag", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateVerificationEmailFlag");
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="vehicleId"></param>
+        public void UpdateServiceEmailFlag(bool flag, long vehicleId)
+        {
+            try
+            {
+                string query = "UPDATE Vehicles SET ServiceEmailSent = " + (flag ? "1" : "0") + " WHERE VehicleId =" + vehicleId;
+                oDatabase.ExecuteNonQuery(query, "Update Vehicle Email Flag");
+
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Service Email Flag", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateServiceEmailFlag");
+            }
         }
         #endregion
     }

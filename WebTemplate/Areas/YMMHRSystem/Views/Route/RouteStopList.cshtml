@@ -11,7 +11,6 @@
             <tr>
                 <th style="text-align: center">Stop</th>
                 <th style="text-align: center">Reference</th>
-                <th style="text-align: center">Time</th>
                 <th style="text-align: center" data-step="4" data-intro="Delete route stop" data-position='auto'>Actions</th>
             </tr>
         </thead>
@@ -27,7 +26,6 @@
                 @Html.Hidden("StopList[" + index + "].StopId", item.StopId, new { @class = "route" })
                 @Html.Hidden("StopList[" + index + "].StopName", item.StopName, new { @class = "route" })
                 @Html.Hidden("StopList[" + index + "].Reference", item.Reference, new { @class = "route" })
-                @Html.Hidden("StopList[" + index + "].Time", item.Time, new { @class = "route" })
                 <td style="text-align: center">
                     <span> @item.StopName </span>
                 </td>
@@ -37,13 +35,9 @@
                 </td>
 
                 <td style="text-align: center">
-                    <span> @item.Time </span>
-                </td>
-
-                <td style="text-align: center">
                     @if (HttpContext.Current.Session["CanDeleteRoute"].Equals(true))
                     {
-                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRouteStop(@item.RouteId, @item.StopId, '@item.StopName')"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRouteStop(@item.RouteId, @item.StopId, '@item.Reference')"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
                     }
                 </td>
             </tr>

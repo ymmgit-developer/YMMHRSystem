@@ -306,16 +306,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET ExtraDinerContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Extra Diner Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET ExtraDinerContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Extra Diner Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -334,16 +327,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET ExtraTransportContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Extra Transport Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET ExtraTransportContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Extra Transport Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -362,16 +348,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET LegalRequirementContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Legal Requirements Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET LegalRequirementContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Legal Requirements Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -390,16 +369,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET VehicleContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Extra Diner Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET VehicleContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Extra Diner Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -418,16 +390,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET UtilityCarContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Utility Car Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET UtilityCarContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Utility Car Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -446,16 +411,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET TranslationContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Translation Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET TranslationContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Translation Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -474,16 +432,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET CoffeeBreakContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Coffee Break Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET CoffeeBreakContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Coffee Break Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -502,16 +453,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET BusinessTripContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Business Trip Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET BusinessTripContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Business Trip Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -530,16 +474,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET LegalAffairContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Legal Affair Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET LegalAffairContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Legal Affair Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -558,16 +495,9 @@ namespace YMMHRSystemLogic
         {
             try
             {
-                if (ValidateContacts(contacts))
-                {
-                    string query = "UPDATE EmailNotifications SET GiftContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
-                    oDatabase.ExecuteNonQuery(query, "Save Gift Contacts");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                string query = "UPDATE EmailNotifications SET GiftContacts = '" + contacts + "' WHERE EmailNotificationId =" + emailNotificationId;
+                oDatabase.ExecuteNonQuery(query, "Save Gift Contacts");
+                return true;
             }
             catch (Exception ex)
             {
@@ -579,43 +509,32 @@ namespace YMMHRSystemLogic
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="contacts"></param>
-        /// <returns></returns>
-        public bool ValidateContacts(string contacts)
-        {
-            if (string.IsNullOrEmpty(contacts))
-            {
-                return true;
-            }
-            List<string> contactList = contacts.Split(',').ToList();
-            Regex rx = new Regex(@"^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z{|}~])*@yachiyo.com.mx$");
-            foreach (var item in contactList)
-            {
-                if (!rx.IsMatch(item))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         public void SendAnniversaryGiftEmail()
         {
             GiftAssociate giftAssociate = new GiftAssociate();
             List<DtoGiftAssociate> giftAssociatesList = giftAssociate.LoadMultiple();
-
             foreach (var item in giftAssociatesList)
             {
-                if (DateTime.ParseExact(item.Month, "MMMM", CultureInfo.InvariantCulture).Month == DateTime.Now.Month && item.Day == DateTime.Now.Day)
+                if (!item.EmailSent)
                 {
-                    sendEmail.SendEmailTemplate("YMM HR System: Anniversary Gift", "TemplateGiftAnniversary", new[,]
-     {
+                    if (DateTime.ParseExact(item.Month, "MMMM", CultureInfo.InvariantCulture).Month == DateTime.Now.Month && item.Day == DateTime.Now.Day)
+                    {
+                        sendEmail.SendEmailTemplate("YMM HR System: Anniversary Gift", "TemplateGiftAnniversary", new[,]
+                        {
                         {"$ASSOCIATE$", item.Associate},
                         {"$ANNIVERSARY$", item.Day + " " + item.Month}
                     }, sendEmail.GetAdminEmail(), GetGiftContacts(1).Split(',').ToList());
+                        giftAssociate.UpdateEmailFlag(true, item.GiftAssociateId);
+                    }
                 }
+                else
+                {
+                    if (DateTime.ParseExact(item.Month, "MMMM", CultureInfo.InvariantCulture).Month < DateTime.Now.Month && item.Day < DateTime.Now.Day)
+                    {
+                        giftAssociate.UpdateEmailFlag(false, item.GiftAssociateId);
+                    }
+                }
+
             }
         }
         /// <summary>
@@ -628,29 +547,52 @@ namespace YMMHRSystemLogic
 
             foreach (var item in vehicleList)
             {
-                if (item.NextVerification?.Subtract(DateTime.Now).Days == 10)
+                if (!item.VerificationEmailSent)
                 {
-                    sendEmail.SendEmailTemplate("YMM HR System: Vehicle Verification", "TemplateVehicleVerification", new[,]
+                    if (item.NextVerification?.Subtract(DateTime.Now).Days == 10)
                     {
+                        sendEmail.SendEmailTemplate("YMM HR System: Vehicle Verification", "TemplateVehicleVerification", new[,]
+                        {
                         {"$MODEL$", item.Model},
                         {"$YEAR$", item.Year},
                         {"$LICENSE_PLATE$", item.LicensePlate },
                         {"$DATE$", item.NextVerification?.ToString("dd/MM/yyyy") }
                     }, sendEmail.GetAdminEmail(), GetVehicleContacts(1).Split(',').ToList());
+                        vehicle.UpdateVerificationEmailFlag(true, item.VehicleId);
+                    }
+                }
+                else
+                {
+                    if (item.NextVerification < DateTime.Now)
+                    {
+                        vehicle.UpdateVerificationEmailFlag(false, item.VehicleId);
+                    }
                 }
             }
 
             foreach (var item in vehicleList)
             {
-                if (item.NextService?.Subtract(DateTime.Now).Days == 10)
+                if (!item.ServiceEmailSent)
                 {
-                    sendEmail.SendEmailTemplate("YMM HR System: Vehicle Service", "TemplateVehicleService", new[,]
+                    if (item.NextService?.Subtract(DateTime.Now).Days == 10)
                     {
+                        sendEmail.SendEmailTemplate("YMM HR System: Vehicle Service", "TemplateVehicleService", new[,]
+                        {
                         {"$MODEL$", item.Model},
                         {"$YEAR$", item.Year},
                         {"$LICENSE_PLATE$", item.LicensePlate },
                         {"$DATE$", item.NextService?.ToString("dd/MM/yyyy") }
                     }, sendEmail.GetAdminEmail(), GetVehicleContacts(1).Split(',').ToList());
+                        vehicle.UpdateServiceEmailFlag(true, item.VehicleId);
+                    }
+                }
+                else
+                {
+                    if (item.NextService < DateTime.Now)
+                    {
+                        vehicle.UpdateServiceEmailFlag(false, item.VehicleId);
+                    }
+
                 }
             }
         }
@@ -664,28 +606,52 @@ namespace YMMHRSystemLogic
 
             foreach (var item in legalRequirementList)
             {
-                if (item.RenewalDate?.Subtract(DateTime.Now).Days == 15)
+                if (!item.RenewalEmailSent)
                 {
-                    sendEmail.SendEmailTemplate("YMM HR System: Legal Requirement Renewal", "TemplateLegalRequirementRenewal", new[,]
+                    if (item.RenewalDate?.Subtract(DateTime.Now).Days == 15)
                     {
+                        sendEmail.SendEmailTemplate("YMM HR System: Legal Requirement Renewal", "TemplateLegalRequirementRenewal", new[,]
+                        {
                         {"$PROCEDURE$", item.LegalProcedure},
                         {"$RENEWAL$", item.RenewalDate?.ToString("dd/MM/yyyy") },
                         {"$EXPIRATION$", item.ExpirationDate?.ToString("dd/MM/yyyy") }
                     }, sendEmail.GetAdminEmail(), GetLegalRequirementContacts(1).Split(',').ToList());
+                        legalRequirement.UpdateRenewalEmailFlag(true, item.LegalRequirementId);
+                    }
                 }
+                else
+                {
+                    if (item.RenewalDate < DateTime.Now)
+                    {
+                        legalRequirement.UpdateRenewalEmailFlag(false, item.LegalRequirementId);
+                    }
+                }
+
             }
 
             foreach (var item in legalRequirementList)
             {
-                if (item.ExpirationDate?.Subtract(DateTime.Now).Days == 15)
+                if (!item.ExpirationEmailSent)
                 {
-                    sendEmail.SendEmailTemplate("YMM HR System: Legal Requirement Expiration", "TemplateLegalRequirementExpiration", new[,]
+                    if (item.ExpirationDate?.Subtract(DateTime.Now).Days == 15)
                     {
+                        sendEmail.SendEmailTemplate("YMM HR System: Legal Requirement Expiration", "TemplateLegalRequirementExpiration", new[,]
+                        {
                         {"$PROCEDURE$", item.LegalProcedure},
                         {"$RENEWAL$", item.RenewalDate?.ToString("dd/MM/yyyy") },
                         {"$EXPIRATION$", item.ExpirationDate?.ToString("dd/MM/yyyy") }
                     }, sendEmail.GetAdminEmail(), GetLegalRequirementContacts(1).Split(',').ToList());
+                        legalRequirement.UpdateExpirationEmailFlag(true, item.LegalRequirementId);
+                    }
                 }
+                else
+                {
+                    if (item.ExpirationDate < DateTime.Now)
+                    {
+                        legalRequirement.UpdateExpirationEmailFlag(false, item.LegalRequirementId);
+                    }
+                }
+
             }
         }
 

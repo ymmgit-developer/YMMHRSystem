@@ -21,7 +21,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     HttpContext.Session["CanSaveVehicle"] = Permission.QueryPermission("VEHICLE.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
-                    HttpContext.Session["CanDeleteVehicle"] = Permission.QueryPermission("VEHICLE.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
+                    HttpContext.Session["CanCancelVehicle"] = Permission.QueryPermission("VEHICLE.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
                     return View("~/Areas/YMMHRSystem/Views/Vehicle/Index.cshtml", vehicle.LoadMultiple());
                 }
@@ -72,8 +72,8 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
+                    dtoVehicle.Status = 1;
                 }
-
                 vehicle.Save(dtoVehicle);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
@@ -89,11 +89,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// </summary>
         /// <param name="vehicleId"></param>
         /// <returns></returns>
-        public string DeleteVehicle(long vehicleId)
+        public string CancelVehicle(long vehicleId)
         {
             try
             {
-                return vehicle.DeleteVehicle(vehicleId) ? "true" : "false";
+                return vehicle.CancelVehicle(vehicleId) ? "true" : "false";
             }
             catch (Exception ex)
             {

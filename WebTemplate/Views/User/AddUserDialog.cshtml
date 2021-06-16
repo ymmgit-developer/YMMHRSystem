@@ -2,6 +2,8 @@
 @using YMMHRSystemLogic
 @{
     Layout = null;
+    Process process = new Process();
+    var processList = process.LoadMultiple();
 }
 <div class="dialog-title">User</div>
 
@@ -23,19 +25,16 @@
         </div>
         <div class="row mt-2 mb-2">
             <div class="cell-md-6">
-                <input type="text" name="LastSurname" id="LastSurname" data-role="input" data-prepend="Second Surname:" data-validate="required" class="user" autocomplete="off" value="@Model.LastSurname">
-                <span class="invalid_feedback">
-                    Enter a surname
-                </span>
+                <input type="text" name="LastSurname" id="LastSurname" data-role="input" data-prepend="Second Surname:" class="user" autocomplete="off" value="@Model.LastSurname">
             </div>
             <div class="cell-md-6">
                 <input type="text" name="WorkerId" id="WorkerId" data-role="input" data-prepend="Worker ID:" data-validate="required" class="user" autocomplete="off" value="@Model.WorkerId">
                 <span class="invalid_feedback">
-                   Enter a worker ID
+                    Enter a worker ID
                 </span>
             </div>
         </div>
-        <div class=" row mt-2 mb-2">
+        <div class="row mt-2 mb-2">
             <div class="cell-md-6">
                 <input type="email" name="Email" id="Email" data-role="input" data-prepend="Email:" data-validate="required" class="user" autocomplete="off" value="@Model.Email">
                 <span class="invalid_feedback">
@@ -50,8 +49,8 @@
             </div>
         </div>
         <div class="row mt-2 mb-2">
-            <div class="cell-md-12">
-                <select data-role="select" id="RoleId" name="RoleId" class="user">
+            <div class="cell-md-6">
+                <select data-role="select" id="RoleId" name="RoleId" class="user notranslate">
 
                     @foreach (var item in Model.RoleList)
                     {
@@ -67,12 +66,27 @@
                     }
                 </select>
             </div>
+            <div class="cell-md-6">
+                <select class="user notranslate" data-role="select" id="Process" name="Process" data-prepend="Process:">
+                    @foreach (var item in processList)
+                    {
+                        if (Model.Process == item.Name)
+                        {
+                            <option selected value="@item.Name">@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Name">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
         </div>
         <div class="row mt-2 mb-2">
             <div class="dialog-actions float-right">
                 @if (HttpContext.Current.Session["CanSaveUser"].Equals(true))
                 {
-                <div><button id="SaveUser" class="button primary"><span class="mif-floppy-disk"> Save</span> </button></div>
+                    <div><button id="SaveUser" class="button primary"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }
                 <div><span id="userPreloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
             </div>

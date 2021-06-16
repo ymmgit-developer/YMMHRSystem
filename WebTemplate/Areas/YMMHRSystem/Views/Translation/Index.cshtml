@@ -87,7 +87,11 @@
 
                             <td style="text-align: center">
                                 <a class="button bg-black fg-white" style="cursor: pointer;" onclick="TranslationDetailDialog(@item.TranslationId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
-                                @if (HttpContext.Current.Session["CanDeleteTranslation"].Equals(true))
+                                @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteTranslation(@item.TranslationId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                                else if (HttpContext.Current.Session["CanDeleteTranslation"].Equals(true) && item.Status == 1)
                                 {
                                     <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteTranslation(@item.TranslationId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
                                 }

@@ -69,7 +69,7 @@ function AddCoffeeBreak() {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.toast.create("Error saving coffee break.", null, null, "bg-red fg-white");
+                Metro.toast.create("No rooms available", null, null, "bg-red fg-white");
             }
 
             $('#SaveCoffeeBreak').attr('disabled', false);

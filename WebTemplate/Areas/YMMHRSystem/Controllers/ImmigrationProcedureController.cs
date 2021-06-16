@@ -24,8 +24,15 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     HttpContext.Session["CanSaveImmigrationProcedure"] = Permission.QueryPermission("IMMIGRATION.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
                     HttpContext.Session["CanDeleteImmigrationProcedure"] = Permission.QueryPermission("IMMIGRATION.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
-
-                    return View("~/Areas/YMMHRSystem/Views/ImmigrationProcedure/Index.cshtml", immigrationProcedure.LoadMultiple());
+                    if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/ImmigrationProcedure/Index.cshtml", immigrationProcedure.LoadMultiple());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/ImmigrationProcedure/Index.cshtml", immigrationProcedure.LoadMultiple(Session["UserName"].ToString()));
+                    }
+             
                 }
                 else
                 {
@@ -68,6 +75,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 dtoImmigrationProcedure.ImmigrationProcedureId = Convert.ToInt64(Session["LoadedImmigrationProcedureId"]);
 
+                dtoImmigrationProcedure.CreatedBy = Session["UserName"].ToString();
                 immigrationProcedure.Save(dtoImmigrationProcedure);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

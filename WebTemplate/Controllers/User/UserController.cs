@@ -81,6 +81,7 @@ namespace WebTemplate.Controllers
                 dtoUsr.Password = user.Password;
                 dtoUsr.RoleId = user.RoleId;
                 dtoUsr.Status = user.Status = "1";
+                dtoUsr.Process = user.Process;
                 this.user.Save(dtoUsr);
                 role.SaveUserTasks(role.GetRoleTaskIdList(user.RoleId), dtoUsr.UserId);
 

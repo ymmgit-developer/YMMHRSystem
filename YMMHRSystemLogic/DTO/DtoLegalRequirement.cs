@@ -17,6 +17,8 @@ namespace YMMHRSystemLogic
         public DateTime? RenewalDate { get; set; }
         public string UserCreated { get; set; }
         public DateTime? DateAdded { get; set; }
+        public bool ExpirationEmailSent { get; set; }
+        public bool RenewalEmailSent { get; set; }
         public List<DtoLegalRequirementAttachment> AttachmentList { get; set; } = new List<DtoLegalRequirementAttachment>();
     }
 }

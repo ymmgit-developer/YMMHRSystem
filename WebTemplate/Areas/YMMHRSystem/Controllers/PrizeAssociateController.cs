@@ -53,7 +53,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-
                 prizeAssociate.Save(dtoPrizeAssociate);
 
                 return Json("true", JsonRequestBehavior.AllowGet);

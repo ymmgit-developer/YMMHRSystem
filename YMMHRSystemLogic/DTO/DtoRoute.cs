@@ -12,7 +12,6 @@ namespace YMMHRSystemLogic
         public string Name { get; set; }
         public string Shift { get; set; }
         public decimal Cost { get; set; }
-        public bool Extraordinary { get; set; }
         public string UserCreated { get; set; }
         public DateTime? DateAdded { get; set; }
         public List<DtoRouteStop> StopList { get; set; } = new List<DtoRouteStop>();

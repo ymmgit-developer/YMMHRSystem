@@ -15,51 +15,6 @@ namespace YMMHRSystemLogic
         SQLTools oDatabase = new SQLTools();
         #region Standard Methods
         /// <summary>
-        /// Loads the GiftAssociate DTO
-        /// </summary>
-        /// <param name="giftAssociateId"></param>
-        /// <returns>DtoGiftAssociate Loaded</returns>
-        public DtoGiftAssociate Load(long giftAssociateId)
-        {
-            DtoGiftAssociate giftAssociate = new DtoGiftAssociate();
-            try
-            {
-                DBFrameworkMapping mapping = new DBFrameworkMapping();
-                if (giftAssociateId != 0)
-                {
-                    mapping.Load<DtoGiftAssociate>("GiftAssociates", new DtoGiftAssociate(), "GiftAssociateId=" + giftAssociateId);
-                    giftAssociate = (DtoGiftAssociate)mapping.dtoList.FirstOrDefault().Dto;
-                }
-
-                return giftAssociate;
-            }
-            catch (Exception ex)
-            {
-                log.WriteToErrorLog("HR System", "Load Gift Associate", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Load");
-                throw ex;
-            }
-        }
-        /// <summary>
-        /// Register GiftAssociate 
-        /// </summary>
-        /// <param name="giftAssociate"></param>
-        /// <returns>GiftAssociate registered</returns>
-        public void Save(DtoGiftAssociate giftAssociate)
-        {
-            try
-            {
-                DBFrameworkMapping mapping = new DBFrameworkMapping();
-                mapping.dtoList.Add(new DBFrameworkDto() { Dto = giftAssociate, TableName = "GiftAssociates" });
-
-                mapping.Save();
-            }
-            catch (Exception ex)
-            {
-                log.WriteToErrorLog("HR System", "Save GiftAssociate", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Save");
-                throw ex;
-            }
-        }
-        /// <summary>
         /// Save multiple Gift Associates
         /// </summary>
         /// <param name="giftAssociates"></param>
@@ -92,7 +47,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoGiftAssociate> giftAssociateList = new List<DtoGiftAssociate>();
 
-                mapping.Load<DtoGiftAssociate>("SELECT GiftAssociateId, WorkerFileId, Associate, Process, Month, Day FROM GiftAssociates ORDER BY GiftAssociateId", "GiftAssociate", new DtoGiftAssociate());
+                mapping.Load<DtoGiftAssociate>("SELECT GiftAssociateId, WorkerFileId, Associate, Process, Month, Day, EmailSent FROM GiftAssociates ORDER BY GiftAssociateId", "GiftAssociate", new DtoGiftAssociate());
                 giftAssociateList.AddRange(mapping.dtoList.Select(renglon => (DtoGiftAssociate)renglon.Dto));
 
                 return giftAssociateList;
@@ -205,7 +160,7 @@ namespace YMMHRSystemLogic
             try
             {
                 WorkerFile workerFile = new WorkerFile();
-                List<DtoWorkerFile> workers = workerFile.LoadMultiple();
+                List<DtoWorkerFile> workers = workerFile.LoadMultiple(1);
                 List<DtoGiftAssociate> actualGiftWorkers = LoadMultiple();
                 List<DtoGiftAssociate> giftWorkers = new List<DtoGiftAssociate>();
 
@@ -220,7 +175,8 @@ namespace YMMHRSystemLogic
                             Process = item.Process,
                             WorkerFileId = item.WorkerFileId,
                             Month = item.AdmissionDate?.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture),
-                            Day = Convert.ToInt32(item.AdmissionDate?.Day)
+                            Day = Convert.ToInt32(item.AdmissionDate?.Day),
+                            EmailSent = false
                         });
                     }
                 }
@@ -234,7 +190,8 @@ namespace YMMHRSystemLogic
                             Process = item.Process,
                             WorkerFileId = item.WorkerFileId,
                             Month = item.AdmissionDate?.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture),
-                            Day = Convert.ToInt32(item.AdmissionDate?.Day)
+                            Day = Convert.ToInt32(item.AdmissionDate?.Day),
+                            EmailSent = false
                         });
                     }
                 }
@@ -254,13 +211,29 @@ namespace YMMHRSystemLogic
         public void DeleteInactiveGiftAssociates()
         {
             WorkerFile workerFile = new WorkerFile();
-            List<DtoWorkerFile> inactiveWorkers = workerFile.LoadMultiple();
+            List<DtoWorkerFile> inactiveWorkers = workerFile.LoadMultiple(0);
             List<DtoGiftAssociate> actualGiftWorkers = LoadMultiple();
 
             if (actualGiftWorkers.Count > 0)
             {
                 List<DtoWorkerFile> inactiveAssociates = inactiveWorkers.Where(x => actualGiftWorkers.Any(y => y.WorkerFileId == x.WorkerFileId) && x.Status == false).ToList();
                 DeleteInactiveWorkers(inactiveAssociates);
+            }
+        }
+        /// <summary>
+        /// Updates the email notification flag
+        /// </summary>
+        /// <param name="flag"></param>
+        public void UpdateEmailFlag(bool flag, long giftAssociateId)
+        {
+            try
+            {
+                string query = "UPDATE GiftAssociates SET EmailSent = " + (flag ? "1" : "0") + " WHERE GiftAssociateId =" + giftAssociateId;
+                oDatabase.ExecuteNonQuery(query, "Update Email Sent GiftAssociate");
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Update Email Flag", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "UpdateEmailFlag");
             }
         }
         #endregion

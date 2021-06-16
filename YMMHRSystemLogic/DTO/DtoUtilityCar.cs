@@ -29,5 +29,6 @@ namespace YMMHRSystemLogic
         public int Status { get; set; }
         public int Passengers { get; set; }
         public DateTime DateAdded { get; set; }
+        public long CreatedBy { get; set; }
     }
 }

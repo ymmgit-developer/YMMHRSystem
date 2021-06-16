@@ -66,7 +66,7 @@ namespace WebTemplate.Controllers
 
                 Session["UserId"] = this.user.GetUserId((user.Email));               
                 user = this.user.Load(Convert.ToInt64(Session["UserId"]));
-                Session["UserName"] = user.Name + user.FirstSurname;
+                Session["UserName"] = user.Name + " " + user.FirstSurname;
 
                 //Cargar variables para DBTools
                 login.LoadSQLToolsStaticVariables(Session["UserId"].ToString());

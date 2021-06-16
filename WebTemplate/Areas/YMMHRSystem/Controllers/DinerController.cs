@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,7 +14,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         // GET: YMMHRSystem/Diner
         Diner diner = new Diner();
 
-        // GET: YMMHRSystem/Diner
         public ActionResult Diner()
         {
             try
@@ -74,7 +74,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-
+                dtoDiner.UserCreated = Session["UserName"].ToString();
                 diner.Save(dtoDiner);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
@@ -111,14 +111,55 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     HttpContext.Session["CanSaveExtraordinaryDiner"] = Permission.QueryPermission("EXTRADINER.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
-                    HttpContext.Session["CanDeleteExtraordinaryDiner"] = Permission.QueryPermission("EXTRADINER.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
-
-                    return View("~/Areas/YMMHRSystem/Views/Diner/ExtraordinaryDiner.cshtml", diner.LoadMultipleExtra());
+                    HttpContext.Session["CanCancelExtraordinaryDiner"] = Permission.QueryPermission("EXTRADINER.DELETE", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
+                    if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Diner/ExtraordinaryDiner.cshtml", diner.LoadMultipleExtra());
+                    }
+                    else
+                    {
+                        return View("~/Areas/YMMHRSystem/Views/Diner/ExtraordinaryDiner.cshtml", diner.LoadMultipleExtra(Session["UserName"].ToString()));
+                    }
                 }
                 else
                 {
                     return View("~/Views/Shared/AccessDenied.cshtml");
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// Add view Diner.
+        /// </summary>
+        /// <param name="extraordinaryDinerId"></param>
+        /// <returns></returns>
+        public ActionResult AddExtraordinaryDiner()
+        {
+            try
+            {
+                DtoExtraordinaryDiner dtoExtraordinaryDiner = new DtoExtraordinaryDiner();
+
+                return View("~/Areas/YMMHRSystem/Views/Diner/ExtraordinaryDinerAddDialog.cshtml", dtoExtraordinaryDiner);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AddGuestExtraordinaryDiner()
+        {
+            try
+            {
+                DtoExtraordinaryDiner dtoExtraordinaryDiner = new DtoExtraordinaryDiner();
+
+                return View("~/Areas/YMMHRSystem/Views/Diner/GuestExtraordinaryDinerAddDialog.cshtml", dtoExtraordinaryDiner);
             }
             catch (Exception ex)
             {
@@ -146,6 +187,26 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
         }
         /// <summary>
+        /// Confirms Extra Diner Request
+        /// </summary>
+        /// <param name="extraordinaryDinerId"></param>
+        /// <returns></returns>
+        public ActionResult ConfirmExtraordinaryDiner(long extraordinaryDinerId)
+        {
+            try
+            {
+                Session["LoadedExtraDinerId"] = extraordinaryDinerId;
+
+                diner.ConfirmExtraordinaryDiner(extraordinaryDinerId, Convert.ToInt64(Session["UserId"]));
+
+                return RedirectToAction("ExtraordinaryDiner");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
         /// Saves a Diner.
         /// </summary>
         /// <param name="dtoExtraDiner"></param>
@@ -154,22 +215,272 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
-                DateTime? dateOrdered = dtoExtraDiner.Date?.Add(dtoExtraDiner.Time);
-                if (dateOrdered?.Subtract(DateTime.Now).TotalHours < 4)
-                {
-                    return Json("false", JsonRequestBehavior.AllowGet);
-                }
-
                 dtoExtraDiner.ExtraordinaryDinerId = Convert.ToInt64(Session["LoadedExtraDinerId"]);
                 if (dtoExtraDiner.ExtraordinaryDinerId == 0)
                 {
-                    if (diner.GetExtraDinerId(dtoExtraDiner.AssociateName, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) != 0)
+                    if (dtoExtraDiner.WorkerList.Count <= 0)
                     {
                         return Json("false", JsonRequestBehavior.AllowGet);
                     }
                 }
-                dtoExtraDiner.Lading = dtoExtraDiner.LadingCost > 0.0m ? true : false;
-                diner.SaveExtra(dtoExtraDiner);
+
+                if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                {
+                    DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
+                    if (dateOrdered.Subtract(DateTime.Now).TotalHours < 4 || dateOrdered < DateTime.Now)
+                    {
+                        return Json("false", JsonRequestBehavior.AllowGet);
+                    }
+
+                    if (dateOrdered.Subtract(DateTime.Now).Days == 1)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+
+                    if ((dateOrdered.DayOfWeek == DayOfWeek.Saturday || dateOrdered.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+
+                    if (dateOrdered.Day == DateTime.Now.Day)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                }
+
+                if (dtoExtraDiner.WorkerList.Count > 0)
+                {
+                    List<DtoExtraordinaryDiner> dinerList = new List<DtoExtraordinaryDiner>();
+                    WorkerFile workerFile = new WorkerFile();
+                    if (dtoExtraDiner.FinishDate != null)
+                    {
+
+                        if (dtoExtraDiner.FinishDate < dtoExtraDiner.Date)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+
+                        List<DateTime?> selectedDates = new List<DateTime?>();
+                        for (var date = dtoExtraDiner.Date; date <= dtoExtraDiner.FinishDate; date = date?.AddDays(1))
+                        {
+                            selectedDates.Add(date);
+                        }
+
+                        List<DtoWorkerFile> workerDatelist = dtoExtraDiner.WorkerList.SelectMany(g => selectedDates.Select(c => new DtoWorkerFile { Names = g.Names, Process = g.Process, AdmissionDate = c.Value })).ToList();
+
+                        foreach (var item in workerDatelist)
+                        {
+                            if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, item.AdmissionDate, dtoExtraDiner.Time) == 0)
+                            {
+                                dinerList.Add(new DtoExtraordinaryDiner()
+                                {
+                                    AssociateName = item.Names,
+                                    Process = item.Process,
+                                    Date = item.AdmissionDate,
+                                    Time = dtoExtraDiner.Time,
+                                    Lading = dtoExtraDiner.Lading,
+                                    LadingCost = dtoExtraDiner.LadingCost,
+                                    Type = dtoExtraDiner.Type,
+                                    UserCreated = Session["UserName"].ToString(),
+                                    Motive = dtoExtraDiner.Motive,
+                                    TypeCost = dtoExtraDiner.TypeCost,
+                                    Contacts = dtoExtraDiner.Contacts
+                                });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in dtoExtraDiner.WorkerList)
+                        {
+                            if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) == 0)
+                            {
+                                dinerList.Add(new DtoExtraordinaryDiner()
+                                {
+                                    AssociateName = item.Names,
+                                    Process = item.Process,
+                                    Date = dtoExtraDiner.Date,
+                                    Time = dtoExtraDiner.Time,
+                                    Lading = dtoExtraDiner.Lading,
+                                    LadingCost = dtoExtraDiner.LadingCost,
+                                    Type = dtoExtraDiner.Type,
+                                    UserCreated = Session["UserName"].ToString(),
+                                    Motive = dtoExtraDiner.Motive,
+                                    TypeCost = dtoExtraDiner.TypeCost,
+                                    Contacts = dtoExtraDiner.Contacts
+                                });
+                            }
+                        }
+                    }
+
+                    diner.SaveMultipleExtra(dinerList, Convert.ToInt64(Session["UserId"]));
+                }
+                else
+                {
+
+                    if (dtoExtraDiner.ExtraordinaryDinerId == 0)
+                    {
+                        if (diner.GetExtraDinerId(dtoExtraDiner.AssociateName, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) != 0)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    dtoExtraDiner.Lading = dtoExtraDiner.LadingCost > 0.0m ? true : false;
+                    if (dtoExtraDiner.ExtraordinaryDinerId == 0)
+                    {
+                        dtoExtraDiner.UserCreated = Session["UserName"].ToString();
+                    }
+                    else
+                    {
+                        dtoExtraDiner.UserModified = Session["UserName"].ToString();
+                    }
+
+                    diner.SaveExtra(dtoExtraDiner, Convert.ToInt64(Session["UserId"]));
+                }
+
+                return Json("true", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json("false", JsonRequestBehavior.AllowGet);
+            }
+
+        }
+        /// <summary>
+        /// Saves a Diner.
+        /// </summary>
+        /// <param name="dtoExtraDiner"></param>
+        /// <returns></returns>
+        public ActionResult SaveGuestExtraordinaryDiner(DtoExtraordinaryDiner dtoExtraDiner)
+        {
+            try
+            {
+
+                if (dtoExtraDiner.GuestQuantity <= 0)
+                {
+                    return Json("false", JsonRequestBehavior.AllowGet);
+                }
+
+
+                if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                {
+                    DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
+                    if (dateOrdered.Subtract(DateTime.Now).TotalHours < 4 || dateOrdered < DateTime.Now)
+                    {
+                        return Json("false", JsonRequestBehavior.AllowGet);
+                    }
+
+                    if (dateOrdered.Subtract(DateTime.Now).Days == 1)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+
+                    if ((dateOrdered.DayOfWeek == DayOfWeek.Saturday || dateOrdered.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+
+                    if (dateOrdered.Day == DateTime.Now.Day)
+                    {
+                        TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
+                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        {
+                            return Json("false", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                }
+
+
+                List<DtoExtraordinaryDiner> dinerList = new List<DtoExtraordinaryDiner>();
+                WorkerFile workerFile = new WorkerFile();
+
+                for (int i = 0; i < dtoExtraDiner.GuestQuantity; i++)
+                {
+                    dtoExtraDiner.WorkerList.Add(new DtoWorkerFile { Names = "Guest", Process = dtoExtraDiner.Process });
+                }
+
+                if (dtoExtraDiner.FinishDate != null)
+                {
+
+                    if (dtoExtraDiner.FinishDate < dtoExtraDiner.Date)
+                    {
+                        return Json("false", JsonRequestBehavior.AllowGet);
+                    }
+
+                    List<DateTime?> selectedDates = new List<DateTime?>();
+                    for (var date = dtoExtraDiner.Date; date <= dtoExtraDiner.FinishDate; date = date?.AddDays(1))
+                    {
+                        selectedDates.Add(date);
+                    }
+                   
+                    List<DtoWorkerFile> workerDatelist = dtoExtraDiner.WorkerList.SelectMany(g => selectedDates.Select(c => new DtoWorkerFile { Names = g.Names, Process = g.Process, AdmissionDate = c.Value })).ToList();
+
+                    foreach (var item in workerDatelist)
+                    {
+                        if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, item.AdmissionDate, dtoExtraDiner.Time) == 0)
+                        {
+                            dinerList.Add(new DtoExtraordinaryDiner()
+                            {
+                                AssociateName = item.Names,
+                                Process = item.Process,
+                                Date = item.AdmissionDate,
+                                Time = dtoExtraDiner.Time,
+                                Lading = dtoExtraDiner.Lading,
+                                LadingCost = dtoExtraDiner.LadingCost,
+                                Type = dtoExtraDiner.Type,
+                                UserCreated = Session["UserName"].ToString(),
+                                Motive = dtoExtraDiner.Motive,
+                                TypeCost = dtoExtraDiner.TypeCost,
+                                Contacts = dtoExtraDiner.Contacts
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var item in dtoExtraDiner.WorkerList)
+                    {
+                        if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) == 0)
+                        {
+                            dinerList.Add(new DtoExtraordinaryDiner()
+                            {
+                                AssociateName = item.Names,
+                                Process = item.Process,
+                                Date = dtoExtraDiner.Date,
+                                Time = dtoExtraDiner.Time,
+                                Lading = dtoExtraDiner.Lading,
+                                LadingCost = dtoExtraDiner.LadingCost,
+                                Type = dtoExtraDiner.Type,
+                                UserCreated = Session["UserName"].ToString(),
+                                Motive = dtoExtraDiner.Motive,
+                                TypeCost = dtoExtraDiner.TypeCost,
+                                Contacts = dtoExtraDiner.Contacts
+                            });
+                        }
+                    }
+                }
+
+                diner.SaveMultipleExtra(dinerList, Convert.ToInt64(Session["UserId"]));
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -184,11 +495,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// </summary>
         /// <param name="extraordinaryDinerId"></param>
         /// <returns></returns>
-        public string DeleteExtraordinaryDiner(long extraordinaryDinerId)
+        public string CancelExtraordinaryDiner(long extraordinaryDinerId)
         {
             try
             {
-                return diner.DeleteExtraDiner(extraordinaryDinerId) ? "true" : "false";
+                return diner.CancelExtraDiner(extraordinaryDinerId) ? "true" : "false";
             }
             catch (Exception ex)
             {

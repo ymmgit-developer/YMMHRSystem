@@ -1,23 +1,24 @@
-﻿$(document).ready(function () {
+﻿var table, tableAssociates;
+$(document).ready(function () {
 
     $('#dttTransports').DataTable({
         buttons: [
             {
                 extend: 'copyHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
             {
                 extend: 'excelHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
             {
                 extend: 'print',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
         ],
@@ -27,29 +28,31 @@
         info: true,
         paging: true,
         ordering: false,
-        scrollY: "50vh",
+        scrollY: "60vh",
         scrollCollapse: true,
+        initComplete: function () {
+            $("#TransportTable").show();
+        }
     });
-
 
     $('#dttExtraordinaryTransports').DataTable({
         buttons: [
             {
                 extend: 'copyHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
             {
                 extend: 'excelHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
             {
                 extend: 'print',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5],
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                 }
             },
         ],
@@ -59,10 +62,12 @@
         info: true,
         paging: true,
         ordering: false,
-        scrollY: "50vh",
+        scrollY: "70vh",
         scrollCollapse: true,
+        initComplete: function () {
+            $("#ExtraordinaryTransportTable").show();
+        }
     });
-
 });
 
 function TransportDetailDialog(id) {
@@ -155,14 +160,25 @@ function ExtraordinaryTransportDetailDialog(id) {
     });
 }
 
+function ExtraordinaryTransportAddDialog() {
+
+    $.ajax({
+        method: "POST",
+        url: window.$AddExtraordinaryTransport,
+        success: function (result) {
+            var dialog = Metro.getPlugin('#ExtraordinaryTransportAddDialog', 'dialog');
+            dialog.setContent(result);
+            setTimeout(function () { dialog.open(); }, 100);
+        }
+    });
+}
+
 function AddExtraordinaryTransport() {
 
     $('#SaveTransport').attr('disabled', true);
     $("#SaveTransport").removeClass('button my-control-colors');
     $("#SaveTransport").addClass('button');
     $("#Preloader").css("visibility", "visible");
-
-    $("#Route").val($("#RouteSelect option:selected").text());
 
     $.ajax({
         method: "POST",
@@ -190,27 +206,27 @@ function AddExtraordinaryTransport() {
 
 }
 
-function ConfirmDeleteExtraordinaryTransport(transportId) {
-    var dialog = Metro.getPlugin('#DeleteExtraordinaryTransport', 'dialog');
+function ConfirmCancelExtraordinaryTransport(transportId) {
+    var dialog = Metro.getPlugin('#CancelExtraordinaryTransport', 'dialog');
     dialog.open();
     window.$transportId = transportId;
 }
 
-function DeleteExtraordinaryTransport() {
+function CancelExtraordinaryTransport() {
 
 
     $.ajax({
         method: "POST",
-        url: window.$DeleteExtraordinaryTransport,
+        url: window.$CancelExtraordinaryTransport,
         data: { extraordinaryTransportId: window.$transportId },
         success: function (result) {
             if (result === "true") {
-                Metro.toast.create("Transport deleted.", null, null, "bg-green fg-white");
+                Metro.toast.create("Transport cancelled.", null, null, "bg-green fg-white");
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.toast.create("Error deleting transport", null, null, "bg-red fg-white");
+                Metro.toast.create("Error cancelling transport", null, null, "bg-red fg-white");
             }
 
         }
@@ -218,13 +234,33 @@ function DeleteExtraordinaryTransport() {
 
 }
 
-function SelectAssociate(names, process){
+function SelectAssociates(names, process, id) {
+
+    var same;
+    $("#dttAssociateList td").each(function () {
+        if ($(this).text() === names) {
+            same = "true";
+        }
+    });
+    if (same === "true") {
+        Metro.toast.create("Associate already added.", null, null, "bg-red fg-white");
+    } else {
+        tableAssociates.row($('#'+id)).remove().draw();
+
+        var node = table.row.add([names, process, '<a class="button small bg-red fg-white" style="cursor: pointer;" onclick="RemoveAssociate(\'' + names + '\')"><span class="mif-bin"></span></a>']).draw(false).node();
+        $(node).css('text-align', 'center');
+        $("#dttAssociateList").find("tr").last().append("<input type='hidden' name='WorkerList[" + ($("#dttAssociateList").find("tr").length - 2) + "].Names' value='" + names + "'>");
+        $("#dttAssociateList").find("tr").last().append("<input type='hidden' name='WorkerList[" + ($("#dttAssociateList").find("tr").length - 2) + "].Process' value='" + process + "'>");
+        Metro.toast.create("Associate added.", null, null, "bg-green fg-white");
+    }
+}
+
+function SelectAssociate(names, process) {
     $('#AssociateName').val(names);
     $('#Process').val(process);
     Metro.dialog.close('#AssociateImporter');
+
 }
-
-
 
 
 

@@ -4,7 +4,7 @@
     Layout = null;
     WorkerFile workerFile = new WorkerFile();
     var associateList = workerFile.LoadMultiple();
-    var foodTypeList = new List<string>() { "Box Lunch", "Weekend", "Special", "Other" };
+    var foodTypeList = new List<string>() { "Box Lunch", "Weekend", "Special", "Shift Change" };
 }
 
 
@@ -15,14 +15,15 @@
         <div class="row">
             <div class="cell-md-12">
                 <div class="row mb-2">
-                    <div class="cell-md-10">
-                        <input type="text" name="AssociateName" id="AssociateName" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
-                        <span class="invalid_feedback">
-                            Select an Associate
-                        </span>
-                    </div>
-                    <div class="cell-md-2">
-                        <a class="button my-button-colors" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
+                    <div class="cell-md-12">
+                        @if (Model.ExtraordinaryDinerId == 0)
+                        {
+                            <input type="text" name="AssociateName" id="AssociateName" onclick="Metro.dialog.open('#AssociateImporter')" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
+                        }
+                        else
+                        {
+                            <input type="text" name="AssociateName" id="AssociateName" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
+                        }
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -30,12 +31,12 @@
                         <input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                     </div>
                     <div class="cell-md-6">
-                        <input style="font-size:12px;"  data-role="timepicker" data-seconds="false" data-value="@Model.Time" id="Time" name="Time">
+                        <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.Time" id="Time" name="Time">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <select data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
+                        <select class="notranslate" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
                             @foreach (var item in foodTypeList)
                             {
                                 if (Model.Type == item)
@@ -71,14 +72,20 @@
                 }
             </div>
         </div>
+        @Html.Hidden("Status", Model.Status)
         @Html.Hidden("Process", Model.Process)
         @Html.Hidden("Type", Model.Type)
         @Html.Hidden("Lading", Model.Lading)
         @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("CreatedBy", Model.CreatedBy)
         @Html.Hidden("DateAdded", Model.DateAdded)
         <div class="row">
             <div class="dialog-actions d-flex flex-justify-start w-100">
-                @if (HttpContext.Current.Session["CanSaveExtraordinaryDiner"].Equals(true))
+                @if (HttpContext.Current.Session["CanSaveExtraordinaryDiner"].Equals(true) && Model.Status <= 1)
+                {
+                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
+                }
+                else if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }

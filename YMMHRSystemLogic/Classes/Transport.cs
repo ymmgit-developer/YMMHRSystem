@@ -54,7 +54,6 @@ namespace YMMHRSystemLogic
 
                 if (transport.TransportId == 0)
                 {
-                    transport.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     transport.Date = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
@@ -79,7 +78,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoTransport> shiftList = new List<DtoTransport>();
 
-                mapping.Load<DtoTransport>("SELECT TransportId, Route, Shift, Date, StartDate, FinishDate, Cost, UserCreated, Type FROM Transports ORDER BY TransportId", "Transports", new DtoTransport());
+                mapping.Load<DtoTransport>("SELECT TransportId, Route, Date, StartDate, FinishDate, Cost, UserCreated, Type FROM Transports ORDER BY TransportId DESC", "Transports", new DtoTransport());
                 shiftList.AddRange(mapping.dtoList.Select(renglon => (DtoTransport)renglon.Dto));
 
                 return shiftList;
@@ -103,7 +102,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoTransport> transportList = new List<DtoTransport>();
 
-                mapping.Load<DtoTransport>("SELECT TransportId, Route, Shift, Date, StartDate, FinishDate, Cost, UserCreated, Type FROM Transports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY TransportId", "Transports", new DtoTransport());
+                mapping.Load<DtoTransport>("SELECT TransportId, Route, Date, StartDate, FinishDate, Cost, UserCreated, Type FROM Transports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY TransportId DESC", "Transports", new DtoTransport());
                 transportList.AddRange(mapping.dtoList.Select(renglon => (DtoTransport)renglon.Dto));
 
                 return transportList;
@@ -145,26 +144,12 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="extraTransport"></param>
         /// <returns>Transport registered</returns>
-        public void SaveExtra(DtoExtraordinaryTransport extraTransport)
+        public void SaveExtra(DtoExtraordinaryTransport extraTransport, long userId = 0)
         {
             try
             {
                 User user = new User();
 
-                if (extraTransport.ExtraordinaryTransportId == 0)
-                {
-                    extraTransport.UserCreated = user.GetUserName(SQLTools.userId.ToString());
-                    extraTransport.Date = DateTime.Now;
-                    sendEmail.SendEmailTemplate("YMM HR System: Extra Transport Request", "TemplateExtraTransportRequest", new[,]
-{
-                        {"$APPLICANT$", extraTransport.UserCreated},
-                        {"$ROUTE$", extraTransport.Route},
-                        {"$STOP$", extraTransport.Stop},
-                        {"$ASSOCIATE$",extraTransport.AssociateName},
-                        {"$DATE$", extraTransport.StartDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetExtraTransportContacts(1).Split(',').ToList());
-
-                }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = extraTransport, TableName = "ExtraordinaryTransports" });
 
@@ -177,17 +162,94 @@ namespace YMMHRSystemLogic
             }
         }
         /// <summary>
+        /// Register Transport 
+        /// </summary>
+        /// <param name="extraTransport"></param>
+        /// <returns>Transport registered</returns>
+        public void SaveMultipleExtra(List<DtoExtraordinaryTransport> extraTransportList, long userId = 0)
+        {
+            try
+            {
+                User user = new User();
+                string associateList = "", emailTitle = "", templateName = "";
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                foreach (var item in extraTransportList)
+                {
+                    if (item.Status != 3)
+                    {
+                        item.Date = DateTime.Now;
+                        item.Status = 1;
+                        item.CreatedBy = userId;
+                    }
+                    mapping.dtoList.Add(new DBFrameworkDto() { Dto = item, TableName = "ExtraordinaryTransports" });
+                    associateList += item.AssociateName + "<br>";
+                }
+
+                mapping.Save();
+
+                List<string> contacts = emailNotification.GetExtraTransportContacts(1).Split(',').ToList();
+                if (extraTransportList[0].Contacts != "")
+                {
+                    List<string> ccContacts = extraTransportList[0].Contacts.Split(',').ToList();
+                    contacts.AddRange(ccContacts);
+                }
+                contacts.Add(user.GetUserEmail(extraTransportList[0].CreatedBy));
+                string date, time = "";
+                if (extraTransportList[0].StartDate == null)
+                {
+                    date = extraTransportList[0].FinishDate?.ToString("dd/MM/yyyy");
+                    time = extraTransportList[0].FinishTime.ToString();
+                }
+                else
+                {
+                    date = extraTransportList[0].StartDate?.ToString("dd/MM/yyyy");
+                    time = extraTransportList[0].StartTime.ToString();
+                }
+                if (extraTransportList[0].Status != 3)
+                {
+                    emailTitle = "YMM HR System: Extra Transport Request";
+                    templateName = "TemplateExtraTransportRequest";
+                }
+                else
+                {
+                    emailTitle = "YMM HR System: Extra Transport Confirmation";
+                    templateName = "TemplateExtraTransportConfirmation";
+                }
+
+                sendEmail.SendEmailTemplate(emailTitle, templateName, new[,]
+                {
+                        {"$APPLICANT$", extraTransportList[0].UserCreated},
+                        {"$MOTIVE$", extraTransportList[0].Motive},
+                        {"$ASSOCIATES$", associateList},
+                        {"$DATE$", date},
+                        {"$TIME$", time},
+                    }, sendEmail.GetAdminEmail(), contacts);
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Save Multiple Extra Transport", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "SaveMultipleExtra");
+                throw ex;
+            }
+        }
+        /// <summary>
         /// Load multiple Transport with fields.
         /// </summary>
         /// <returns>Load Transport Dto</returns>
-        public List<DtoExtraordinaryTransport> LoadMultipleExtra()
+        public List<DtoExtraordinaryTransport> LoadMultipleExtra(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoExtraordinaryTransport>("SELECT TOP 200 ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                }
+                else
+                {
+                    mapping.Load<DtoExtraordinaryTransport>("SELECT TOP 200 ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE UserCreated = '" + userFilter + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                }
 
-                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Shift, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated FROM ExtraordinaryTransports ORDER BY ExtraordinaryTransportId", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
                 extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
 
                 return extraTransportList;
@@ -211,7 +273,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
 
-                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Shift, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated FROM ExtraordinaryTransports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryTransportId", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
                 extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
 
                 return extraTransportList;
@@ -222,20 +284,61 @@ namespace YMMHRSystemLogic
                 throw ex;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="applicant"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public List<DtoExtraordinaryTransport> LoadMultipleCommonExtra(string applicant, DateTime date)
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
+
+                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE UserCreated = '" + applicant + "' AND Date = '" + date.ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
+
+                return extraTransportList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Common Extra Transports With Filter", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleCommonExtra");
+                throw ex;
+            }
+        }
         #endregion
 
-        #region General Methods    
+        #region General Methods  
+        public void ConfirmExtraordinaryTransport(long extraordinaryTransportId, long userId)
+        {
+            try
+            {
+                DtoExtraordinaryTransport dtoExtraordinaryTransport = LoadExtra(extraordinaryTransportId);
+
+                List<DtoExtraordinaryTransport> commonExtraTransport = LoadMultipleCommonExtra(dtoExtraordinaryTransport.UserCreated, dtoExtraordinaryTransport.Date);
+                commonExtraTransport.ForEach(x => x.Status = 3);
+                SaveMultipleExtra(commonExtraTransport, userId);
+
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Confirm Extraordinary Transport", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "ConfirmExtraordinaryTransport");
+                throw ex;
+            }
+        }
         /// <summary>
         /// Get Transport Id
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public long GetTransportId(string route, string shift, DateTime startDate, DateTime finishDate)
+        public long GetTransportId(string route, DateTime startDate, DateTime finishDate)
         {
             try
             {
                 DataRow dataRow = null;
-                string sqlString = "SELECT TransportId FROM Transports WHERE Route = '" + route + "' AND Shift = '" + shift + "' AND StartDate = '" + startDate.ToString("yyyyMMdd") + "' AND FinishDate = '" + finishDate.ToString("yyyyMMdd") + "'";
+                string sqlString = "SELECT TransportId FROM Transports WHERE Route = '" + route + "' AND StartDate = '" + startDate.ToString("yyyyMMdd") + "' AND FinishDate = '" + finishDate.ToString("yyyyMMdd") + "'";
 
                 dataRow = oDatabase.GetRow(sqlString, "Get TransportId");
 
@@ -276,12 +379,12 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public long GetExtraTransportId(string associateName, string route, string shift, DateTime? startDate, DateTime? finishDate)
+        public long GetExtraTransportId(string associateName, DateTime? startDate, DateTime? finishDate)
         {
             try
             {
                 DataRow dataRow = null;
-                string sqlString = "SELECT ExtraordinaryTransportId FROM ExtraordinaryTransports WHERE AssociateName = '" + associateName + "' AND Route = '" + route + "' AND Shift = '" + shift + "' AND StartDate = '" + startDate?.ToString("yyyyMMdd") + "' AND FinishDate = '" + finishDate?.ToString("yyyyMMdd") + "'";
+                string sqlString = "SELECT ExtraordinaryTransportId FROM ExtraordinaryTransports WHERE AssociateName = '" + associateName + "' AND StartDate = '" + startDate?.ToString("yyyyMMdd") + "' AND FinishDate = '" + finishDate?.ToString("yyyyMMdd") + "'";
 
                 dataRow = oDatabase.GetRow(sqlString, "Get Extra Transport Id");
 
@@ -301,17 +404,38 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="extraTransportId"></param>
         /// <returns></returns>
-        public bool DeleteExtraTransport(long extraTransportId)
+        public bool CancelExtraTransport(long extraTransportId)
         {
             try
             {
-                string query = "DELETE ExtraordinaryTransports WHERE ExtraordinaryTransportId =" + extraTransportId;
-                oDatabase.ExecuteNonQuery(query, "Remove Extra Transport");
+                DtoExtraordinaryTransport dtoExtraordinaryTransport = LoadExtra(extraTransportId);
+
+                string query = "UPDATE ExtraordinaryTransports SET Status = 2 WHERE ExtraordinaryTransportId =" + extraTransportId;
+                oDatabase.ExecuteNonQuery(query, "Cancels Extra Transport");
+
+                User user = new User();
+
+                try
+                {
+                    List<string> contacts = emailNotification.GetExtraTransportContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(dtoExtraordinaryTransport.CreatedBy));
+                    sendEmail.SendEmailTemplate("YMM HR System: Extra Transport Cancellation", "TemplateExtraTransportCancellation", new[,]
+                    {
+                        {"$APPLICANT$", dtoExtraordinaryTransport.UserCreated},
+                        {"$ROUTE$", dtoExtraordinaryTransport.Route},
+                        {"$STOP$", dtoExtraordinaryTransport.Stop},
+                        {"$ASSOCIATE$",dtoExtraordinaryTransport.AssociateName},
+                        {"$DATE$", dtoExtraordinaryTransport.StartDate?.ToString("dd/MM/yyyy")}
+                    }, sendEmail.GetAdminEmail(), contacts);
+                }
+                catch (Exception)
+                {
+                }
                 return true;
             }
             catch (Exception ex)
             {
-                log.WriteToErrorLog("HR System", "Delete Extraordinary Transport", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DeleteExtraTransport");
+                log.WriteToErrorLog("HR System", "Cancels Extraordinary Transport", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "CancelExtraTransport");
                 return false;
             }
 

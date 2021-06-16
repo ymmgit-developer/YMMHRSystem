@@ -52,7 +52,6 @@ namespace YMMHRSystemLogic
 
                 if (room.RoomId == 0)
                 {
-                    room.UserCreated = user.GetUserName(SQLTools.userId.ToString());
                     room.DateAdded = DateTime.Now;
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();

@@ -13,23 +13,20 @@
         <div class="row">
             <div class="cell-md-12">
                 <div class="row mb-2">
-                    <div class="cell-md-5">
+                    <div class="cell-md-9">
                         <select data-on-change="RouteSelected()" data-role="select" id="RouteSelect" name="RouteSelect" data-prepend="Route:">
                             @foreach (var item in routeList)
                             {
-                                if (Model.Route == item.Name && Model.Shift == item.Shift)
+                                if (Model.Route == item.Name)
                                 {
-                                    <option selected id="@item.Shift" value="@item.Cost">@item.Name</option>
+                                    <option selected value="@item.Cost">@item.Name</option>
                                 }
                                 else
                                 {
-                                    <option id="@item.Shift" value="@item.Cost">@item.Name</option>
+                                    <option value="@item.Cost">@item.Name</option>
                                 }
                             }
                         </select>
-                    </div>
-                    <div class="cell-md-4">
-                        <input type="text" name="Shift" id="Shift" data-role="input" readonly="readonly" data-prepend="Shift:" autocomplete="off" value="">
                     </div>
                     <div class="cell-md-3">
                         @if (Model.Type)
@@ -93,7 +90,6 @@
     });
 
     function RouteSelected() {
-        $("#Shift").val($("#RouteSelect option:selected").prop('id'));
         $("#Cost").val($("#RouteSelect option:selected").val());
     }
 </script>

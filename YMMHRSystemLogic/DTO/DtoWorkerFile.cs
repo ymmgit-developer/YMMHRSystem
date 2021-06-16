@@ -30,6 +30,9 @@ namespace YMMHRSystemLogic
         public string RFC { get; set; }
         public string NSS { get; set; }
         public string Job { get; set; }
+        public string Route { get; set; }
+        public string Shift { get; set; }
+        public string Stop { get; set; }
         public int AdmissionNumber { get; set; }
         public int DismissalNumber { get; set; }
         public List<DtoDismissal> DismissalList { get; set; } = new List<DtoDismissal>();

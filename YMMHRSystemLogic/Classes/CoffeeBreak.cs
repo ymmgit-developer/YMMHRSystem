@@ -48,16 +48,19 @@ namespace YMMHRSystemLogic
         /// </summary>
         /// <param name="coffeeBreak"></param>
         /// <returns>CoffeeBreak registered</returns>
-        public void Save(DtoCoffeeBreak coffeeBreak)
+        public void Save(DtoCoffeeBreak coffeeBreak, long userId = 0)
         {
             try
             {
                 User user = new User();
                 if (coffeeBreak.CoffeeBreakId == 0)
                 {
-                    coffeeBreak.Responsable = user.GetUserName(SQLTools.userId.ToString());
                     coffeeBreak.DateAdded = DateTime.Now;
                     coffeeBreak.Status = 1;
+                    coffeeBreak.CreatedBy = userId;
+
+                    List<string> contacts = emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList();
+                    contacts.Add(user.GetUserEmail(userId));
 
                     sendEmail.SendEmailTemplate("YMM HR System: Coffee Break Request", "TemplateCoffeeBreakRequest", new[,]
                     {
@@ -65,7 +68,7 @@ namespace YMMHRSystemLogic
                         {"$TYPE$", coffeeBreak.Type},
                         {"$ROOM$", coffeeBreak.Room},
                         {"$DATE$", coffeeBreak.StartDate?.ToString("dd/MM/yyyy")}
-                    }, sendEmail.GetAdminEmail(), emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList());
+                    }, sendEmail.GetAdminEmail(), contacts);
                 }
 
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
@@ -83,14 +86,21 @@ namespace YMMHRSystemLogic
         /// Load multiple CoffeeBreak with fields.
         /// </summary>
         /// <returns>Load CoffeeBreak Dto</returns>
-        public List<DtoCoffeeBreak> LoadMultiple()
+        public List<DtoCoffeeBreak> LoadMultiple(string userFilter = "")
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoCoffeeBreak> coffeeBreakList = new List<DtoCoffeeBreak>();
-
-                mapping.Load<DtoCoffeeBreak>("SELECT CoffeeBreakId, Responsable, AttendeeQuantity, InstructorQuantity, Room, Type, StartTime, FinishTime, StartDate, FinishDate, Status, DateAdded FROM CoffeeBreaks ORDER BY CoffeeBreakId", "CoffeeBreaks", new DtoCoffeeBreak());
+                if (userFilter == "")
+                {
+                    mapping.Load<DtoCoffeeBreak>("SELECT CoffeeBreakId, Responsable, AttendeeQuantity, InstructorQuantity, Room, Type, StartTime, FinishTime, StartDate, FinishDate, Status, DateAdded, CreatedBy FROM CoffeeBreaks ORDER BY CoffeeBreakId", "CoffeeBreaks", new DtoCoffeeBreak());
+                }
+                else
+                {
+                    mapping.Load<DtoCoffeeBreak>("SELECT CoffeeBreakId, Responsable, AttendeeQuantity, InstructorQuantity, Room, Type, StartTime, FinishTime, StartDate, FinishDate, Status, DateAdded, CreatedBy FROM CoffeeBreaks WHERE Responsable = '" + userFilter + "' ORDER BY CoffeeBreakId", "CoffeeBreaks", new DtoCoffeeBreak());
+                }
+                
                 coffeeBreakList.AddRange(mapping.dtoList.Select(renglon => (DtoCoffeeBreak)renglon.Dto));
 
                 return coffeeBreakList;
@@ -98,6 +108,37 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 log.WriteToErrorLog("HR System", "Load Multiple CoffeeBreak", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultiple");
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public List<DtoRoom> LoadMultipleAvailableRooms(DateTime? date)
+        {
+            try
+            {
+                Room room = new Room();
+                var rooms = room.LoadMultiple();
+                var coffeeBreaks = LoadMultiple();
+                List<DtoRoom> roomList = new List<DtoRoom>();
+                List<DtoCoffeeBreak> busyRooms = coffeeBreaks.Where(y => ((date >= y.StartDate?.Add(y.StartTime) && date <= y.FinishDate?.Add(y.FinishTime)) && y.Status != 3)).ToList();
+                if (busyRooms.Count > 0)
+                {
+                    roomList = rooms.Where(x => !busyRooms.Any(y => y.Room == x.Name)).ToList();
+                }
+                else
+                {
+                    roomList = rooms;
+                }
+
+                return roomList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple Available Rooms", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultipleAvailableRooms");
                 throw ex;
             }
         }

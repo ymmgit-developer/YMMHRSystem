@@ -12,7 +12,6 @@ namespace YMMHRSystemLogic
         public string AssociateName { get; set; }
         public string Process { get; set; }
         public string Route { get; set; }
-        public string Shift { get; set; }
         public string Stop { get; set; }
         public TimeSpan StartTime { get; set; }
         public DateTime? StartDate { get; set; }
@@ -20,7 +19,13 @@ namespace YMMHRSystemLogic
         public DateTime? FinishDate { get; set; }
         public string Motive { get; set; }
         public decimal Cost { get; set; }
+        public string Contacts { get; set; }
         public string UserCreated { get; set; }
         public DateTime Date { get; set; }
+        public string UserModified { get; set; }
+        public int Status { get; set; }
+        public long CreatedBy{ get; set; }
+        public List<DtoWorkerFile> WorkerList { get; set; } = new List<DtoWorkerFile>();
+        public bool ShiftChange { get; set; }
     }
 }

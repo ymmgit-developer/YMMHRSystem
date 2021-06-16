@@ -66,36 +66,24 @@ function AddStop(id) {
     var stopId = $("#StopName option:selected").val();
     var stopName = $("#StopName option:selected").text();
     var reference = $("#Reference").val();
-    var time = $("#Time").val();
 
     $("#dttRouteStops td").each(function () {
-        if ($(this).text() === reference) {
+        if ($(this).val() === reference) {
             same = "true";
         }
     });
     if (same === "true") {
         Metro.toast.create("Stop already exists.", null, null, "bg-red fg-white");
     } else {
-        $.ajax({
-            method: "POST",
-            url: window.$ValidateRouteStopExistence,
-            data: { routeId: RouteId, stopId: stopId },
-            success: function (result) {
-                if (result === "true") {
-                    Metro.toast.create("Stop already exists within another route.", null, null, "bg-red fg-white");
-                } else {
-                    var node = table.row.add([stopName, reference, time, "<a class='button small bg-red fg-white' style='cursor: pointer;' onclick='ConfirmDeleteStop(" + RouteId + "," + stopId + ",\"" + reference + "\")'><span class='mif-bin'></span><span class='actionButton'> Delete</span></a>"]).draw(false).node();
-                    $(node).css('text-align', 'center');
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteStopId' class='route' value=''>");
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteId' class='route' value='" + RouteId + "'>");
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].StopId' class='route' value='" + stopId + "'>");
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].StopName' class='route' value='" + stopName + "'>");
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].Reference' class='route' value='" + reference + "'>");
-                    $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].Time' class='route' value='" + time + "'>");
 
-                }
-            }
-        });
+        var node = table.row.add([stopName, reference, "<a class='button small bg-red fg-white' style='cursor: pointer;' onclick='ConfirmDeleteRouteStop(" + RouteId + "," + stopId + ",\"" + reference + "\")'><span class='mif-bin'></span><span class='actionButton'> Delete</span></a>"]).draw(false).node();
+        $(node).css('text-align', 'center');
+        $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteStopId' class='route' value=''>");
+        $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].RouteId' class='route' value='" + RouteId + "'>");
+        $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].StopId' class='route' value='" + stopId + "'>");
+        $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].StopName' class='route' value='" + stopName + "'>");
+        $("#dttRouteStops").find("tr").last().append("<input type='hidden' name='StopList[" + ($("#dttRouteStops").find("tr").length - 2) + "].Reference' class='route' value='" + reference + "'>");
+        Metro.toast.create("Stop added.", null, null, "bg-green fg-white");
     }
 }
 

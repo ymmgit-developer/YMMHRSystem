@@ -3,9 +3,6 @@
 @{
     Layout = null;
     WorkerFile workerFile = new WorkerFile();
-    YMMHRSystemLogic.Route route = new YMMHRSystemLogic.Route();
-    var routeList = route.LoadMultiple();
-    var stopList = route.GetRouteStopList(routeList[0].RouteId);
     var associateList = workerFile.LoadMultiple();
 }
 
@@ -18,104 +15,95 @@
             <div class="cell-md-12">
                 <div class="row mb-2">
                     <div class="cell">
-                        <input type="text" name="AssociateName" id="AssociateName" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
-                        <span class="invalid_feedback">
-                            Select an Associate
-                        </span>
-                    </div>
-                    <div class="cell-md-1">
-                        <a class="button my-button-colors" style="cursor: pointer; color: white;" onclick="Metro.dialog.open('#AssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Select</span></a>
+                        @if (Model.ExtraordinaryTransportId == 0)
+                        {
+                            <input type="text" name="AssociateName" id="AssociateName" onclick="Metro.dialog.open('#AssociateImporter')" data-validate="required" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
+                        }
+                        else
+                        {
+                            <input type="text" name="AssociateName" id="AssociateName" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
+                        }
                     </div>
                     @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                     {
-                        <div class="row">
-                            <div class="cell ml-2">
-                                <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="Cost" name="Cost">
-                            </div>
+                        <div class="cell">
+                            <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="Cost" name="Cost">
                         </div>
                     }
                 </div>
                 <div class="row mb-2">
-                    <div class="cell-md-3">
-                        @if (Model.ExtraordinaryTransportId == 0)
+                    <div class="cell-md-6">
+                        @if (Model.ExtraordinaryTransportId != 2)
                         {
-                            <input data-prepend="Start Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <input data-prepend="Arrival Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         }
                         else
                         {
-                            <input type="text" name="StartDate" id="StartDate" data-role="input" readonly="readonly" data-prepend="Start Date:" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? null : Model.StartDate?.ToString("yyyy-MM-dd"))">
+                            <input type="text" name="StartDate" id="StartDate" data-role="input" readonly="readonly" data-prepend="Arrival Date:" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? null : Model.StartDate?.ToString("yyyy-MM-dd"))">
                         }
 
                     </div>
-                    <div class="cell-md-3">
+                    <div class="cell-md-6">
                         <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
                     </div>
-                    <div class="cell-md-3">
-                        @if (Model.ExtraordinaryTransportId == 0)
-                        {                           
-                            <input data-prepend="Finish Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                </div>
+                <div class="row mb-2">
+                    <div class="cell-md-6">
+                        @if (Model.ExtraordinaryTransportId != 2)
+                        {
+                            <input data-prepend="Departure Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                         }
                         else
                         {
-                            <input type="text" name="FinishDate" id="FinishDate" data-role="input" readonly="readonly" data-prepend="Finish Date:" autocomplete="off" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? null : Model.FinishDate?.ToString("yyyy-MM-dd"))">
+                            <input type="text" name="FinishDate" id="FinishDate" data-role="input" readonly="readonly" data-prepend="Departure Date:" autocomplete="off" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? null : Model.FinishDate?.ToString("yyyy-MM-dd"))">
                         }
                     </div>
-                    <div class="cell-md-3">
+                    <div class="cell-md-6">
                         <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="cell">
-                        <select data-on-change="RouteSelected()" data-role="select" id="RouteSelect" name="RouteSelect" data-prepend="Route:">
-                            @foreach (var item in routeList)
-                            {
-                                if (Model.Route == item.Name)
-                                {
-                                    <option selected id="@item.Shift" value="@item.RouteId">@item.Name</option>
-                                }
-                                else
-                                {
-                                    <option id="@item.Shift" value="@item.RouteId">@item.Name</option>
-                                }
-                            }
-                        </select>
+                        <input type="text" name="Route" id="Route" data-role="input" readonly="readonly" data-prepend="Route:" autocomplete="off" value="@Model.Route">
                     </div>
                     <div class="cell">
-                        <input type="text" name="Shift" id="Shift" data-role="input" readonly="readonly" data-prepend="Shift:" autocomplete="off" value="@Model.Shift">
-                    </div>
-                    <div class="cell">
-                        <select data-role="select" id="Stop" name="Stop" data-prepend="Stop:">
-                            @foreach (var item in stopList)
-                            {
-                                if (Model.Stop == item.StopName)
-                                {
-                                    <option selected value="@item.StopName">@item.StopName</option>
-                                }
-                                else
-                                {
-                                    <option value="@item.StopName">@item.StopName</option>
-                                }
-                            }
-                        </select>
+                        <input type="text" name="Stop" id="Stop" data-role="input" readonly="readonly" data-prepend="Stop:" autocomplete="off" value="@Model.Stop">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="cell">
                         <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value="">@Model.Motive</textarea>
-                        <span class="invalid_feedback">
-                            Enter a Motive
-                        </span>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="cell">
+                        @if (Model.ShiftChange)
+                        {
+                            <input type="checkbox" data-role="checkbox" data-style="2" checked="checked" data-caption="Shift Change" class="shiftChangeCheck">
+                        }
+                        else
+                        {
+                            <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Shift Change" class="shiftChangeCheck">
+                        }
                     </div>
                 </div>
             </div>
         </div>
         @Html.Hidden("Process", Model.Process)
-        @Html.Hidden("Route", Model.Route)
         @Html.Hidden("UserCreated", Model.UserCreated)
         @Html.Hidden("Date", Model.Date)
+        @Html.Hidden("Contacts", Model.Contacts)
+        @Html.Hidden("Status", Model.Status)
+        @Html.Hidden("CreatedBy", Model.CreatedBy)
+        @Html.Hidden("ShiftChange", Model.ShiftChange)
         <div class="row">
             <div class="dialog-actions d-flex flex-justify-start w-100">
-                @if (HttpContext.Current.Session["CanSaveExtraordinaryTransport"].Equals(true))
+                @if (HttpContext.Current.Session["CanSaveExtraordinaryTransport"].Equals(true) && Model.Status <= 1)
+                {
+                    <div><button id="SaveTransport" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
+                }
+                else if(Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <div><button id="SaveTransport" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
                 }
@@ -135,29 +123,13 @@
         setInterval(function () {
             $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
         }, 500);
-
-        RouteSelected();
     });
 
-    function RouteSelected() {
-        var routeId = $("#RouteSelect option:selected").val();
-        $("#Shift").val($("#RouteSelect option:selected").prop('id'));
-        var StopSelect = Metro.getPlugin("#Stop", 'select');
-
-        var output = [];
-
-        $.ajax({
-            type: 'POST',
-            url: $LoadStops,
-            data: { routeId: routeId },
-            success: function (response) {
-                StopSelect.data([]);
-                var data = response;
-                $.each(data, function (key, val) {
-                    output.push("<option value='" + data[key].StopName + "'>" + data[key].StopName + "</option>");
-                });
-                StopSelect.data(output.join(''));
-            },
-        });
-    }
+    $(".shiftChangeCheck").on("change", function (e) {
+        if (e.target.checked) {
+            $('#ShiftChange').val("true");
+        } else {
+            $('#ShiftChange').val("false");
+        }
+    });
 </script>

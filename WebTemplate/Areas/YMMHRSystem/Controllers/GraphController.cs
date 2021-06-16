@@ -1302,10 +1302,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             //cleanup
             Response.Flush();
         }
-        public void ExportTranslations(DateTime startDate, DateTime endDate)
+        public void ExportTranslations(DateTime? startDate, DateTime? endDate)
         {
             Translation translation = new Translation();
-            List<DtoTranslation> translationList = translation.LoadMultipleWithFilter(startDate.ToString("yyyyMMdd"), endDate.AddDays(1).ToString("yyyyMMdd"));
+            List<DtoTranslation> translationList = translation.LoadMultipleWithFilter(startDate?.ToString("yyyyMMdd"), endDate?.AddDays(1).ToString("yyyyMMdd"));
 
             ExcelPackage excelPackage = new ExcelPackage();
             ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("TranslationRecord");
@@ -1448,7 +1448,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             worksheet.Cells[1, 6].Value = "Motive";
             worksheet.Cells[1, 7].Value = "Cost";
             worksheet.Cells[1, 8].Value = "Lading Cost";
-            var range = worksheet.Cells[1, 1, 1, 8];
+            worksheet.Cells[1, 9].Value = "Status";
+            worksheet.Cells[1, 10].Value = "Date Added";
+            var range = worksheet.Cells[1, 1, 1, 10];
             range.Style.Font.Bold = true;
 
             int row = 2;
@@ -1464,9 +1466,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 worksheet.Cells[row, 7].Style.Numberformat.Format = "$ #,###,###.00";
                 worksheet.Cells[row, 8].Value = item.LadingCost;
                 worksheet.Cells[row, 8].Style.Numberformat.Format = "$ #,###,###.00";
+                worksheet.Cells[row, 9].Value = item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled";
+                worksheet.Cells[row, 10].Value = item.DateAdded.ToString("yyyy-MM-dd HH:mm:ss");
                 row++;
             }
-
 
             range = worksheet.Cells[worksheet.Dimension.Address];
             range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -1509,11 +1512,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("TransportRecord");
 
             worksheet.Cells[1, 1].Value = "Route";
-            worksheet.Cells[1, 2].Value = "Shift";
-            worksheet.Cells[1, 3].Value = "Start Date";
-            worksheet.Cells[1, 4].Value = "Finish Date";
-            worksheet.Cells[1, 5].Value = "Type";
-            worksheet.Cells[1, 6].Value = "Cost";
+            worksheet.Cells[1, 2].Value = "Start Date";
+            worksheet.Cells[1, 3].Value = "Finish Date";
+            worksheet.Cells[1, 4].Value = "Type";
+            worksheet.Cells[1, 5].Value = "Cost";
             var range = worksheet.Cells[1, 1, 1, 6];
             range.Style.Font.Bold = true;
 
@@ -1521,12 +1523,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             foreach (var item in transportList)
             {
                 worksheet.Cells[row, 1].Value = item.Route;
-                worksheet.Cells[row, 2].Value = item.Shift;
-                worksheet.Cells[row, 3].Value = item.StartDate.ToShortDateString();
-                worksheet.Cells[row, 4].Value = item.FinishDate.ToShortDateString();
-                worksheet.Cells[row, 5].Value = item.Type ? "One Way" : "Round";
-                worksheet.Cells[row, 6].Value = item.Cost;
-                worksheet.Cells[row, 6].Style.Numberformat.Format = "$ #,###,###.00";
+                worksheet.Cells[row, 2].Value = item.StartDate.ToShortDateString();
+                worksheet.Cells[row, 3].Value = item.FinishDate.ToShortDateString();
+                worksheet.Cells[row, 4].Value = item.Type ? "One Way" : "Round";
+                worksheet.Cells[row, 5].Value = item.Cost;
+                worksheet.Cells[row, 5].Style.Numberformat.Format = "$ #,###,###.00";
                 row++;
             }
 
@@ -1573,16 +1574,17 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             worksheet.Cells[1, 1].Value = "Associate";
             worksheet.Cells[1, 2].Value = "Process";
             worksheet.Cells[1, 3].Value = "Route";
-            worksheet.Cells[1, 4].Value = "Shift";
-            worksheet.Cells[1, 5].Value = "Stop";
-            worksheet.Cells[1, 6].Value = "Start Time";
-            worksheet.Cells[1, 7].Value = "Start Date";
-            worksheet.Cells[1, 8].Value = "Finish Time";
-            worksheet.Cells[1, 9].Value = "Finish Date";
-            worksheet.Cells[1, 10].Value = "Motive";
-            worksheet.Cells[1, 11].Value = "Cost";
+            worksheet.Cells[1, 4].Value = "Stop";
+            worksheet.Cells[1, 5].Value = "Start Time";
+            worksheet.Cells[1, 6].Value = "Start Date";
+            worksheet.Cells[1, 7].Value = "Finish Time";
+            worksheet.Cells[1, 8].Value = "Finish Date";
+            worksheet.Cells[1, 9].Value = "Motive";
+            worksheet.Cells[1, 10].Value = "Cost";
+            worksheet.Cells[1, 11].Value = "Status";
+            worksheet.Cells[1, 12].Value = "Date Added";
 
-            var range = worksheet.Cells[1, 1, 1, 11];
+            var range = worksheet.Cells[1, 1, 1, 12];
             range.Style.Font.Bold = true;
 
             int row = 2;
@@ -1591,15 +1593,16 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 worksheet.Cells[row, 1].Value = item.AssociateName;
                 worksheet.Cells[row, 2].Value = item.Process;
                 worksheet.Cells[row, 3].Value = item.Route;
-                worksheet.Cells[row, 4].Value = item.Shift;
-                worksheet.Cells[row, 5].Value = item.Stop;
-                worksheet.Cells[row, 6].Value = item.StartTime.ToString(@"hh\:mm");
-                worksheet.Cells[row, 7].Value = item.StartDate?.ToShortDateString();
-                worksheet.Cells[row, 8].Value = item.FinishTime.ToString(@"hh\:mm"); 
-                worksheet.Cells[row, 9].Value = item.FinishDate?.ToShortDateString();
-                worksheet.Cells[row, 10].Value = item.Motive;
-                worksheet.Cells[row, 11].Value = item.Cost;
-                worksheet.Cells[row, 11].Style.Numberformat.Format = "$ #,###,###.00";
+                worksheet.Cells[row, 4].Value = item.Stop;
+                worksheet.Cells[row, 5].Value = item.StartTime.ToString(@"hh\:mm");
+                worksheet.Cells[row, 6].Value = item.StartDate?.ToShortDateString();
+                worksheet.Cells[row, 7].Value = item.FinishTime.ToString(@"hh\:mm"); 
+                worksheet.Cells[row, 8].Value = item.FinishDate?.ToShortDateString();
+                worksheet.Cells[row, 9].Value = item.Motive;
+                worksheet.Cells[row, 10].Value = item.Cost;
+                worksheet.Cells[row, 10].Style.Numberformat.Format = "$ #,###,###.00";
+                worksheet.Cells[row, 11].Value = item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled";
+                worksheet.Cells[row, 12].Value = item.Date.ToString("yyyy-MM-dd HH:mm:ss");
                 row++;
             }
 

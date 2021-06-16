@@ -63,13 +63,11 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// <returns></returns>
         public ActionResult SaveRoute(DtoRoute dtoRoute)
         {
-            DtoRoute dtoRoutes = new DtoRoute();
-
             try
             {
 
-                dtoRoutes.RouteId = Convert.ToInt64(Session["LoadedRouteId"]);
-                if (dtoRoutes.RouteId == 0)
+                dtoRoute.RouteId = Convert.ToInt64(Session["LoadedRouteId"]);
+                if (dtoRoute.RouteId == 0)
                 {
                     if (route.GetRouteId(dtoRoute.Name) != 0)
                     {
@@ -77,15 +75,8 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     }
                 }
 
-                dtoRoutes.Name = dtoRoute.Name;
-                dtoRoutes.Shift = dtoRoute.Shift;
-                dtoRoutes.Cost = dtoRoute.Cost;
-                dtoRoutes.StopList = dtoRoute.StopList;
-                dtoRoutes.Extraordinary = dtoRoute.Extraordinary;
-                dtoRoutes.UserCreated = dtoRoute.UserCreated;
-                dtoRoutes.DateAdded = dtoRoute.DateAdded;
-
-                route.Save(dtoRoutes);
+                dtoRoute.UserCreated = Session["UserName"].ToString();
+                route.Save(dtoRoute);
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
@@ -124,24 +115,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
-            }
-        }
-        /// <summary>
-        /// Validates if Stop exists within Route Stop Table. 
-        /// </summary>
-        /// <param name="routeId"></param>
-        /// <param name="stopId"></param>
-        /// <returns>true or false</returns>
-        public string ValidateRouteStopExistence(string stopId)
-        {
-            try
-            {
-                return route.ValidateRouteStopExistence(stopId) ? "true" : "false";
-            }
-            catch (Exception ex)
-            {
-
                 throw ex;
             }
         }
