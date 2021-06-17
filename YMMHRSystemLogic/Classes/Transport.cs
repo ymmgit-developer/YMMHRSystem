@@ -188,10 +188,10 @@ namespace YMMHRSystemLogic
                 mapping.Save();
 
                 List<string> contacts = emailNotification.GetExtraTransportContacts(1).Split(',').ToList();
-                if (extraTransportList[0].Contacts != "")
+                if (!string.IsNullOrEmpty(extraTransportList[0].Contacts) && extraTransportList[0].Contacts != null)
                 {
                     List<string> ccContacts = extraTransportList[0].Contacts.Split(',').ToList();
-                    contacts.AddRange(ccContacts);
+                    contacts.AddRange(ccContacts.Distinct());
                 }
                 contacts.Add(user.GetUserEmail(extraTransportList[0].CreatedBy));
                 string date, time = "";
@@ -297,7 +297,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
 
-                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE UserCreated = '" + applicant + "' AND Date = '" + date.ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE UserCreated = '" + applicant + "' AND Date = '" + date.ToString("yyyy-MM-dd HH:mm:ss") + "' AND Status = 1 ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
                 extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
 
                 return extraTransportList;

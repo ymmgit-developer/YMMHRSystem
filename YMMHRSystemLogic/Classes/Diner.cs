@@ -292,7 +292,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryDiner> extraDinerList = new List<DtoExtraordinaryDiner>();
 
-                mapping.Load<DtoExtraordinaryDiner>("SELECT ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, TypeCost, Lading, LadingCost, Motive, DateAdded, UserCreated, UserModified, Status, CreatedBy, Contacts FROM ExtraordinaryDiner WHERE UserCreated = '" + applicant + "' AND Type = '" + type + "' AND DateAdded = '" + date.ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY ExtraordinaryDinerId DESC, Status", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
+                mapping.Load<DtoExtraordinaryDiner>("SELECT ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, TypeCost, Lading, LadingCost, Motive, DateAdded, UserCreated, UserModified, Status, CreatedBy, Contacts FROM ExtraordinaryDiner WHERE UserCreated = '" + applicant + "' AND Type = '" + type + "' AND DateAdded = '" + date.ToString("yyyy-MM-dd HH:mm:ss") + "' AND Status = 1 ORDER BY ExtraordinaryDinerId DESC, Status", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
                 extraDinerList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryDiner)renglon.Dto));
 
                 return extraDinerList;

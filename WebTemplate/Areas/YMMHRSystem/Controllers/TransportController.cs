@@ -374,8 +374,5 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 throw ex;
             }
         }
-
-
-
     }
 }
