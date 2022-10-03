@@ -122,7 +122,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoWorkerFile> workerfileList = new List<DtoWorkerFile>();
 
-                mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Route, Stop, Shift FROM WorkerFiles WHERE Type <> 'Staff' AND Status = " + (status ? 1 : 0) + " ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
+                mapping.Load<DtoWorkerFile>("SELECT WorkerFileId, Names, AdmissionDate, Process, WorkerId, Status, Rehirable, DismissalNumber, AdmissionNumber, Route, Stop FROM WorkerFiles WHERE Type <> 'Staff' AND Status = " + (status ? 1 : 0) + " ORDER BY WorkerId * 1", "WorkerFiles", new DtoWorkerFile());
                 workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoWorkerFile)renglon.Dto));
 
                 return workerfileList;
