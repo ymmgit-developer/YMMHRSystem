@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
 
-    $('#dttWorkerFiles').DataTable({
+    $('#dttWorkerFiles').datatable({
         buttons: [
             {
                 extend: 'copyHtml5',
@@ -21,21 +21,20 @@
                 }
             },
         ],  
-        dom: 'Bfrtip',
+        dom: 'lftiprB',
         deferRender: true,
         responsive: true,
         compact: true,
         searching: true,
         info: true,
         paging: true,
-        ordering: false,
-        scrollY: "50vh",
+        ordering: true,
+        scrollY: "100vh",
         scrollCollapse: true,
         initComplete: function () {
-            $("#WorkerFileTable").show();
+           $("#WorkerFileTable").show();
         }
     });
-
 });
 
 function SaveWorkerFile() {

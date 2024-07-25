@@ -458,6 +458,30 @@ namespace YMMHRSystemLogic
             }
 
         }
+        /// <summary>
+        /// Recupera una lista de correo de los usuarios sugeridos.
+        /// </summary>
+        /// <param input="typing"></param>
+        /// <returns></returns>
+        public List<DtoUser> GetUserEmailSuggestions()
+        {
+            try
+            {
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoUser> userList = new List<DtoUser>();
+
+                mapping.Load<DtoUser>("SELECT DISTINCT Name, FirstSurname, LastSurname ,Email FROM Users WHERE Status = 1", "Users", new DtoUser());
+                userList.AddRange(mapping.dtoList.Select(renglon => (DtoUser)renglon.Dto));
+
+                return userList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get User Email", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetUserEmailSuggestions");
+                throw ex;
+            }
+
+        }
         #endregion
     }
 }

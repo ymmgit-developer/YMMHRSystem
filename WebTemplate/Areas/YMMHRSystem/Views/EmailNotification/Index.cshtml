@@ -146,16 +146,29 @@
         <span>Saving....</span>
     </div>
 </div>
+
 <script>
+    //function onBeforeTagAdd(val) {
+
+    //    var regex = /^[a-zA-Z0-9._-]+@@yachiyo.com.mx\s*$/;
+    //    if (regex.test(val)) {
+    //        return true;
+    //    } else {
+    //        Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
+    //        return false;
+    //    }
+
+    //}
     function onBeforeTagAdd(val) {
-
-        var regex = /^[a-zA-Z0-9._-]+@@yachiyo.com.mx\s*$/;
-        if (regex.test(val)) {
-            return true;
-        } else {
-            Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
-            return false;
-        }
-
+    //17/06/2024
+    // Modificamos la regex para aceptar los dominios @@motherson.com y @@yachiyo.com.mx 
+    var regex = /^[a-zA-Z0-9._-]+@@(motherson\.com|yachiyo\.com\.mx)\s*$/;
+    if (regex.test(val)) {
+        return true;
+    } else {
+        Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
+        return false;
     }
+}
+
 </script>

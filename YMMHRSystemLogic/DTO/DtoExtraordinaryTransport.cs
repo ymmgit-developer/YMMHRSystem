@@ -27,5 +27,6 @@ namespace YMMHRSystemLogic
         public long CreatedBy{ get; set; }
         public List<DtoWorkerFile> WorkerList { get; set; } = new List<DtoWorkerFile>();
         public bool ShiftChange { get; set; }
+        public List<DtoUser> UserEmailSuggestions { get; set; } = new List<DtoUser> { };
     }
 }

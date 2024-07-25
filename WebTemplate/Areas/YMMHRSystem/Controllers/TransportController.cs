@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 using YMMHRSystemLogic;
@@ -13,6 +16,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
     {
         // GET: YMMHRSystem/Transport
         Transport transport = new Transport();
+        User user = new User();
 
         // GET: YMMHRSystem/Transport
         public ActionResult Transport()
@@ -175,6 +179,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 DtoExtraordinaryTransport dtoExtraordinaryTransport = new DtoExtraordinaryTransport();
 
+                // Obtener todas las sugerencias de correo electrónico
+                List<DtoUser> dtoUserListSuggestions = user.GetUserEmailSuggestions();
+                dtoExtraordinaryTransport.UserEmailSuggestions = dtoUserListSuggestions;              
+
                 return View("~/Areas/YMMHRSystem/Views/Transport/ExtraordinaryTransportAddDialog.cshtml", dtoExtraordinaryTransport);
             }
             catch (Exception ex)
@@ -187,7 +195,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// </summary>
         /// <param name="dtoExtraTransport"></param>
         /// <returns></returns>
-        public ActionResult SaveExtraordinaryTransport(DtoExtraordinaryTransport dtoExtraTransport)
+        public ActionResult SaveExtraordinaryTransport(DtoExtraordinaryTransport dtoExtraTransport, int TypeTransport, string ListMultiday)
         {
             try
             {
@@ -196,7 +204,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     if (dtoExtraTransport.WorkerList.Count <= 0)
                     {
-                        return Json("false", JsonRequestBehavior.AllowGet);
+                        return Json(new { success = false, message = "Please select an associate" }, JsonRequestBehavior.AllowGet);
                     }
                 }
                 if (dtoExtraTransport.FinishDate != null)
@@ -205,10 +213,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         if (dtoExtraTransport.StartDate > dtoExtraTransport.FinishDate)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Start date cannot be later than finish date" }, JsonRequestBehavior.AllowGet);
                         }
                     }
-
                 }
                 if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
@@ -217,7 +224,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         DateTime finishDateTime = Convert.ToDateTime(dtoExtraTransport.FinishDate + dtoExtraTransport.FinishTime);
                         if (finishDateTime.Subtract(DateTime.Now).TotalHours < 4 || finishDateTime < DateTime.Now)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Please request transport within 4 hour window" }, JsonRequestBehavior.AllowGet);
                         }
 
                         if (finishDateTime.Subtract(DateTime.Now).Days == 1)
@@ -225,7 +232,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request next day transport earlier than 4:56pm" }, JsonRequestBehavior.AllowGet);
                             }
                         }
 
@@ -234,7 +241,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request Saturday transport earlier than 10:30am Friday" }, JsonRequestBehavior.AllowGet);
                             }
                         }
 
@@ -243,7 +250,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request same day transport earlier than 3:30pm" }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }
@@ -253,7 +260,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         DateTime startDateTime = Convert.ToDateTime(dtoExtraTransport.StartDate + dtoExtraTransport.StartTime);
                         if (startDateTime.Subtract(DateTime.Now).TotalHours < 4 || startDateTime < DateTime.Now)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Please request transport within 4 hour window" }, JsonRequestBehavior.AllowGet);
                         }
 
                         if (startDateTime.Subtract(DateTime.Now).Days == 1)
@@ -261,7 +268,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request next day transport earlier than 4:56pm" }, JsonRequestBehavior.AllowGet);
                             }
                         }
 
@@ -270,7 +277,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request Saturday transport earlier than 10:30am Friday" }, JsonRequestBehavior.AllowGet);
                             }
                         }
 
@@ -279,20 +286,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
                             if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
                             {
-                                return Json("false", JsonRequestBehavior.AllowGet);
+                                return Json(new { success = false, message = "Please request same day transport earlier than 3:30pm" }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }
-
                 }
+
+                List<DtoExtraordinaryTransport> transportList = new List<DtoExtraordinaryTransport>();
+                WorkerFile workerFile = new WorkerFile();
+
                 if (dtoExtraTransport.WorkerList.Count > 0)
                 {
-                    List<DtoExtraordinaryTransport> transportList = new List<DtoExtraordinaryTransport>();
-                    WorkerFile workerFile = new WorkerFile();
-
                     foreach (var item in dtoExtraTransport.WorkerList)
                     {
-                        if (transport.GetExtraTransportId(item.Names, dtoExtraTransport.StartDate, dtoExtraTransport.FinishDate) == 0)
+                        if (TypeTransport == 1)
                         {
                             transportList.Add(new DtoExtraordinaryTransport()
                             {
@@ -311,17 +318,64 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                                 ShiftChange = dtoExtraTransport.ShiftChange
                             });
                         }
+                        else if (TypeTransport == 2)
+                        {
+                            DateTime currentDate = dtoExtraTransport.StartDate.Value;
+                            while (currentDate <= dtoExtraTransport.FinishDate.Value)
+                            {
+                                transportList.Add(new DtoExtraordinaryTransport()
+                                {
+                                    AssociateName = item.Names,
+                                    Process = item.Process,
+                                    StartDate = currentDate,
+                                    StartTime = dtoExtraTransport.StartTime,
+                                    FinishDate = currentDate,
+                                    FinishTime = dtoExtraTransport.FinishTime,
+                                    Route = workerFile.GetWorkerFileRoute(item.Names),
+                                    Stop = workerFile.GetWorkerFileStop(item.Names),
+                                    UserCreated = Session["UserName"].ToString(),
+                                    Motive = dtoExtraTransport.Motive,
+                                    Cost = dtoExtraTransport.Cost,
+                                    Contacts = dtoExtraTransport.Contacts,
+                                    ShiftChange = dtoExtraTransport.ShiftChange
+                                });
+                                currentDate = currentDate.AddDays(1);
+                            }
+                        }
+                        else if (TypeTransport == 3)
+                        {
+                            var dates = ListMultiday.Split(',').Select(date => DateTime.Parse(date.Trim()));
+                            foreach (var date in dates)
+                            {
+                                transportList.Add(new DtoExtraordinaryTransport()
+                                {
+                                    AssociateName = item.Names,
+                                    Process = item.Process,
+                                    StartDate = date,
+                                    StartTime = dtoExtraTransport.StartTime,
+                                    FinishDate = date,
+                                    FinishTime = dtoExtraTransport.FinishTime,
+                                    Route = workerFile.GetWorkerFileRoute(item.Names),
+                                    Stop = workerFile.GetWorkerFileStop(item.Names),
+                                    UserCreated = Session["UserName"].ToString(),
+                                    Motive = dtoExtraTransport.Motive,
+                                    Cost = dtoExtraTransport.Cost,
+                                    Contacts = dtoExtraTransport.Contacts,
+                                    ShiftChange = dtoExtraTransport.ShiftChange
+                                });
+                            }
+                        }
                     }
+
                     transport.SaveMultipleExtra(transportList, Convert.ToInt64(Session["UserId"]));
                 }
                 else
                 {
-
                     if (dtoExtraTransport.ExtraordinaryTransportId == 0)
                     {
                         if (transport.GetExtraTransportId(dtoExtraTransport.AssociateName, dtoExtraTransport.StartDate, dtoExtraTransport.FinishDate) != 0)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Transport already exists" }, JsonRequestBehavior.AllowGet);
                         }
                     }
                     if (dtoExtraTransport.ExtraordinaryTransportId == 0)
@@ -336,15 +390,15 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     transport.SaveExtra(dtoExtraTransport);
                 }
 
-
-                return Json("true", JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "Transport saved successfully" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json("false", JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-
         }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -374,5 +428,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 throw ex;
             }
         }
+
     }
 }

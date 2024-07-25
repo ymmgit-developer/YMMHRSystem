@@ -98,24 +98,35 @@ function AddTransport() {
         cache: false,
         data: $("#TransportForm").serialize(),
         success: function (result) {
-            if (result === "true") {
+            if (result.success === true) {
                 Metro.toast.create("Transport saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#TransportDetail');
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.dialog.open('#Error')
+                showErrorDialog(result.message);
             }
 
             $('#SaveTransport').attr('disabled', false);
             $("#SaveTransport").addClass('button my-control-colors');
             $("#SaveTransport").addClass('button');
             $("#Preloader").css("visibility", "hidden");
-
         }
     });
+}
 
+function showErrorDialog(message) {
+    var dialogContent = '<div class="dialog-title">Error</div>' +
+        '<div class="dialog-content">' +
+        '<p>' + message + '</p>' +
+        '</div>' +
+        '<div class="dialog-actions ml-auto">' +
+        '<button class="button alert" onclick="Metro.dialog.close(\'#Error\')">OK</button>' +
+        '</div>';
+    console.log(message);
+    $("#Error").html(dialogContent);
+    Metro.dialog.open('#Error');
 }
 
 function ConfirmDeleteTransport(transportId) {
@@ -186,6 +197,8 @@ function AddExtraordinaryTransport() {
         cache: false,
         data: $("#ExtraTransportForm").serialize(),
         success: function (result) {
+            console.log(result);
+            
             if (result === "true") {
                 Metro.toast.create("Transport saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#ExtraordinaryTransportDetail');
@@ -193,7 +206,8 @@ function AddExtraordinaryTransport() {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.dialog.open('#Error')
+                Metro.dialog.open('#Error');
+                console.log("#####################");
             }
 
             $('#SaveTransport').attr('disabled', false);

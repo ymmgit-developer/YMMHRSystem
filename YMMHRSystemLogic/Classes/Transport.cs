@@ -2,9 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace YMMHRSystemLogic
 {
@@ -440,6 +443,6 @@ namespace YMMHRSystemLogic
             }
 
         }
-        #endregion
+        #endregion 
     }
 }

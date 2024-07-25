@@ -43,7 +43,7 @@
                         <th style="text-align: center">Associate</th>
                         <th style="text-align: center">Route</th>
                         <th style="text-align: center">Stop</th>
-                        <th style="text-align: center">Date</th>
+                        <th style="text-align: center">Date For</th>
                         <th style="text-align: center">Status</th>
                         <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
                             data-position='auto'>Actions</th>
@@ -74,7 +74,7 @@
                             </td>
 
                             <td style="text-align: center">
-                                <span> @item.Date </span>
+                                <span> @item.StartDate.ToString().Substring(0,10) @item.StartTime.ToString(@"hh\:mm") </span>
                             </td>
 
                             <td style="text-align: center">
@@ -82,22 +82,39 @@
                             </td>
 
                             <td style="text-align: center">
-                                <a class="button small bg-black fg-white" style="cursor: pointer; " onclick="ExtraordinaryTransportDetailDialog(@item.ExtraordinaryTransportId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="ExtraordinaryTransportDetailDialog(@item.ExtraordinaryTransportId)">
+                                    <span class="mif-eye"></span>
+                                    <span class="actionButton"> View</span>
+                                </a>
+
                                 @if (HttpContext.Current.Session["CanCancelExtraordinaryTransport"].Equals(true))
                                 {
-                                    if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                                    if (item.Status == 1) // Only allow cancellation if the status is pending (assuming status 1 is pending)
                                     {
-                                        <a class="button small bg-red fg-white" style="cursor: pointer; " onclick="ConfirmCancelExtraordinaryTransport(@item.ExtraordinaryTransportId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
+                                        if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                                        {
+                                            <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelExtraordinaryTransport(@item.ExtraordinaryTransportId)">
+                                                <span class="mif-cancel"></span>
+                                                <span class="actionButton"> Cancel</span>
+                                            </a>
+                                        }
+                                        else if ((!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) &&
+                                                 Convert.ToDateTime(item.StartDate + item.StartTime).Subtract(DateTime.Now).TotalHours > 2)
+                                        {
+                                            <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelExtraordinaryTransport(@item.ExtraordinaryTransportId)">
+                                                <span class="mif-cancel"></span>
+                                                <span class="actionButton"> Cancel</span>
+                                            </a>
+                                        }
                                     }
-                                    else if ((!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) && item.Status == 1 && Convert.ToDateTime(item.StartDate + item.StartTime).Subtract(DateTime.Now).TotalHours > 2)
-                                    {
-                                        <a class="button small bg-red fg-white" style="cursor: pointer; " onclick="ConfirmCancelExtraordinaryTransport(@item.ExtraordinaryTransportId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
-                                    }
-
                                 }
-                                @if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) && item.Status == 1)
+
+                                @if (item.Status == 1 && (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
                                 {
-                                    <a class="button small bg-green fg-white" style="cursor: pointer;" href="@Url.Action("ConfirmExtraordinaryTransport", "Transport", new { Area = "YMMHRSystem", extraordinaryTransportId = item.ExtraordinaryTransportId })"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                    <a class="button small bg-green fg-white" style="cursor: pointer;" href="@Url.Action("ConfirmExtraordinaryTransport", "Transport", new { Area = "YMMHRSystem", extraordinaryTransportId = item.ExtraordinaryTransportId })">
+                                        <span class="mif-checkmark"></span>
+                                        <span class="actionButton"> Confirm</span>
+                                    </a>
                                 }
                             </td>
                         </tr>
@@ -120,12 +137,12 @@
     <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
         <div class="dialog-title">Error</div>
         <div class="dialog-content">
-            <p>- Transport already exists</p>
+            @*<p>- Transport already exists</p>
             <p>- Please select an associate</p>
             <p>- Please request same day transport earlier than 3:30pm</p>
             <p>- Please request next day transport earlier than 4:56pm</p>
             <p>- Please request Saturday transport earlier than 10:30am Friday</p>
-            <p>- Please request transport within 4 hour window </p>
+            <p>- Please request transport within 4 hour window </p>*@
         </div>
         <div class="dialog-actions ml-auto">
             <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>

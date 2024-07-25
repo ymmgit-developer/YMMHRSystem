@@ -9,7 +9,7 @@
 <div class="dialog-title">Extra Transport</div>
 
 <div class="dialog-content">
-    <form id="ExtraTransportForm" data-role="validator" data-on-validate-form="AddExtraordinaryTransport()" action="javascript:">
+    <form id="ExtraTransportForm" class="needs-validation" data-role="validator" data-on-validate-form="AddExtraordinaryTransport()" action="javascript:">
         <div class="row">
             <div class="cell-md-6">
                 <div class="row d-flex flex-align-center flex-justify-between mx-5">
@@ -33,41 +33,100 @@
             <!---SPLIT--->
             <div class="cell-md-6">
                 <div class="row mb-2 flex-justify-center flex-align-center">
-                    <div class="cell-md-12">
-                        <label>Email Contacts</label>
-                        <input id="Contacts" value="" name="Contacts" data-on-before-tag-add="onBeforeTagAdd" data-max-tags="10" type="text" data-role="taginput">
+                    <div class="container">
+                        <label for="Contacts">Email Contacts</label>
+                        <input id="Contacts" placeholder='@@' class='flexdatalist dotted-border' data-min-length='1' multiple='multiple' list='emailsuggestions' value="" name="Contacts" type="text">
+                        <datalist id="emailsuggestions">
+                            @foreach (var user in Model.UserEmailSuggestions)
+                            {
+                                <option value="@user.Email" data-name="@user.Name @user.FirstSurname @user.LastSurname">@user.Name @user.FirstSurname @user.LastSurname</option>
+                            }
+                        </datalist>
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="cell-md-6">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="TypeTransport" value="1" id="radio_oneday" autocomplete="off" checked>
+                                <label class="btn btn btn-outline-dark" for="radio_oneday">One day</label>
+
+                                <input type="radio" class="btn-check" name="TypeTransport" value="2" id="radio_range" autocomplete="off">
+                                <label class="btn btn btn-outline-dark" for="radio_range">Range</label>
+
+                                <input type="radio" class="btn-check" name="TypeTransport" value="3" id="radio_multiday" autocomplete="off">
+                                <label class="btn btn btn-outline-dark" for="radio_multiday">Multi-day</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container p-3">
+                                <input type="text" class="selector active w-100 dotted-border" id="StartDate_Front" name="StartDate_Front" placeholder="Select Date" data-input>
+                            </div>
+                            <div class="container p-3" style="display: none;">
+                                <input type="text" class="selector active w-100 dotted-border" id="StartDate" name="StartDate" placeholder="Select Date" data-input>
+                                <input type="text" class="selector active w-100 dotted-border" id="ListMultiday" name="ListMultiday" data-input/>
+                            </div>
+                        </div>
                         @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                         {
-                            <input data-prepend="Arrival Date:" autocomplete="off" id="StartDate" name="StartDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            @*<input data-prepend="Arrival Date:" autocomplete="off" id="StartDate" name="StartDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">*@
+
                         }
                         else
                         {
-                            <input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" autocomplete="off" id="StartDate" name="StartDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            @*<input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" autocomplete="off" id="StartDate" name="StartDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">*@
                         }
                     </div>
-                    <div class="cell-md-6">
-                        <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="0" id="StartTime" name="StartTime">
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="cell-md-6">
+                    <div class="col-md-6">
                         @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                         {
-                            <input data-prepend="Departure Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            DateTime now = DateTime.Now;
+                            string hour = now.Hour.ToString("D2");
+                            string minute = now.Minute.ToString("D2");
+                            string value = hour + ":" + minute;
+                            <div class="col-md-12 position-relative">
+                                <input type="time" class="form-control" id="StartTime" name="StartTime" disabled>
+                            </div>
                         }
                         else
                         {
-                            <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            DateTime now = DateTime.Now;
+                            now = now.AddHours(2);
+                            string hour = now.Hour.ToString("D2");
+                            string minute = now.Minute.ToString("D2");
+                            string value = hour + ":" + minute;
+                            <div class="col-md-12 position-relative">
+                                <input type="time" class="form-control" id="StartTime" name="StartTime" min="@value" disabled>
+                                <div id="SuggestedTimeTooltip" class="valid-tooltip">
+                                    Suggested time
+                                </div>
+                                <div id="InvalidTimeTooltip" class="invalid-tooltip">
+                                    The scheduled time cannot be less
+                                </div>
+                            </div>
+                            @*<input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="0" id="StartTime" name="StartTime">*@
                         }
                     </div>
-                    <div class="cell-md-6">
-                        <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="0" id="FinishTime" name="FinishTime">
-                    </div>
                 </div>
+                <div class="row" style="display: none;">
+                    <input autocomplete="off" id="FinishDate" name="FinishDate" value="">
+                    <input type="text" class="form-control" id="FinishTime" name="FinishTime">
+                </div>
+                @*<div class="row mb-2">
+                        <div class="cell-md-6">
+                            @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                            {
+                                <input data-prepend="Departure Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            }
+                            else
+                            {
+                                <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            }
+                        </div>
+                        <div class="cell-md-6">
+                            <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="0" id="FinishTime" name="FinishTime">
+                        </div>
+                    </div>*@
                 <div class="row mb-2">
                     <div class="cell">
                         <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required maxlength=400" data-chars-counter="#chars-counter" data-chars-counter-template=" $1 char(s)" autocomplete="off" value="">@Model.Motive</textarea>
@@ -125,7 +184,9 @@
         });
 
         setInterval(function () {
-            $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+            if ($("#Cost").length) {
+                $("#Cost").val($("#Cost").val().match(/^-?\d+(?:\.\d{0,2})?/));
+            }
         }, 500);
     });
 
@@ -159,10 +220,182 @@
             if (regex.test(val)) {
                 return true;
             } else {
-                Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
-                return false;
+                regex = /^[a-zA-Z0-9._-]+@@motherson.com\s*$/;
+                if (regex.test(val)) {
+                    return true;
+                } else {
+                    Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+<script>
+    /*Sugererencias de correo*/
+    $(document).ready(function () {
+        // Inicializa Flexdatalist en el input
+        $('.flexdatalist').flexdatalist({
+            minLength: 1,
+            searchIn: ['value', 'name'],  // Buscar en el valor y en el nombre
+            searchByWord: true,
+            multiple: true,
+            textProperty: 'label',
+            valueProperty: 'value',
+            visibleProperties: ["value", "label"],
+            searchContain: true,
+            maxShownResults: 100
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Función para inicializar Flatpickr con la configuración adecuada
+        function initializeFlatpickr(mode) {
+            $("#StartDate_Front").flatpickr({
+                mode: mode,
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                onClose: function (selectedDates, dateStr, instance) {
+                    updateStartAndFinishDate(mode, selectedDates);
+                }
+            });
+        }
+
+        // Inicializar Flatpickr con la configuración predeterminada (One day)
+        initializeFlatpickr("single");
+
+        // Manejar cambios en los radio buttons
+        $("input[name='TypeTransport']").change(function () {
+            // Destruir el Flatpickr existente
+            $("#StartDate_Front").flatpickr().destroy();
+
+            // Obtener el valor del radio button seleccionado
+            let mode;
+            if ($("#radio_oneday").is(":checked")) {
+                mode = "single";
+            } else if ($("#radio_range").is(":checked")) {
+                mode = "range";
+            } else if ($("#radio_multiday").is(":checked")) {
+                mode = "multiple";
             }
 
+            // Inicializar Flatpickr con el nuevo modo
+            initializeFlatpickr(mode);
+        });
+    });
+</script>
+<script>
+    // Función para sugerir horas
+    var formatDate = (d) => {
+        let month = (d.getMonth() + 1).toString().padStart(2, '0');
+        let day = d.getDate().toString().padStart(2, '0');
+        return d.getFullYear() + "-" + month + "-" + day;
+    }
+
+    $(document).ready(function () {
+        $('#StartDate_Front').change(function () {
+            var selectedDate = $('#StartDate_Front').val();
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if ($(this).val()) { // Verifica si se ha seleccionado una fecha
+                $('#StartTime').prop('disabled', false); // Habilita el input StartTime
+                if (selectedDate === formatDate(today)) { // Verifica si la fecha seleccionada es hoy
+                    var now = new Date();
+                    var hours = now.getHours() + 2;
+                    var minutes = now.getMinutes();
+                    minutes = minutes < 10 ? '0' + minutes : minutes;
+                    var timeString = (hours < 10 ? '0' : '') + hours + ':' + minutes;
+
+                    $('#StartTime').val(timeString); // Establece el valor de StartTime
+                    $('#StartTime').attr('min', timeString); // Establece el valor mínimo de StartTime
+
+                    $('#SuggestedTimeTooltip').show(); // Muestra el SuggestedTimeTooltip
+                    setTimeout(function () {
+                        $('#SuggestedTimeTooltip').fadeOut();
+                    }, 3000); // Oculta el SuggestedTimeTooltip después de 3 segundos
+
+                    // Verifica si la hora sugerida es mayor a 5:30 PM
+                    var suggestedTime = new Date();
+                    suggestedTime.setHours(hours);
+                    suggestedTime.setMinutes(minutes);
+                    var limitTime = new Date();
+                    limitTime.setHours(17, 30); // 5:30 PM
+
+                    if (suggestedTime > limitTime) {
+                        alertify
+                            .alert("Please request same day transport earlier than 3:30pm", function () {
+                                alertify.message('OK');
+                                $('#StartDate_Front').val('');
+                            });
+                        alertify.minimalDialog("");
+                    }
+                } else {
+                    $('#StartTime').val(''); // Limpia el valor de StartTime si la fecha no es hoy
+                    $('#StartTime').removeAttr('min'); // Elimina el valor mínimo de StartTime
+                    $('#SuggestedTimeTooltip').hide(); // Oculta el SuggestedTimeTooltip si no es necesario
+                }
+            }
+        });
+
+        // Muestra el InvalidTimeTooltip cuando se establece un valor no válido
+        $('#StartTime').on('change', function () {
+            var minTime = $(this).attr('min');
+            var selectedTime = $(this).val();
+            if (selectedTime && selectedTime < minTime) {
+                $(this).val(minTime);
+                $('#InvalidTimeTooltip').show();
+                setTimeout(function () {
+                    $('#InvalidTimeTooltip').fadeOut();
+                }, 7000); // Oculta el InvalidTimeTooltip después de 7 segundos
+            } else {
+                $('#InvalidTimeTooltip').hide(); // Oculta el InvalidTimeTooltip si el valor es válido
+            }
+        });
+    });
+
+    // Asigna el valor FinishTime = StartTime + 1 hr cuando se quita el foco de StartTime
+    $(document).ready(function () {
+        $("#StartTime").on("blur", function () {
+            var v_StartTime = $("#StartTime").val();
+            var v_FinishTime = moment(v_StartTime, "HH:mm").add(1, 'hour').format("HH:mm");
+            $("#FinishTime").val(v_FinishTime);
+        });
+    });
+
+    // Si el tipo de solicitud es multi-day se asigna la lista de fechas al input ListMultiday
+    $(document).ready(function () {
+        $("#Motive").on("click", function () {
+            var TypeTransportSelect = $("input[name='TypeTransport']:checked").val();
+            if (TypeTransportSelect == 3) {
+                $("#ListMultiday").val($("#StartDate_Front").val());
+            }
+        });
+    });
+</script>
+
+<script>
+    // Función para actualizar los valores de StartDate y FinishDate
+    function updateStartAndFinishDate(mode, selectedDates) {
+        if (mode === "single") {
+            let date = selectedDates[0] ? selectedDates[0].toISOString().split('T')[0] : '';
+            $("#StartDate").val(date);
+            $("#FinishDate").val(date);
+        } else if (mode === "range") {
+            let startDate = selectedDates[0] ? selectedDates[0].toISOString().split('T')[0] : '';
+            let finishDate = selectedDates[1] ? selectedDates[1].toISOString().split('T')[0] : '';
+            $("#StartDate").val(startDate);
+            $("#FinishDate").val(finishDate);
+        } else if (mode === "multiple") {
+            // Puedes manejar el modo "multiple" según tu necesidad
+            // Aquí se tomará la primera fecha para StartDate y la última fecha para FinishDate
+            let startDate = selectedDates[0] ? selectedDates[0].toISOString().split('T')[0] : '';
+            let finishDate = selectedDates[selectedDates.length - 1] ? selectedDates[selectedDates.length - 1].toISOString().split('T')[0] : '';
+            $("#StartDate").val(startDate);
+            $("#FinishDate").val(finishDate);
         }
     }
 </script>
