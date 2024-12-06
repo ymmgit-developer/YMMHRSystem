@@ -197,8 +197,6 @@ function AddExtraordinaryTransport() {
         cache: false,
         data: $("#ExtraTransportForm").serialize(),
         success: function (result) {
-            console.log(result);
-            
             if (result === "true") {
                 Metro.toast.create("Transport saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#ExtraordinaryTransportDetail');
@@ -207,7 +205,7 @@ function AddExtraordinaryTransport() {
                 }, 1000);
             } else {
                 Metro.dialog.open('#Error');
-                console.log("#####################");
+                console.log(result.message);
             }
 
             $('#SaveTransport').attr('disabled', false);
