@@ -20,20 +20,23 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr id="@item.WorkerFileId">
+                        if (item.Status)
+                        {
+                            <tr id="@item.WorkerFileId">
 
-                            <td style="text-align: center">
-                                <span> @item.Names </span>
-                            </td>
+                                <td style="text-align: center">
+                                    <span> @item.Names </span>
+                                </td>
 
-                            <td style="text-align: center">
-                                <span> @item.Process </span>
-                            </td>
+                                <td style="text-align: center">
+                                    <span> @item.Process </span>
+                                </td>
 
-                            <td style="text-align: center">
-                                <a id="Select" class="button my-control-colors fg-white" style="cursor: pointer;" onclick="SelectAssociates('@item.Names', '@item.Process', @item.WorkerFileId)"><span class="mif-plus"></span><span class="actionButton"> Add</span></a>
-                            </td>
-                        </tr>
+                                <td style="text-align: center">
+                                    <a id="Select" class="button my-control-colors fg-white" style="cursor: pointer;" onclick="SelectAssociates('@item.Names', '@item.Process', @item.WorkerFileId)"><span class="mif-plus"></span><span class="actionButton"> Add</span></a>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

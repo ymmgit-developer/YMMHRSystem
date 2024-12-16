@@ -482,6 +482,28 @@ namespace YMMHRSystemLogic
             }
 
         }
+        /// <summary>
+        /// Recupera el proceso de un usuario.
+        /// </summary>
+        /// <param input="userId"></param>
+        /// <returns>El proceso al que pertenece el usuario</returns>
+        public string GetProcessbyUser(long userId)
+        {
+            try
+            {
+                SQLTools oBD = new SQLTools();
+                DataRow dr;
+                dr = oBD.GetRow("select Process FROM Users u WHERE u.UserId =" + userId, "");
+
+                return dr["Process"].ToString();
+            }
+            catch (Exception ex)
+            {
+                Log log = new Log();
+                log.WriteToErrorLog("HR System", "Query Process", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "QueryProcess");
+                throw ex;
+            }
+        }
         #endregion
     }
 }

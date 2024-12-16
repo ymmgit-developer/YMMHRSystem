@@ -65,4 +65,14 @@ function ExportLegalRequirements() {
     }
 }
 
+function ExportExtraInOut() {
+    var startDate = $("#StartDate8").val();
+    var endDate = $("#EndDate8").val();
+    if (startDate === "" || endDate === "") {
+        Metro.toast.create("Please enter dates", null, null, "bg-red fg-white");
+    } else {
+        window.location = $ExportAccessAuthorization + "?startDate=" + startDate + "&endDate=" + endDate;
+    }
+}
+
 

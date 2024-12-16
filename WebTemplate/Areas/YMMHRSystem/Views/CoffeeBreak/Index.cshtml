@@ -86,7 +86,7 @@
 
                             <td style="text-align: center">
                                 <a class="button bg-black fg-white" style="cursor: pointer;" onclick="CoffeeBreakDetailDialog(@item.CoffeeBreakId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
-                                @if (Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                                @if ((Role.QueryRole("GA", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) & item.Status == 1)
                                 {
                                     <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteCoffeeBreak(@item.CoffeeBreakId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
                                 }

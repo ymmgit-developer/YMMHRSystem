@@ -39,41 +39,59 @@
                 <div><h6 style="color:black">Email Contacts</h6></div>
             </div>
             <div class="cell-md-3">
-                <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Multiple days range" id="range" onclick="EnableFinishDate()">
+                <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Days range" id="range" @*onclick="EnableFinishDate()"*@>
+                <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Multiple days" id="multipleDays" />
             </div>
         </div>
         <div class="row mb-2">
             <div class="cell-md-12">
-                <input id="Contacts" value="" name="Contacts" data-on-before-tag-add="onBeforeTagAdd" data-max-tags="10" type="text" data-role="taginput">
+                @*<input id="Contacts" value="" name="Contacts" data-on-before-tag-add="onBeforeTagAdd" data-max-tags="10" type="text" data-role="taginput">*@
+                <input id="Contacts" placeholder="" class='flexdatalist dotted-border w-100' data-min-length='1' multiple='multiple' list='emailsuggestions' value="" name="Contacts" type="text">
+                <datalist id="emailsuggestions">
+                    @foreach (var user in Model.UserEmailSuggestions)
+                    {
+                        <option value="@user.Email" data-name="@user.Name @user.FirstSurname @user.LastSurname">@user.Name @user.FirstSurname @user.LastSurname</option>
+                    }
+                </datalist>
             </div>
         </div>
         <div class="row mb-2">
             <div class="cell-md-6">
-                @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                <div class="w-100">
+                    <input type="text" class="selector active w-100 dotted-border" id="Date" name="Date" placeholder="Date" autocomplete="off" readonly data-input />
+                </div>
+                @*@if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <input data-prepend="Start Date:" data-validate="required" autocomplete="off" id="Date" name="Date" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                 }
                 else
                 {
                     <input data-prepend="Start Date:" data-validate="required" autocomplete="off" id="Date" name="Date" value="" data-role="calendarpicker" data-cls-calendar="compact" data-min-date="@DateTime.Now" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-                }
+                }*@
 
             </div>
             <div class="cell-md-6">
-                @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                <div class="w-100">
+                    <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Date" autocomplete="off" readonly data-input disabled />
+                </div>
+                @*@if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <input data-prepend="Finish Date:" disabled="disabled" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
                 }
                 else
                 {
                     <input data-prepend="Finish Date:" disabled="disabled" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-min-date="@DateTime.Now" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-                }
+                }*@
             </div>
 
         </div>
         <div class="row mb-2">
             <div class="cell-md-6">
-                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="0" id="Time" name="Time">
+                <div class="w-100">
+                    <div class="cell-12 border bd-gray">
+                        <input style="font-size:15px;" type="time" id="Time" name="Time" class="w-100" autocomplete="off">
+                    </div>
+                </div>
             </div>
             <div class="cell-md-6">
                 <select class="notranslate" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
@@ -110,19 +128,29 @@
                 <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
             </div>
         </div>
+
+        <div style="display:none;">
+            <input type="text" name="MultipleDates" id="MultipleDates" />
+        </div>
     </form>
+</div>
+
+<div style="display:none;">
+    @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+    {<input type="number" value=1 id="RolUser" />}
+    else
+    { <input type="number" value=0 id="RolUser" />}
 </div>
 
 <script>
 
     $("#range").on("change", function (e) {
         if (e.target.checked) {
-            $('#FinishDate').attr('data-validate="required"');
+            $('#FinishDate').attr('data-validate', 'required');
             $("#FinishDate").parent().addClass('required');
-            $("#FinishDate").attr('data-validate', 'required');
             $('#FinishDate').prop("disabled", false);
         } else {
-            $('#FinishDate').val(null);
+            $('#FinishDate').val("");
             $("#FinishDate").parent().removeClass('required');
             $("#FinishDate").removeAttr('data-validate');
             $('#FinishDate').prop("disabled", true);
@@ -130,6 +158,28 @@
     });
 
 </script>
+
+<script>
+
+    $(document).ready(function () {
+        // Obtener el valor de RolUser
+        var rolUserValue = parseInt($("#RolUser").val());
+
+        // Configuración base para Flatpickr
+        var config = {
+            allowInput: true,
+            clickOpens: true, // Previene la apertura automática del calendario
+            dateFormat: "d-m-Y", // Formato DD-MM-YYYY
+            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+        };
+
+        // Inicializar los Datepickers
+        $("#Date").flatpickr(config);
+        $("#FinishDate").flatpickr(config);
+    });
+
+</script>
+
 <script>
     function onBeforeTagAdd(val) {
 
@@ -148,3 +198,87 @@
         }
     }
 </script>
+
+<script>
+    /*Sugererencias de correo*/
+    $(document).ready(function () {
+        // Inicializa Flexdatalist en el input
+        $('.flexdatalist').flexdatalist({
+            minLength: 1,
+            searchIn: ['value', 'name'],  // Buscar en el valor y en el nombre
+            searchByWord: true,
+            multiple: true,
+            textProperty: 'label',
+            valueProperty: 'value',
+            visibleProperties: ["value", "label"],
+            searchContain: true,
+            maxShownResults: 100
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Obtener el valor de RolUser
+        var rolUserValue = parseInt($("#RolUser").val());
+
+        // Configuración base para Flatpickr
+        var config = {
+            allowInput: true,
+            clickOpens: true, // Previene la apertura automática del calendario
+            dateFormat: "d-m-Y", // Formato DD-MM-YYYY
+            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+            onClose: function (selectedDates, dateStr, instance) {
+                if ($("#multipleDays").is(":checked")) {
+
+                    // Convertir las fechas seleccionadas a un string separado por comas
+                    var selectedDatesStr = selectedDates.map(function (date) {
+                        return instance.formatDate(date, "d-m-Y");
+                    }).join(',');
+
+                    // Asignar las fechas al input oculto
+                    $("#MultipleDates").val(selectedDatesStr);
+                }
+            }
+        };
+
+        // Inicializar los Datepickers
+        var datePicker = $("#Date").flatpickr(config);
+        var finishDatePicker = $("#FinishDate").flatpickr(config);
+
+        // Manejar el cambio en el checkbox multipleDays
+        $("#multipleDays").change(function () {
+            if ($(this).is(":checked")) {
+                // Desmarcar y deshabilitar el checkbox range
+                $("#range").prop("checked", false).prop("disabled", true);
+
+                // Limpiar y deshabilitar el input FinishDate
+                finishDatePicker.clear(); // Limpia el valor del Flatpickr
+                $("#FinishDate").prop("disabled", true);
+
+                // Cambiar el modo a "multiple" en el input Date
+                datePicker.set("mode", "multiple");
+            } else {
+                // Desmarcar multipleDays no habilitará FinishDate
+                $("#range").prop("disabled", false); // Habilitar range
+
+                // Limpiar el input Date
+                datePicker.clear();
+
+                // Cambiar el modo a "single" en el input Date
+                datePicker.set("mode", "single");
+            }
+        });
+    });
+</script>
+
+<style>
+    input[type="time"] {
+        border: none;
+        outline: none; /* Remueve el borde cuando el input está enfocado */
+        box-shadow: none; /* Remueve cualquier sombra que pueda estar generando la línea */
+        -webkit-appearance: none; /* Remueve el estilo predeterminado en navegadores WebKit como Chrome y Safari */
+        -moz-appearance: none; /* Remueve el estilo predeterminado en Firefox */
+        appearance: none; /* Remueve el estilo predeterminado en navegadores modernos */
+    }
+</style>

@@ -21,35 +21,50 @@
     <form id="CoffeeBreakForm" data-role="validator" data-on-validate-form="AddCoffeeBreak()" action="javascript:">
         <div class="row mb-1">
             <div class="cell-md-6">
-                <input data-prepend="Start Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <!--<input data-prepend="Start Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
+                <label for="StartDate">Start Date</label>
+                <input type="text" class="selector active w-100 dotted-border" onchange="DateSelected()" id="StartDate" name="StartDate" placeholder="Start Date" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" readonly data-input />
             </div>
             <div class="cell-md-6">
-                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
-            </div>
-        </div>
-        <div class="row mb-1">
-            <div class="cell-md-6">
-                <input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
-            </div>
-            <div class="cell-md-6">
-                <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+                <div class="row">
+                    <label for="time">Start Time</label>
+                    <input class="w-100" type="time" id="StartTime" value="@Model.StartTime" name="StartTime" />
+                </div>
+                @*<input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">*@
             </div>
         </div>
         <div class="row mb-1">
             <div class="cell-md-6">
-                <select class="notranslate" data-role="select" id="Type" name="Type" data-prepend="Type:">
-                    @foreach (var item in coffeeTypeList)
-                    {
-                        if (Model.Type == item)
-                        {
-                            <option selected value="@item">@item</option>
-                        }
-                        else
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    }
-                </select>
+                <!--<input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
+                <label for="FinishDate">Finish Date</label>
+                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Finish Date" autocomplete="off" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" readonly data-input />
+            </div>
+            <div class="cell-md-6">
+                <div class="row">
+                    <label for="FinishTime">Finish Time</label>
+                    <input class="w-100" type="time" id="FinishTime" value="@Model.FinishTime" name="FinishTime" />
+                </div>
+                @*<input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">*@           
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="cell-md-6">
+                <input type="text" id="Type" name="Type" data-role="input" value="@Model.Type" data-prepend="Type: " readonly />
+                <span class="helper-text" id="helperText"></span>
+                @*<select class="notranslate" data-role="select" id="Type" name="Type" data-prepend="Type:">
+            <option selected value=""> </option>
+            @foreach (var item in coffeeTypeList)
+            {
+                if (Model.Type == item)
+                {
+                    <option value="@item">@item</option>
+                }
+                else
+                {
+                    <option value="@item">@item</option>
+                }
+            }
+        </select>*@
             </div>
             <div class="cell-md-6">
                 @if (Model.Status <= 1)
@@ -79,10 +94,10 @@
                 <label>Number of Attendees:</label>
                 <input type="text" data-role="spinner" name="AttendeeQuantity" id="AttendeeQuantity" autocomplete="off" data-buttons-position="right" data-min-value="1" value="@Model.AttendeeQuantity">
             </div>
-            <div class="cell-md-6">
+            @*<div class="cell-md-6">
                 <label>Number of Instructors:</label>
                 <input type="text" data-role="spinner" name="InstructorQuantity" id="InstructorQuantity" autocomplete="off" data-buttons-position="right" data-min-value="1" value="@Model.InstructorQuantity">
-            </div>
+            </div>*@
         </div>
         @Html.Hidden("Status", Model.Status)
         @Html.Hidden("Responsable", Model.Responsable)
@@ -129,6 +144,14 @@
         </div>
     </form>
 </div>
+
+<div style="display:none;">
+    @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+    {<input type="number" value=1 id="RolUser" />}
+    else
+    { <input type="number" value=0 id="RolUser" />}
+</div>
+
 <script>
     function DateSelected() {
         var startDate = $("#StartDate").val();
@@ -150,5 +173,57 @@
             },
         });
     }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Obtener el valor de RolUser
+        var rolUserValue = parseInt($("#RolUser").val());
+
+        // Configuración base para Flatpickr
+        var config = {
+            allowInput: true,
+            clickOpens: true, // Previene la apertura automática del calendario
+            dateFormat: "d-m-Y", // Formato DD-MM-YYYY
+            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+        };
+
+        // Inicializar los Datepickers
+        $("#StartDate").flatpickr(config);
+        $("#FinishDate").flatpickr(config);
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Listener para el evento blur
+        $('#FinishTime').on('blur', function () {
+            // Obtener los valores de los inputs
+            var startDate = $('#StartDate').val();
+            var startTime = $('#StartTime').val();
+            var finishDate = $('#FinishDate').val();
+            var finishTime = $('#FinishTime').val();
+
+            // Verificar si todos los campos tienen valores
+            if (startDate && startTime && finishDate && finishTime) {
+                // Formar las fechas completas usando moment.js
+                var startDateTime = moment(startDate + ' ' + startTime, 'YYYY-MM-DD HH:mm');
+                var finishDateTime = moment(finishDate + ' ' + finishTime, 'YYYY-MM-DD HH:mm');
+
+                // Calcular la diferencia en horas
+                var duration = moment.duration(finishDateTime.diff(startDateTime));
+                var hoursDiff = duration.asHours();
+
+                // Modificar el select dependiendo de la diferencia de tiempo
+                if (hoursDiff <= 2) {
+                    $('#Type').val('Basic').trigger('change');
+                    $('#helperText').html('<small>The meeting is less than or equal to 2 hrs.</small>');
+                } else {
+                    $('#Type').val('Complete').trigger('change');
+                    $('#helperText').html('<small>The meeting is longer than 2 hours.</small>');
+                }
+            }
+        });
+    });
 </script>
 

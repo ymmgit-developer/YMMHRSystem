@@ -1,0 +1,166 @@
+﻿@{
+    var firstNotifications = ViewBag.FirstNotifications;
+    var secondNotifications = ViewBag.SecondNotifications;
+    var users = ViewBag.Users;
+    ViewBag.Title = "In/Out Notifications";
+}
+<head>
+    <script>
+        $AddFirstApprover = '@Url.Action("AddFirstApprover", "Notifications", new { area = "YMMHRSystem" })';
+        $AddSecondApprover = '@Url.Action("AddSecondApprover", "Notifications", new { area = "YMMHRSystem" })';
+        $SaveFirstApproverRelation = '@Url.Action("SaveFirstApprover", "Notifications", new { area = "YMMHRSystem" })';
+        $DeleteFirstApproverRelation = '@Url.Action("DeleteFirstApprover", "Notifications", new { area = "YMMHRSystem" })';
+        $SaveSecondApproverRelation = '@Url.Action("SaveSecondApprover", "Notifications", new { area = "YMMHRSystem" })';
+        $DeleteSecondApproverRelation = '@Url.Action("DeleteSecondApprover", "Notifications", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/NotificationsCheckInOut.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Check In/Out Notifications</h5>
+
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveNotificationsInOut"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window allowing the user to add a new record to the list of first approvers in Check In/Out." data-position='auto' onclick="FirstApproverAddDialog()"><span class="mif-done"></span><span class="actionButton"> First Approver </span></a>
+                <a class="button flat-button" style="color:white" data-step="2" data-intro="This button will open a window that will allow the user to add a new record in the list of second approvers in Check In/Out." data-position='auto' onclick="SecondApproverAddDialog()"><span class="mif-done_all"></span><span class="actionButton"> Second Approver </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>First Notifications</h1>
+    </div>
+
+    <div class="container-fluid mt-5" style="font-size: 0.8rem">
+        <div id="FirstApproversTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttFirstApprovers" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Applicant</th>
+                        <th style="text-align: center">Notify to</th>
+                        <th style="text-align: center">Email To Notify</th>
+                        <th style="text-align: center">User Created</th>
+                        <th style="text-align: center">Date Added</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting" data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var firstApprovers in firstNotifications)
+                    {
+                        <tr>
+                            <td style="text-align: center">
+                                <span> @firstApprovers.NamesApplicant </span>
+                            </td>
+                            <td style="text-align: center">
+                                @foreach (var user in users)
+                                {
+                                    if (user.UserId.ToString() == firstApprovers.IdUserToNotify)
+                                    {
+                                        <span>@user.Name @user.FirstSurname</span>
+                                    }
+                                }
+                            </td>
+                            <td style="text-align: center">
+                                <span> @firstApprovers.EmailToNotify </span>
+                            </td>
+                            <td style="text-align: center">
+                                <span> @firstApprovers.UserCreated </span>
+                            </td>
+                            <td style="text-align: center">
+                                <span> @firstApprovers.DateAdded </span>
+                            </td>
+                            <td style="text-align: center">
+                                @if(HttpContext.Current.Session["CanDeleteNotificationsInOut"].Equals(true))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRegister(@firstApprovers.IdNotification)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Second Notifications</h1>
+    </div>
+
+    <div class="container-fluid mt-5" style="font-size: 0.8rem">
+        <div id="SecondApproversTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttSecondApprovers" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Notify to</th>
+                        <th style="text-align: center">Email To Notify</th>
+                        <th style="text-align: center">User Created</th>
+                        <th style="text-align: center">Date Added</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting" data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var secondApprovers in secondNotifications)
+                    {
+                        <tr>
+                            <td style="text-align: center">
+                                <span> @secondApprovers.IdUserToNotify </span>
+                            </td>
+                            <td style="text-align: center">
+                                <span> @secondApprovers.EmailToNotify </span>
+                            </td>
+                            <td style="text-align: center">
+                                <span> @secondApprovers.UserCreated </span>
+                            </td>
+                            <td style="text-align: center">
+                                <span> @secondApprovers.DateAdded </span>
+                            </td>
+                            <td style="text-align: center">
+                                @if (HttpContext.Current.Session["CanDeleteNotificationsInOut"].Equals(true))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteSecondRegister(@secondApprovers.IdNotification)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="FirstApproversAddDialog" name="FirstApproversAddDialog" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="SecondApproversAddDialog" name="SecondApproversAddDialog" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteRegisterApprovers" name="DeleteRegisterApprovers" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteRegisterApprovers()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteRegisterApprovers')"> No</button>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteRegisterSecondApprovers" name="DeleteRegisterSecondApprovers" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteRegisterSecondApprovers()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteRegisterSecondApprovers')"> No</button>
+        </div>
+    </div>
+</body>

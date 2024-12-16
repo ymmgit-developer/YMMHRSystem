@@ -1,0 +1,164 @@
+@using YMMHRSystemLogic
+@model List<DtoEntryExitAuthorization>
+
+@{
+    ViewBag.Title = "Extraordinary staff Check In/Out";
+    Types type = new Types();
+    var types = type.GetTypes();
+}
+<head>
+    <script>
+        $AddRecordCheckInOut = '@Url.Action("AddCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+        $SaveRecordCheckInOut = '@Url.Action("SaveCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+        $DetailRecordCheckInOut = '@Url.Action("DetailCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+        $UpdateRecordCheckInOut = '@Url.Action("UPdateCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+        $DeleteRecordCheckInOut = '@Url.Action("DeleteCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+        $ApprovedRecordCheckInOut = '@Url.Action("ApproveCheckInOut", "EntryExitAuthorization", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/CheckInOut.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Extraordinary staff entry/exit</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanCreateChekInOut"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' onclick="CheckIODetailAddDialog()"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="CheckInOutTable" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttCheckIO" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Created by</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Associates</th>
+                        <th style="text-align: center">Type</th>
+                        <th style="text-align: center">For time</th>
+                        <th style="text-align: center">For date</th>
+                        <th style="text-align: center">Status</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in Model)
+                    {
+                        <tr>
+                            <td style="text-align: center">
+                                <span>@record.CreateBy</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>@record.Process</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>@record.Associate</span>
+                            </td>
+                            <td style="text-align: center">
+                                @foreach (var optiontype in types)
+                                {
+                                    if (optiontype.IdType == @record.IdType)
+                                    {
+                                        <span>@optiontype.DescriptionType</span>
+                                    }
+                                }
+                            </td>
+                            <td style="text-align: center">
+                                <span>@record.TimeFor</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>@record.DateFor.ToString("dd/MM/yyyy")</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>
+                                    @if (record.CurrentState == 0)
+                                    {
+                                        <text>Created</text>
+                                    }
+                                    else if (record.CurrentState == 1)
+                                    {
+                                        <text>First approval: Ok</text>
+                                    }
+                                    else if (record.CurrentState == 2)
+                                    {
+                                        <text>Complete approvals</text>
+                                    }
+                                </span>
+                            </td>
+                            <td style="text-align: center">
+                                @if (record.CurrentState == 0 || record.CurrentState == 1)
+                                {
+                                    string ComposedName = Session["UserName"].ToString() + " " + Session["UserName"].ToString();
+                                    if (!string.Equals(record.Associate?.Trim(), Session["WorkerFileName"].ToString()?.Trim(), StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        if (HttpContext.Current.Session["CanApproveChekInOut"].Equals(true))
+                                        {
+                                            if (Permission.QueryPermission("CHECKINOUT.FIRSTAPPROVAL", long.Parse(HttpContext.Current.Session["UserId"].ToString())) && (record.CurrentState == 0))
+                                            {
+                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                            }
+                                            if (Permission.QueryPermission("CHECKINOUT.SECONDAPPROVAL", long.Parse(HttpContext.Current.Session["UserId"].ToString())) && (record.CurrentState == 1))
+                                            {
+                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                            }
+                                        }
+                                    }
+                                }
+                                <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordCheckInOutDetailDialog(@record.IdRecordsInOut)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                <!--Delete button, existe si:-->
+                                <!--CreateBy = HttpContext.Session["Name"]-->
+                                <!--CurrentState != 2-->
+                                <!--Role.QueryRole("HR", Convert.ToInt64(Session["UserId"]))-->
+                                @if ((record.CreateBy == Session["UserName"].ToString()) || Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])))
+                                {
+                                    if (record.CurrentState != 2)
+                                    {
+                                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordCheckInOut(@record.IdRecordsInOut)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div class="dialog" data-role="dialog" id="CheckInOutDetailDialog" name="CheckInOutDetailDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true"   >
+
+    </div>
+
+    <div class="dialog" data-role="dialog" id="CheckInOutAddDialog" name="CheckInOutAddDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p></p> <!-- Este contenido será actualizado dinámicamente -->
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="CancelCheckInOut" name="CancelCheckInOut" class="dialog" data-role="dialog">
+        <div class="dialog-title">Cancel</div>
+        <div class="dialog-content"> Are you sure you want to cancel this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="CancelCheckInOut()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#CancelCheckInOut')"> No</button>
+        </div>
+    </div>
+</body>

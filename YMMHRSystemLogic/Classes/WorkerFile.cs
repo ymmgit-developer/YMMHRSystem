@@ -235,6 +235,31 @@ namespace YMMHRSystemLogic
 
         }
         /// <summary>
+        /// Get WorkerFile Id by name
+        /// </summary>
+        /// <param name="workerId"></param>
+        /// <returns></returns>
+        public string GetWorkerFileIdByName(string Names)
+        {
+            try
+            {
+                DataRow dataRow = null;
+                string sqlString = "SELECT WorkerFileId FROM WorkerFiles WHERE Names = '" + Names + "'";
+
+                dataRow = oDatabase.GetRow(sqlString, "Get GetWorkerFileIdByName");
+
+                if (dataRow == null) return "";
+
+                return dataRow["WorkerFileId"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get WorkerFile Id By Name", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetWorkerFileIdByName");
+                throw ex;
+            }
+
+        }
+        /// <summary>
         /// Get WorkerFile Route
         /// </summary>
         /// <param name="workerId"></param>
@@ -332,6 +357,28 @@ namespace YMMHRSystemLogic
             }
 
         }
+
+        /// <summary>
+        /// Dismisses a Worker (New Process) Ago,2024 
+        /// </summary>
+        /// <param name="WorkerFileId"></param>
+        /// <returns>true, false</returns>
+        public bool DismissWorkerWithoutWorkerFiles(int WorkerId) {
+            try
+            {
+                DateTime date = DateTime.Now.Date;
+                string query = "";
+                query = "UPDATE WorkerFiles SET Status = 0, Rehirable = 0, DismissalNumber = " + (GetWorkerDismissals(WorkerId) + 1) + ", DismissalDate = '" + date.ToString("yyyyMMdd") + "' WHERE WorkerId = " + WorkerId;
+                oDatabase.ExecuteNonQuery(query, "Worker dismiss made");
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                log.WriteToErrorLog("HR System", "Dismiss Worker Without Requiring Documentation", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DismissWorker");
+                return false;
+            }
+        }
+
         /// <summary>
         /// Admit a Worker. 
         /// </summary>

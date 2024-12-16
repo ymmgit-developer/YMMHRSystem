@@ -23,8 +23,21 @@ namespace YMMHRSystemLogic
             try
             {
                 SQLTools sQLTools = new SQLTools();
-                string userIdstring = userId == null || userId == "" ? "NULL" : "'" + userId + "'";
-                string sqlString = "INSERT INTO ErrorLogs (Date,App,UserId,MethodObjective,ErrorMessage,StackTrace,Method) VALUES (GetDate(),'" + app + "'," + userIdstring + ",'" + methodObjective + "','" + exceptionMessage + "','" + stackTrace + "','" + method + "')";
+
+                // Escapar comillas simples en las variables de entrada
+                string safeApp = app.Replace("'", "''");
+                string safeMethodObjective = methodObjective.Replace("'", "''");
+                string safeExceptionMessage = exceptionMessage.Replace("'", "''");
+                string safeStackTrace = stackTrace.Replace("'", "''");
+                string safeMethod = method.Replace("'", "''");
+
+                // Asigna 'NULL' cuando userId sea null o vacío
+                string userIdstring = string.IsNullOrEmpty(userId) ? "NULL" : $"'{userId.Replace("'", "''")}'";
+
+                string sqlString = $@"
+            INSERT INTO ErrorLogs (Date, App, UserId, MethodObjective, ErrorMessage, StackTrace, Method) 
+            VALUES (GetDate(), '{safeApp}', {userIdstring}, '{safeMethodObjective}', '{safeExceptionMessage}', '{safeStackTrace}', '{safeMethod}')
+        ";
 
                 sQLTools.ExecuteNonQuery(sqlString, "Error Log Insert");
             }
@@ -33,5 +46,6 @@ namespace YMMHRSystemLogic
                 throw;
             }
         }
+
     }
 }

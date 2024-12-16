@@ -12,7 +12,7 @@ namespace WebTemplate
                         "~/Scripts/jquery-{version}.js"
                         , "~/Scripts/metro.min.js",
                         "~/Scripts/Chart.min.js",
-                        "~/Scripts/chartjs-plugin-datalabels.min.js"));
+                       "~/Scripts/chartjs-plugin-datalabels.min.js"));
 
             bundles.Add(new Bundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));

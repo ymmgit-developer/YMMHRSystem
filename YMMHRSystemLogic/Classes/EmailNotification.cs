@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+
 namespace YMMHRSystemLogic
 {
     public class EmailNotification
@@ -655,6 +656,42 @@ namespace YMMHRSystemLogic
             }
         }
 
+        /// <summary>
+        /// Send notification of first approval
+        /// </summary>
+        public void FirstApprovalNotification(string IdApplicant, string Applicant, string Type, string Motive, DateTime DateFor, string TimeFor)
+        {
+            FirstNotificationEntryExit firstNotificationEntryExit = new FirstNotificationEntryExit();
+            var notifyToList = new List<string> { firstNotificationEntryExit.GetNotifyTo(IdApplicant) };
+
+            sendEmail.SendEmailTemplate("YMM HR System: Request for approval Entry/Exit"
+                , "TemplateFirstApproval", new[,] { 
+                { "$APPLICANT$", Applicant },
+                { "$TYPE$", Type },
+                { "$MOTIVE$", Motive },
+                { "$DATEFOR$", DateFor.ToString("dd/MM/yyyy") },
+                { "$TIMEFOR$", TimeFor } }
+            , sendEmail.GetAdminEmail()
+            , notifyToList);
+        }
+
+        public void SecondApprovalNotification(int IdRecordsInOut)
+        {
+            EntryExitAuthorization entryExitAuthorization = new EntryExitAuthorization();
+            SecondNotificationEntryExit secondnotify = new SecondNotificationEntryExit();
+            DtoEntryExitAuthorization data = entryExitAuthorization.GetRecord(IdRecordsInOut);
+            Motive motive = new Motive();
+            Types types = new Types();
+            sendEmail.SendEmailTemplate("YMM HR System: Request for approval Entry/Exit"
+                , "TemplateSecondApproval", new[,] {
+                { "$APPLICANT$", data.Associate.ToString() },
+                { "$TYPE$", types.GetTypeDescription(data.IdType) },
+                { "$MOTIVE$", motive.GetMotiveDescription(data.IdMotive) },
+                { "$DATEFOR$", data.DateFor.ToString("dd/MM/yyyy") },
+                { "$TIMEFOR$", data.TimeFor.ToString() } }
+            , sendEmail.GetAdminEmail()
+            , secondnotify.GetNotifyTo());
+        }
         #endregion
     }
 }

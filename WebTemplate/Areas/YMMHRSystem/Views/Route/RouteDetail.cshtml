@@ -39,14 +39,14 @@
     <!-----------------------------------FLEX GRID------------------------------>
     <div class="row mt-5" data-step="1" data-intro="Route information" data-position="auto">
 
-        <div class="cell-md-8">
+        <div class="cell-md-12">
             <input type="text" name="GetName" id="GetName" data-role="input" data-prepend="Name:" autocomplete="off" value="@Model.Name">
         </div>
 
-        <div class="cell-md-4">
+        @*<div class="cell-md-4">
             <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="GetCost" name="GetCost">
             @Html.Hidden("Cost", Model.Cost, new { @class = "route" })
-        </div>
+        </div>*@
         @Html.Hidden("Name", Model.Name, new { @class = "route" })
         @Html.Hidden("UserCreated", Model.UserCreated, new { @class = "route" })
         @Html.Hidden("DateAdded", Model.DateAdded, new { @class = "route" })

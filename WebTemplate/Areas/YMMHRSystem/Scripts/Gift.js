@@ -30,7 +30,6 @@
         scrollY: "50vh",
         scrollCollapse: true,
     });
-
 });
 
 function GiftDetailDialog(id) {

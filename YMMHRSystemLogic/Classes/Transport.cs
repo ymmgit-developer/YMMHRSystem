@@ -276,7 +276,7 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoExtraordinaryTransport> extraTransportList = new List<DtoExtraordinaryTransport>();
 
-                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE Date BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
+                mapping.Load<DtoExtraordinaryTransport>("SELECT ExtraordinaryTransportId, AssociateName, Process, Route, Stop, StartTime, StartDate, FinishTime, FinishDate, Motive, Cost, Date, UserCreated, UserModified, Status, CreatedBy, Contacts, ShiftChange FROM ExtraordinaryTransports WHERE StartDate BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY ExtraordinaryTransportId DESC, Status", "ExtraordinaryTransports", new DtoExtraordinaryTransport());
                 extraTransportList.AddRange(mapping.dtoList.Select(renglon => (DtoExtraordinaryTransport)renglon.Dto));
 
                 return extraTransportList;

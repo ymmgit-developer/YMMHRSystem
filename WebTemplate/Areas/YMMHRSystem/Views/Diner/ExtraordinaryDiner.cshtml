@@ -43,7 +43,7 @@
                     <tr>
                         <th style="text-align: center">Applicant</th>
                         <th style="text-align: center">Process</th>
-                        <th style="text-align: center">Associate</th>
+                        <th style="text-align: center">Associates</th>
                         <th style="text-align: center">Type</th>
                         <th style="text-align: center">Time</th>
                         <th style="text-align: center">Date</th>
@@ -65,6 +65,14 @@
                             </td>
 
                             <td style="text-align: center">
+                                @*@if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                                    {
+                                        <span> @item.Count </span>
+                                    }
+                                    else
+                                    {
+                                        <span> @item.AssociateName </span>
+                                    }*@
                                 <span> @item.AssociateName </span>
                             </td>
 
@@ -127,17 +135,13 @@
     <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
         <div class="dialog-title">Error</div>
         <div class="dialog-content">
-            <p>- Diner already exists</p>
-            <p>- Please  select an associate</p>
-            <p>- Please request same day diner earlier than 3:30pm</p>
-            <p>- Please request next day diner earlier than 4:56pm</p>
-            <p>- Please request Saturday diner earlier than 10:30am Friday</p>
-            <p>- Please request diner within 4 hour window </p>
+            <p></p> <!-- Este contenido será actualizado dinámicamente -->
         </div>
         <div class="dialog-actions ml-auto">
             <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
         </div>
     </div>
+
 
     <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="CancelExtraordinaryDiner" name="CancelExtraordinaryDiner" class="dialog" data-role="dialog">
         <div class="dialog-title">Cancel</div>

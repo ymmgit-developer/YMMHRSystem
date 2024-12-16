@@ -11,6 +11,7 @@
         $ExportTransports = '@Url.Action("ExportTransports", "Graph", new { area = "YMMHRSystem" })';
         $ExportExtraTransports = '@Url.Action("ExportExtraTransports", "Graph", new { area = "YMMHRSystem" })';
         $ExportLegalRequirements = '@Url.Action("ExportLegalRequirements", "Graph", new { area = "YMMHRSystem" })';
+        $ExportAccessAuthorization = '@Url.Action("ExportAccessAuthorization", "Graph", new { area = "YMMHRSystem" })'
     </script>
 </head>
 
@@ -28,7 +29,83 @@
         </div>
     </div>
 
-    <div class="container-fluid mt-2" style="text-align:center">
+        <div class="grid">
+            <div class="row">
+                    <!----- Worker Records  ---->
+                    <div class="cell-lg-4 mb-2">
+                        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-center flex-align-center">
+                            <h5>Worker Records</h5>
+                        </div>
+                        <div class="col">
+                            <div class="row  mb-1">
+                                <select data-role="select" id="Status" name="Status" data-prepend="Status:">
+                                    <option value="0">Inactive</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">All</option>
+                                </select>
+                            </div>
+                            <div class="row  mb-2">
+                                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportWorkerRecord()">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!----- Extra Diner  ---->
+                    <div class="cell-lg-4 mb-2">
+                        <div style="background-color: rgb(54, 54, 54);" class="row mr-0 ml-0 mt-2 d-flex flex-justify-center flex-align-center">
+                            <h5>Extra Diner</h5>
+                        </div>
+                        <div class="col">
+                            <div class="row mb-1">
+                                <input data-prepend="Start Date:" autocomplete="off" id="StartDate4" name="StartDate4" data-role="calendarpicker" data-cls-calendar="compact">
+                            </div>
+                            <div class="row mb-1">
+                                <input data-prepend="End Date:" autocomplete="off" id="EndDate4" name="EndDate4" data-role="calendarpicker" data-cls-calendar="compact">
+                            </div>
+                            <div class="row mb-1">
+                                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraDiners()">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!----- Extra Transport  ---->
+                    <div class="cell-lg-4 mb-2">
+                        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-center flex-align-center">
+                            <h5>Extra Transport</h5>
+                        </div>
+                        <div class="col">
+                            <div class="row mb-1">
+                                <input data-prepend="Start Date:" autocomplete="off" id="StartDate6" name="StartDate6" data-role="calendarpicker" data-cls-calendar="compact">
+                            </div>
+                            <div class="row mb-1">
+                                <input data-prepend="End Date:" autocomplete="off" id="EndDate6" name="EndDate6" data-role="calendarpicker" data-cls-calendar="compact">
+                            </div>
+                            <div class="row mb-1">
+                                <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraTransports()">Export</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="row">
+                <!----- Access Authorization  ---->
+                <div class="cell-lg-4 mb-2">
+                    <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-center flex-align-center">
+                        <h5>Access Authorization</h5>
+                    </div>
+                    <div class="col">
+                        <div class="row mb-1">
+                            <input data-prepend="Start Date:" autocomplete="off" id="StartDate8" name="StartDate8" data-role="calendarpicker" data-cls-calendar="compact">
+                        </div>
+                        <div class="row mb-1">
+                            <input data-prepend="End Date:" autocomplete="off" id="EndDate8" name="EndDate8" data-role="calendarpicker" data-cls-calendar="compact">
+                        </div>
+                        <div class="row mb-1">
+                            <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraInOut()">Export</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    @*<div class="container-fluid mt-2" style="text-align:center">
         <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-center flex-align-center">
             <div class="cell-md-12">
                 <h5>Worker Records</h5>
@@ -142,5 +219,5 @@
                 <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportLegalRequirements()">Export</button>
             </div>
         </div>
-    </div>
+    </div>*@
 </body>

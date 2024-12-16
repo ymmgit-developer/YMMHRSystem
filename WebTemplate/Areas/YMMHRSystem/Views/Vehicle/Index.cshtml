@@ -1,0 +1,127 @@
+﻿@model List<DtoVehicle>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Vehicles";
+}
+<head>
+    <script>
+        $SaveVehicle = '@Url.Action("SaveVehicle", "Vehicle", new { area = "YMMHRSystem" })';
+        $LoadVehicle = '@Url.Action("LoadVehicle", "Vehicle", new { area = "YMMHRSystem" })';
+        $CancelVehicle = '@Url.Action("CancelVehicle", "Vehicle", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Vehicle.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Vehicles</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveVehicle"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' onclick="VehicleDetailDialog(0)"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="VehicleTable" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttVehicles" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Model</th>
+                        <th style="text-align: center">Year</th>
+                        <th style="text-align: center">License Plate</th>
+                        <th style="text-align: center">Type</th>
+                        <th style="text-align: center">Associate</th>
+                        <th style="text-align: center">Policy End</th>
+                        <th style="text-align: center">Next Service</th>
+                        <th style="text-align: center">Status</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting" data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+
+                        <td style="text-align: center">
+                            <span> @item.Model </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @item.Year </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @item.LicensePlate </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @item.Type </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @item.Associate </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @(item.PolicyEnd?.ToShortDateString()) </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @(item.NextService?.ToShortDateString()) </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <span> @(item.Status == 1 ? "Active" : "Inactive") </span>
+                        </td>
+
+                        <td style="text-align: center">
+                            <a class="button bg-black fg-white" style="cursor: pointer;" onclick="VehicleDetailDialog(@item.VehicleId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                            @if (HttpContext.Current.Session["CanCancelVehicle"].Equals(true))
+                            {
+                                <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelVehicle(@item.VehicleId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="1200" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="VehicleDetail" name="VehicleDetail" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>- Vehicle already exists</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="CancelVehicle" name="CancelVehicle" class="dialog" data-role="dialog">
+        <div class="dialog-title">Cancel</div>
+        <div class="dialog-content"> Are you sure you want to cancel this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="CancelVehicle()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#CancelVehicle')"> No</button>
+        </div>
+    </div>
+</body>
+

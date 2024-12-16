@@ -94,7 +94,7 @@ namespace YMMHRSystemLogic
                 List<DtoCoffeeBreak> coffeeBreakList = new List<DtoCoffeeBreak>();
                 if (userFilter == "")
                 {
-                    mapping.Load<DtoCoffeeBreak>("SELECT CoffeeBreakId, Responsable, AttendeeQuantity, InstructorQuantity, Room, Type, StartTime, FinishTime, StartDate, FinishDate, Status, DateAdded, CreatedBy FROM CoffeeBreaks ORDER BY CoffeeBreakId", "CoffeeBreaks", new DtoCoffeeBreak());
+                    mapping.Load<DtoCoffeeBreak>("SELECT CoffeeBreakId, Responsable, AttendeeQuantity, InstructorQuantity, Room, Type, StartTime, FinishTime, StartDate, FinishDate, Status, DateAdded, CreatedBy FROM CoffeeBreaks ORDER BY CoffeeBreakId DESC", "CoffeeBreaks", new DtoCoffeeBreak());
                 }
                 else
                 {

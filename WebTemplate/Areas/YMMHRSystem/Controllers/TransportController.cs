@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using YMMHRSystemLogic;
 
 namespace WebTemplate.Areas.YMMHRSystem.Controllers
@@ -195,7 +196,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// </summary>
         /// <param name="dtoExtraTransport"></param>
         /// <returns></returns>
-        public ActionResult SaveExtraordinaryTransport(DtoExtraordinaryTransport dtoExtraTransport, int TypeTransport, string ListMultiday)
+        public ActionResult SaveExtraordinaryTransport(DtoExtraordinaryTransport dtoExtraTransport, int TypeTransport, string ListMultiday, Boolean? NoStartTime)
         {
             try
             {
@@ -222,9 +223,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     if (dtoExtraTransport.FinishDate != null)
                     {
                         DateTime finishDateTime = Convert.ToDateTime(dtoExtraTransport.FinishDate + dtoExtraTransport.FinishTime);
-                        if (finishDateTime.Subtract(DateTime.Now).TotalHours < 4 || finishDateTime < DateTime.Now)
+                        if (finishDateTime.Subtract(DateTime.Now).TotalHours < 2 || finishDateTime < DateTime.Now)
                         {
-                            return Json(new { success = false, message = "Please request transport within 4 hour window" }, JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Please request transport within 2 hour window" }, JsonRequestBehavior.AllowGet);
                         }
 
                         if (finishDateTime.Subtract(DateTime.Now).Days == 1)
@@ -258,9 +259,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     if (dtoExtraTransport.StartDate != null)
                     {
                         DateTime startDateTime = Convert.ToDateTime(dtoExtraTransport.StartDate + dtoExtraTransport.StartTime);
-                        if (startDateTime.Subtract(DateTime.Now).TotalHours < 4 || startDateTime < DateTime.Now)
+                        DateTime finishDateTime = Convert.ToDateTime(dtoExtraTransport.FinishDate + dtoExtraTransport.FinishTime);
+                        if (NoStartTime != false && dtoExtraTransport.StartDate == DateTime.Today)
                         {
-                            return Json(new { success = false, message = "Please request transport within 4 hour window" }, JsonRequestBehavior.AllowGet);
+                            if (finishDateTime.Subtract(DateTime.Now).TotalHours < 2)
+                            {
+                                return Json(new { success = false, message = "Please request transport within 2 hour window" }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        else 
+                        {
+                            if (startDateTime.Subtract(DateTime.Now).TotalHours < 2 || startDateTime < DateTime.Now)
+                            {
+                                return Json(new { success = false, message = "Please request transport within 2 hour window" }, JsonRequestBehavior.AllowGet);
+                            }
                         }
 
                         if (startDateTime.Subtract(DateTime.Now).Days == 1)
@@ -301,6 +313,12 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         if (TypeTransport == 1)
                         {
+                            // Check if StartTime is PM and FinishTime is AM
+                            if (dtoExtraTransport.StartTime.Hours >= 12 && dtoExtraTransport.FinishTime.Hours < 12)
+                            {
+                                dtoExtraTransport.FinishDate = dtoExtraTransport.StartDate.Value.AddDays(1);
+                            }
+
                             transportList.Add(new DtoExtraordinaryTransport()
                             {
                                 AssociateName = item.Names,
@@ -323,13 +341,19 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             DateTime currentDate = dtoExtraTransport.StartDate.Value;
                             while (currentDate <= dtoExtraTransport.FinishDate.Value)
                             {
+                                DateTime finishDate = currentDate;
+                                if (dtoExtraTransport.StartTime.Hours >= 12 && dtoExtraTransport.FinishTime.Hours < 12)
+                                {
+                                    finishDate = currentDate.AddDays(1);
+                                }
+
                                 transportList.Add(new DtoExtraordinaryTransport()
                                 {
                                     AssociateName = item.Names,
                                     Process = item.Process,
                                     StartDate = currentDate,
                                     StartTime = dtoExtraTransport.StartTime,
-                                    FinishDate = currentDate,
+                                    FinishDate = finishDate,
                                     FinishTime = dtoExtraTransport.FinishTime,
                                     Route = workerFile.GetWorkerFileRoute(item.Names),
                                     Stop = workerFile.GetWorkerFileStop(item.Names),
@@ -347,13 +371,19 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             var dates = ListMultiday.Split(',').Select(date => DateTime.Parse(date.Trim()));
                             foreach (var date in dates)
                             {
+                                DateTime finishDate = date;
+                                if (dtoExtraTransport.StartTime.Hours >= 12 && dtoExtraTransport.FinishTime.Hours < 12)
+                                {
+                                    finishDate = date.AddDays(1);
+                                }
+
                                 transportList.Add(new DtoExtraordinaryTransport()
                                 {
                                     AssociateName = item.Names,
                                     Process = item.Process,
                                     StartDate = date,
                                     StartTime = dtoExtraTransport.StartTime,
-                                    FinishDate = date,
+                                    FinishDate = finishDate,
                                     FinishTime = dtoExtraTransport.FinishTime,
                                     Route = workerFile.GetWorkerFileRoute(item.Names),
                                     Stop = workerFile.GetWorkerFileStop(item.Names),
@@ -366,7 +396,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             }
                         }
                     }
-
                     transport.SaveMultipleExtra(transportList, Convert.ToInt64(Session["UserId"]));
                 }
                 else

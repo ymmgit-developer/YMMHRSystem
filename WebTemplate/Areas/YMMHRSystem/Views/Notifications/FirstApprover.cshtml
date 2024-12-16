@@ -1,0 +1,147 @@
+@model YMMHRSystemLogic.DtoFirstNotificationEntryExit
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+
+    User user = new User();
+    var userlist = user.LoadMultiple();
+}
+<div class="dialog-title">First Notification</div>
+
+<div class="dialog-content">
+    <form id="FirstApproverForm" data-role="validator" data-on-validate-form="AddRegister()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-6">
+                <div class="row d-flex flex-align-center flex-justify-between mx-5">
+                    <div><h6 style="color:black">Associates</h6></div>
+                    <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="Metro.dialog.open('#MultiSelectAssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Add </span></a></div>
+                </div>
+                <div id="AssociateTable">
+                    <!---------------------------------------TABLA ------------------------------------------>
+                    <table id="dttAssociateList" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">Names</th>
+                                <th style="text-align: center">Process</th>
+                                <th style="text-align: center"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!---SPLIT--->
+            <div class="cell-md-6">
+                <div class="row flex-align-center flex-justify-between">
+                    <div><h6 style="color:black">Users</h6></div>
+                    <div class="container" style="overflow-y: auto;">
+                        <ul id="UsersList" data-role="list"
+                            data-cls-list="unstyled-list row flex-justify-center mt-4"
+                            data-cls-list-item="cell-sm-6 cell-md-4"
+                            data-show-pagination="true"
+                            data-items="10"
+                            data-items-steps="5,10,15"
+                            data-show-items-steps="true"
+                            data-show-list-info="true">
+
+                            @foreach (var usuario in userlist.Where(u => u.Status == "1"))
+                            {
+                                string concatname = usuario.Name + " " + usuario.FirstSurname;
+                                <li data-caption="@usuario.Name" data-userid="@usuario.UserId" data-email="@usuario.Email" data-show-pagination="true">
+                                    <input name="checkUserId" type="checkbox" data-role="checkbox" value="@usuario.UserId" data-caption="@concatname">
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="dialog-actions d-flex flex-justify-between w-100">
+                <div>
+                    <button id="SaveFirstApproverRelationship" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button>
+                    <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="MultiSelectAssociateImporter" name="MultiSelectAssociateImporter" class="dialog" data-role="dialog">
+    @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/MultiSelectAssociateList.cshtml", associateList)
+</div>
+
+<script>
+    $(document).ready(function () {
+        table = $('#dttAssociateList').DataTable({
+            responsive: true,
+            retrieve: true,
+            searching: false,
+            info: false,
+            compact: true,
+            paging: false,
+            ordering: false,
+            scrollY: "33vh",
+            scrollCollapse: true
+        });
+    });
+
+    function SelectAssociates(names, process, id) {
+        var same = false;
+        $("#dttAssociateList td").each(function () {
+            if ($(this).text() === names) {
+                same = true;
+            }
+        });
+
+        if (same) {
+            Metro.toast.create("Associate already added.", null, null, "bg-red fg-white");
+        } else {
+            tableAssociates.row($('#' + id)).remove().draw();
+
+            var node = table.row.add([
+                names,
+                process,
+                '<a class="button small bg-red fg-white" style="cursor: pointer;" onclick="RemoveAssociate(\'' + names + '\')"><span class="mif-bin"></span></a>'
+            ]).draw(false).node();
+
+            $(node).css('text-align', 'center');
+
+            var lastRowIndex = $("#dttAssociateList").find("tr").length - 2;
+            $("#dttAssociateList").find("tr").last().append(
+                "<input type='hidden' name='WorkerList[" + lastRowIndex + "].Names' value='" + names + "'>"
+            );
+            $("#dttAssociateList").find("tr").last().append(
+                "<input type='hidden' name='WorkerList[" + lastRowIndex + "].Process' value='" + process + "'>"
+            );
+
+            Metro.toast.create("Associate added.", null, null, "bg-green fg-white");
+        }
+    }
+
+    function RemoveAssociate(names) {
+        var aux;
+        $("#dttAssociateList td").each(function () {
+            if ($(this).text() === names) {
+                aux = $(this).parents('tr');
+            }
+        });
+        table.row(aux).remove().draw();
+        Metro.toast.create("Associate removed.", null, null, "bg-green fg-white");
+    }
+
+    $("#range").on("change", function (e) {
+        if (e.target.checked) {
+            $('#FinishDate').attr('data-validate', 'required');
+            $("#FinishDate").parent().addClass('required');
+            $('#FinishDate').prop("disabled", false);
+        } else {
+            $('#FinishDate').val("");
+            $("#FinishDate").parent().removeClass('required');
+            $("#FinishDate").removeAttr('data-validate');
+            $('#FinishDate').prop("disabled", true);
+        }
+    });
+</script>

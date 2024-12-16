@@ -74,11 +74,15 @@
                             </td>
 
                             <td style="text-align: center">
-                                <span> @item.StartDate.ToString().Substring(0,10) @item.StartTime.ToString(@"hh\:mm") </span>
+                                <span> @item.StartDate.ToString().Substring(0,10) @item.StartTime.ToString(@"hh\:mm") - @item.FinishDate.ToString().Substring(0, 10) @item.FinishTime.ToString(@"hh\:mm")</span>
                             </td>
 
                             <td style="text-align: center">
-                                <span> @(item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled") </span>
+                                <span class="@(
+                                    item.Status == 1 ? "fg-black" : 
+                                    item.Status == 3 ? "fg-green" : 
+                                    item.Status == 2 ? "fg-red" : ""
+                                )"> @(item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled") </span>
                             </td>
 
                             <td style="text-align: center">

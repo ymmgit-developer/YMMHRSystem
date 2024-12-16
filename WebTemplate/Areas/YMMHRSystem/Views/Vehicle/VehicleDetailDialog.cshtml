@@ -35,13 +35,13 @@
         </div>
         <div class="row mb-2">
             <div class="cell">
-                <input data-prepend="Next Service:" id="NextService" name="NextService" data-validate="required" value="@Model.NextService" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Next Service:" id="NextService" name="NextService" data-validate="required" value="@Model.NextService" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
             <div class="cell">
-                <input data-prepend="Next Verification:" id="NextVerification" name="NextVerification" data-validate="required" value="@Model.NextVerification" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Next Verification:" id="NextVerification" name="NextVerification" data-validate="required" value="@Model.NextVerification" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
             <div class="cell">
-                <input data-prepend="Annual Fee:" id="AnnualFee" name="AnnualFee" data-validate="required" value="@Model.AnnualFee" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Annual Fee:" id="AnnualFee" name="AnnualFee" data-validate="required" value="@Model.AnnualFee" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
         </div>
         <div class="row mb-2">
@@ -72,10 +72,10 @@
                 <input type="text" name="PolicyNumber" id="PolicyNumber" data-role="input" data-prepend="Policy Number:" data-validate="required" autocomplete="off" value="@Model.PolicyNumber">
             </div>
             <div class="cell">
-                <input data-prepend="Policy Start:" id="PolicyStart" name="PolicyStart" data-validate="required" value="@Model.PolicyStart" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Policy Start:" id="PolicyStart" name="PolicyStart" data-validate="required" value="@Model.PolicyStart" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
             <div class="cell">
-                <input data-prepend="Policy End:" id="PolicyEnd" name="PolicyEnd" data-validate="required" value="@Model.PolicyEnd" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Policy End:" id="PolicyEnd" name="PolicyEnd" data-validate="required" value="@Model.PolicyEnd" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
         </div>
         <div class="row">
@@ -95,7 +95,7 @@
                 </select>
             </div>
             <div class="cell">
-                <input data-prepend="Invoice Date:" id="InvoiceDate" name="InvoiceDate" data-validate="required" value="@Model.InvoiceDate" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                <input data-prepend="Invoice Date:" id="InvoiceDate" name="InvoiceDate" data-validate="required" value="@Model.InvoiceDate" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
             </div>
         </div>
         @Html.Hidden("DateAdded", Model.DateAdded)

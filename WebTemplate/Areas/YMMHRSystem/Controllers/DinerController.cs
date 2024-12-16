@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
     {
         // GET: YMMHRSystem/Diner
         Diner diner = new Diner();
+        User user = new User();
 
         public ActionResult Diner()
         {
@@ -142,6 +144,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 DtoExtraordinaryDiner dtoExtraordinaryDiner = new DtoExtraordinaryDiner();
 
+                // Obtener todas las sugerencias de correo electrónico
+                List<DtoUser> dtoUserListSuggestions = user.GetUserEmailSuggestions();
+                dtoExtraordinaryDiner.UserEmailSuggestions = dtoUserListSuggestions;
+
                 return View("~/Areas/YMMHRSystem/Views/Diner/ExtraordinaryDinerAddDialog.cshtml", dtoExtraordinaryDiner);
             }
             catch (Exception ex)
@@ -158,6 +164,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             try
             {
                 DtoExtraordinaryDiner dtoExtraordinaryDiner = new DtoExtraordinaryDiner();
+
+                // Obtener todas las sugerencias de correo electrónico
+                List<DtoUser> dtoUserListSuggestions = user.GetUserEmailSuggestions();
+                dtoExtraordinaryDiner.UserEmailSuggestions = dtoUserListSuggestions;
 
                 return View("~/Areas/YMMHRSystem/Views/Diner/GuestExtraordinaryDinerAddDialog.cshtml", dtoExtraordinaryDiner);
             }
@@ -211,7 +221,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// </summary>
         /// <param name="dtoExtraDiner"></param>
         /// <returns></returns>
-        public ActionResult SaveExtraordinaryDiner(DtoExtraordinaryDiner dtoExtraDiner)
+        public ActionResult SaveExtraordinaryDiner(DtoExtraordinaryDiner dtoExtraDiner, string MultipleDates)
         {
             try
             {
@@ -220,42 +230,42 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     if (dtoExtraDiner.WorkerList.Count <= 0)
                     {
-                        return Json("false", JsonRequestBehavior.AllowGet);
+                        return Json(new { success = false, message = "Please select an associate." }, JsonRequestBehavior.AllowGet);
                     }
                 }
 
                 if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
-                    DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
-                    if (dateOrdered.Subtract(DateTime.Now).TotalHours < 4 || dateOrdered < DateTime.Now)
+                    // Si hay fechas múltiples, se validan una por una
+                    if (!string.IsNullOrEmpty(MultipleDates))
                     {
-                        return Json("false", JsonRequestBehavior.AllowGet);
-                    }
-
-                    if (dateOrdered.Subtract(DateTime.Now).Days == 1)
-                    {
-                        TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        var dates = MultipleDates.Split(',');
+                        foreach (var date in dates)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            DateTime parsedDate;
+                            if (DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                            {
+                                // Aquí validamos cada fecha como se hace para dtoExtraDiner.Date
+                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time.ToString());
+                                if (!validationResult.success)
+                                {
+                                    return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "Invalid date format in MultipleDates." }, JsonRequestBehavior.AllowGet);
+                            }
                         }
                     }
-
-                    if ((dateOrdered.DayOfWeek == DayOfWeek.Saturday || dateOrdered.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    else
                     {
-                        TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        // Validar la fecha única de dtoExtraDiner
+                        DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
+                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time.ToString());
+                        if (!validationResult.success)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
-                        }
-                    }
-
-                    if (dateOrdered.Day == DateTime.Now.Day)
-                    {
-                        TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
-                        {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
@@ -263,13 +273,47 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 if (dtoExtraDiner.WorkerList.Count > 0)
                 {
                     List<DtoExtraordinaryDiner> dinerList = new List<DtoExtraordinaryDiner>();
-                    WorkerFile workerFile = new WorkerFile();
-                    if (dtoExtraDiner.FinishDate != null)
-                    {
 
+                    // Si se recibieron múltiples fechas
+                    if (!string.IsNullOrEmpty(MultipleDates))
+                    {
+                        // Dividir las fechas recibidas por comas
+                        var dates = MultipleDates.Split(',');
+
+                        foreach (var date in dates)
+                        {
+                            DateTime parsedDate;
+                            if (DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                            {
+                                // Crear un registro para cada trabajador con cada fecha
+                                foreach (var worker in dtoExtraDiner.WorkerList)
+                                {
+                                    if (diner.GetExtraDinerId(worker.Names, dtoExtraDiner.Type, parsedDate, dtoExtraDiner.Time) == 0)
+                                    {
+                                        dinerList.Add(new DtoExtraordinaryDiner()
+                                        {
+                                            AssociateName = worker.Names,
+                                            Process = worker.Process,
+                                            Date = parsedDate,
+                                            Time = dtoExtraDiner.Time,
+                                            Lading = dtoExtraDiner.Lading,
+                                            LadingCost = dtoExtraDiner.LadingCost,
+                                            Type = dtoExtraDiner.Type,
+                                            UserCreated = Session["UserName"].ToString(),
+                                            Motive = dtoExtraDiner.Motive,
+                                            TypeCost = dtoExtraDiner.TypeCost,
+                                            Contacts = dtoExtraDiner.Contacts
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (dtoExtraDiner.FinishDate != null)
+                    {
                         if (dtoExtraDiner.FinishDate < dtoExtraDiner.Date)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(false, JsonRequestBehavior.AllowGet);
                         }
 
                         List<DateTime?> selectedDates = new List<DateTime?>();
@@ -325,16 +369,16 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         }
                     }
 
+                    // Guardar todos los registros
                     diner.SaveMultipleExtra(dinerList, Convert.ToInt64(Session["UserId"]));
                 }
                 else
                 {
-
                     if (dtoExtraDiner.ExtraordinaryDinerId == 0)
                     {
                         if (diner.GetExtraDinerId(dtoExtraDiner.AssociateName, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) != 0)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(false, JsonRequestBehavior.AllowGet);
                         }
                     }
                     dtoExtraDiner.Lading = dtoExtraDiner.LadingCost > 0.0m ? true : false;
@@ -350,62 +394,62 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     diner.SaveExtra(dtoExtraDiner, Convert.ToInt64(Session["UserId"]));
                 }
 
-                return Json("true", JsonRequestBehavior.AllowGet);
+                return Json(true, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json("false", JsonRequestBehavior.AllowGet);
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
-
         }
+
         /// <summary>
         /// Saves a Diner.
         /// </summary>
         /// <param name="dtoExtraDiner"></param>
         /// <returns></returns>
-        public ActionResult SaveGuestExtraordinaryDiner(DtoExtraordinaryDiner dtoExtraDiner)
+        public ActionResult SaveGuestExtraordinaryDiner(DtoExtraordinaryDiner dtoExtraDiner, string MultipleDates)
         {
             try
             {
 
                 if (dtoExtraDiner.GuestQuantity <= 0)
                 {
-                    return Json("false", JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Guest quantity must be greater than zero." }, JsonRequestBehavior.AllowGet);
                 }
 
 
                 if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
-                    DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
-                    if (dateOrdered.Subtract(DateTime.Now).TotalHours < 4 || dateOrdered < DateTime.Now)
+                    // Si hay fechas múltiples, se validan una por una
+                    if (!string.IsNullOrEmpty(MultipleDates))
                     {
-                        return Json("false", JsonRequestBehavior.AllowGet);
-                    }
-
-                    if (dateOrdered.Subtract(DateTime.Now).Days == 1)
-                    {
-                        TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        var dates = MultipleDates.Split(',');
+                        foreach (var date in dates)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            DateTime parsedDate;
+                            if (DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                            {
+                                // Aquí validamos cada fecha como se hace para dtoExtraDiner.Date
+                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time.ToString());
+                                if (!validationResult.success)
+                                {
+                                    return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "Invalid date format in MultipleDates." }, JsonRequestBehavior.AllowGet);
+                            }
                         }
                     }
-
-                    if ((dateOrdered.DayOfWeek == DayOfWeek.Saturday || dateOrdered.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    else
                     {
-                        TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                        // Validar la fecha única de dtoExtraDiner
+                        DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
+                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time.ToString());
+                        if (!validationResult.success)
                         {
-                            return Json("false", JsonRequestBehavior.AllowGet);
-                        }
-                    }
-
-                    if (dateOrdered.Day == DateTime.Now.Day)
-                    {
-                        TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
-                        if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
-                        {
-                            return Json("false", JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
@@ -458,35 +502,44 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 }
                 else
                 {
-                    foreach (var item in dtoExtraDiner.WorkerList)
+                    if (!string.IsNullOrEmpty(MultipleDates)) 
                     {
-                        if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) == 0)
+                        var dates = MultipleDates.Split(',');
+                        foreach (var date in dates) 
                         {
-                            dinerList.Add(new DtoExtraordinaryDiner()
+                            DateTime parsedDate;
+                            DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+                            foreach (var item in dtoExtraDiner.WorkerList)
                             {
-                                AssociateName = item.Names,
-                                Process = item.Process,
-                                Date = dtoExtraDiner.Date,
-                                Time = dtoExtraDiner.Time,
-                                Lading = dtoExtraDiner.Lading,
-                                LadingCost = dtoExtraDiner.LadingCost,
-                                Type = dtoExtraDiner.Type,
-                                UserCreated = Session["UserName"].ToString(),
-                                Motive = dtoExtraDiner.Motive,
-                                TypeCost = dtoExtraDiner.TypeCost,
-                                Contacts = dtoExtraDiner.Contacts
-                            });
+                                if (diner.GetExtraDinerId(item.Names, dtoExtraDiner.Type, parsedDate, dtoExtraDiner.Time) == 0)
+                                {
+                                    dinerList.Add(new DtoExtraordinaryDiner()
+                                    {
+                                        AssociateName = item.Names,
+                                        Process = item.Process,
+                                        Date = parsedDate,
+                                        Time = dtoExtraDiner.Time,
+                                        Lading = dtoExtraDiner.Lading,
+                                        LadingCost = dtoExtraDiner.LadingCost,
+                                        Type = dtoExtraDiner.Type,
+                                        UserCreated = Session["UserName"].ToString(),
+                                        Motive = dtoExtraDiner.Motive,
+                                        TypeCost = dtoExtraDiner.TypeCost,
+                                        Contacts = dtoExtraDiner.Contacts
+                                    });
+                                }
+                            }
                         }
                     }
                 }
 
                 diner.SaveMultipleExtra(dinerList, Convert.ToInt64(Session["UserId"]));
 
-                return Json("true", JsonRequestBehavior.AllowGet);
+                return Json(true, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json("false", JsonRequestBehavior.AllowGet);
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
 
         }

@@ -27,5 +27,7 @@ namespace YMMHRSystemLogic
         public long CreatedBy { get; set; }
         public List<DtoWorkerFile> WorkerList { get; set; } = new List<DtoWorkerFile>();
         public int GuestQuantity { get; set; }
+        //public int? Count { get; set; } //Se añade este atributo contar la suma de resgistros
+        public List<DtoUser> UserEmailSuggestions { get; set; } = new List<DtoUser> { };
     }
 }

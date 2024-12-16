@@ -62,6 +62,7 @@ function AddCoffeeBreak() {
         cache: false,
         data: $("#CoffeeBreakForm").serialize(),
         success: function (result) {
+            console.warn(result);
             if (result !== "false") {
                 Metro.toast.create("Coffee break saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#CoffeeBreakDetail');
@@ -122,6 +123,7 @@ function StartCoffeeBreak() {
         cache: false,
         data: $("#CoffeeBreakForm").serialize(),
         success: function (result) {
+            console.warn(result);
             if (result === "true") {
                 Metro.toast.create("Coffee Break started.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#CoffeeBreakDetail');
@@ -153,6 +155,7 @@ function EndCoffeeBreak() {
         cache: false,
         data: $("#CoffeeBreakForm").serialize(),
         success: function (result) {
+            console.warn(result);
             if (result === "true") {
                 Metro.toast.create("Coffee Break ended.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#CoffeeBreakDetail');

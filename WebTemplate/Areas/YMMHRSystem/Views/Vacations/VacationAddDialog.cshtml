@@ -1,0 +1,155 @@
+@using YMMHRSystemLogic
+@model DtoVacations
+
+@{
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+    var worker = ViewBag.Workerfile;
+}
+
+<head>
+    <script>
+        /*Variables Global*/
+        var $Age;
+    </script>
+</head>
+
+<div class="dialog-title">Request Vacations</div>
+
+<div class="dialog-content">
+    <form id="VacationForm" data-role="validator" data-on-validate-form="AddVacations()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-6">
+                <input type="text" id="WorkerFileId" name="WorkerFileId"  value="@worker.WorkerFileId" style="display: none"/>
+                <div class="row d-flex flex-align-center flex-justify-between mx-5">
+                    <div><h6 style="color:black">Associate</h6></div>
+                </div>
+                <div id="AssociateTable">
+                    <!---------------------------------------TABLA ------------------------------------------>
+                    <table id="dttAssociateList" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">Names</th>
+                                <th style="text-align: center">Process</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center">@worker.Names</td>
+                                <td style="text-align: center">@worker.Process</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!---SPLIT--->
+            <div class="cell-md-6">
+                <div class="row">
+                    <div class="cell-md-6">
+                        <div class="row mb-2">
+                            <div class="container">
+                                <input type="text" data-role="input" data-prepend="Vacation days available: " id="AvailableVacationDays" name="AvailableVacationDays" value="@worker.AvailableVacationDays" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="container">
+                                <input type="date" data-role="input" data-prepend="Admission date: " id="admissionDate" name="admissionDate" value="@worker.AdmissionDate.ToString("yyyy-MM-dd")" placeholder="YYYY-MM-DD"  title="MM-DD-AAAA" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="container">
+                                <input type="text" data-role="input" data-prepend="Age: " name="timeElapsed" id="timeElapsed" readonly/>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="container">
+                                <input type="text" data-role="input" data-prepend="Vacation days remaining: " id="RemainingVacationDays" name="RemainingVacationDays" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="container">
+                                <textarea data-role="textarea" id="Comments" name="Comments"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell-md-6">
+                        <div class="row">
+                            <div class="container">
+                                <input type="text" class="selector active w-100 dotted-border" id="DatesVacation" name="DatesVacation" placeholder="Date(s)" autocomplete="off" readonly data-input />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="dialog-actions d-flex flex-justify-between w-100">
+                <div>
+                    <button id="SaveRegisterVacation" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button>
+                    <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        const availableDaysInput = document.getElementById("AvailableVacationDays");
+        const remainingDaysInput = document.getElementById("RemainingVacationDays");
+
+        // Inicializar el campo de días restantes con el valor inicial disponible
+        remainingDaysInput.value = availableDaysInput.value;
+
+        flatpickr("#DatesVacation", {
+            mode: "multiple", // Permite selección de múltiples fechas
+            inline: true,
+            dateFormat: "Y-m-d", // Formato de fecha
+            disable: [
+                function (date) {
+                    // Deshabilitar domingos
+                    return date.getDay() === 0; // 0 corresponde a los domingos
+                }
+            ],
+            locale: {
+                firstDayOfWeek: 0 // Define el lunes como el primer día de la semana
+            },
+            onChange: function (selectedDates) {
+                // Obtener el total de días disponibles
+                const availableDays = parseInt(availableDaysInput.value, 10);
+
+                // Calcular los días restantes
+                const remainingDays = availableDays - selectedDates.length;
+
+                // Actualizar el campo de días restantes
+                remainingDaysInput.value = remainingDays >= 0 ? remainingDays : 0;
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        const admissionDateInput = document.getElementById('admissionDate');
+        const timeElapsedInput = document.getElementById('timeElapsed');
+
+        const admissionDate = new Date(admissionDateInput.value);
+        const currentDate = new Date();
+
+        let years = currentDate.getFullYear() - admissionDate.getFullYear();
+        let months = currentDate.getMonth() - admissionDate.getMonth();
+        let days = currentDate.getDate() - admissionDate.getDate();
+
+        // Ajustar meses y días negativos
+        if (days < 0) {
+            months--;
+            days += new Date(admissionDate.getFullYear(), admissionDate.getMonth() + 1, 0).getDate();
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        const timeElapsed = `${years} years, ${months} months, ${days} days`;
+        timeElapsedInput.value = timeElapsed;
+    });
+
+</script>

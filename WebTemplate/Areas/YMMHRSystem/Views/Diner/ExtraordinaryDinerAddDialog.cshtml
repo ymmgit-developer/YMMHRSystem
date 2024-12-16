@@ -1,0 +1,313 @@
+﻿@model DtoExtraordinaryDiner
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+    var foodTypeList = new List<string>() { "Box Lunch", "Weekend", "Special", "Shift Change" };
+}
+
+
+<div class="dialog-title">Extra Diner</div>
+
+<div class="dialog-content">
+    <form id="ExtraDinerForm" data-role="validator" data-on-validate-form="AddExtraordinaryDiner()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-6">
+                <div class="row d-flex flex-align-center flex-justify-between mx-5">
+                    <div><h6 style="color:black">Associates</h6></div>
+                    <div><a class="button small my-button-colors" style="cursor: pointer;" onclick="Metro.dialog.open('#MultiSelectAssociateImporter')"><span class="mif-user-plus"></span><span class="actionButton"> Add </span></a></div>
+                </div>
+                <div id="AssociateTable">
+                    <!---------------------------------------TABLA ------------------------------------------>
+                    <table id="dttAssociateList" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">Names</th>
+                                <th style="text-align: center">Process</th>
+                                <th style="text-align: center"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!---SPLIT--->
+            <div class="cell-md-6">
+                <div class="row flex-align-center flex-justify-between">
+                    <div class="cell-md-9">
+                        <div><h6 style="color:black">Email Contacts</h6></div>
+                    </div>
+                    <div class="cell-md-3">
+                        <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Days range" id="range" @*onclick="EnableFinishDate()"*@>
+                        <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Multiple days" id="multipleDays" />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell-md-12">
+                        @*<input id="Contacts" value="" name="Contacts" data-on-before-tag-add="onBeforeTagAdd" data-max-tags="10" type="text" data-role="taginput">*@
+                        <div class="w-100">
+                            <div class="form-group">
+                                <input id="Contacts" placeholder='@@' class='flexdatalist dotted-border w-100' data-min-length='1' multiple='multiple' list='emailsuggestions' value="" name="Contacts" type="text">
+                                <datalist id="emailsuggestions">
+                                    @foreach (var user in Model.UserEmailSuggestions)
+                                    {
+                                        <option value="@user.Email" data-name="@user.Name @user.FirstSurname @user.LastSurname">@user.Name @user.FirstSurname @user.LastSurname</option>
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell-md-6">
+                        <div class="row">
+                            <div class="container">
+                                <label for="Date">Start Date</label>
+                                <input type="text" class="selector active w-100 dotted-border" id="Date" name="Date" placeholder="Date" autocomplete="off" readonly data-input />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell-md-6">
+                        <div class="row">
+                            <div class="container">
+                                <label for="FinishDate">Finish Date</label>
+                                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Date" readonly data-input disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell-md-6">
+                        <div class="w-100">
+                            <div class="cell-12 border bd-gray">
+                                <input type="time" style="font-size:15px;" autocomplete="off" class="form-control w-100" id="Time" name="Time">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell-md-6">
+                        <select class="notranslate" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
+                            @foreach (var item in foodTypeList)
+                            {
+                                if (Model.Type == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="cell">
+                        <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required maxlength=400" data-chars-counter="#chars-counter" data-chars-counter-template=" $1 char(s)" autocomplete="off">@Model.Motive</textarea>
+                        <p style="font-size: 0.8rem" id="chars-counter"> 0 char(s)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("Process", Model.Process)
+        @Html.Hidden("Type", Model.Type)
+        @Html.Hidden("Lading", Model.Lading)
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        <div class="row">
+            <div class="dialog-actions d-flex flex-justify-start w-100">
+                @if (HttpContext.Current.Session["CanSaveExtraordinaryDiner"].Equals(true) && Model.Status != 2)
+                {
+                    <div><button id="SaveDiner" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
+                }
+                <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+            </div>
+        </div>
+
+        <div style="display:none;">
+            <input type="text" name="MultipleDates" id="MultipleDates" />
+        </div>
+    </form>
+</div>
+
+<div data-overlay="true" data-width="900" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="MultiSelectAssociateImporter" name="MultiSelectAssociateImporter" class="dialog" data-role="dialog">
+    @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/MultiSelectAssociateList.cshtml", associateList)
+</div>
+
+<div style="display:none;">
+    @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+    {<input type="number" value=1 id="RolUser" />}
+    else
+    { <input type="number" value=0 id="RolUser" />}
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        table = $('#dttAssociateList').DataTable({
+            responsive: true,
+            retrieve: true,
+            searching: false,
+            info: false,
+            compact: true,
+            paging: false,
+            ordering: false,
+            scrollY: "33vh",
+            scrollCollapse: true,
+        });
+    });
+
+    function RemoveAssociate(names) {
+        var aux;
+        $("#dttAssociateList td").each(function () {
+            if ($(this).text() === names) {
+                aux = $(this).parents('tr');
+            }
+        });
+        table.row(aux).remove().draw();
+        Metro.toast.create("Associate removed.", null, null, "bg-green fg-white");
+    }
+
+    $("#range").on("change", function (e) {
+        if (e.target.checked) {
+            $('#FinishDate').attr('data-validate', 'required');
+            $("#FinishDate").parent().addClass('required');
+            $('#FinishDate').prop("disabled", false);
+        } else {
+            $('#FinishDate').val("");
+            $("#FinishDate").parent().removeClass('required');
+            $("#FinishDate").removeAttr('data-validate');
+            $('#FinishDate').prop("disabled", true);
+        }
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        // Obtener el valor de RolUser
+        var rolUserValue = parseInt($("#RolUser").val());
+
+        // Configuración base para Flatpickr
+        var config = {
+            allowInput: true,
+            clickOpens: true, // Previene la apertura automática del calendario
+            dateFormat: "d-m-Y", // Formato DD-MM-YYYY
+            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+        };
+
+        // Inicializar los Datepickers
+        $("#Date").flatpickr(config);
+        $("#FinishDate").flatpickr(config);
+    });
+</script>
+<script>
+    function onBeforeTagAdd(val) {
+
+        var regex = /^[a-zA-Z0-9._-]+@@yachiyo.com.mx\s*$/;
+        if (regex.test(val)) {
+            return true;
+        } else {
+            regex = /^[a-zA-Z0-9._-]+@@yachiyo-ind.co.jp\s*$/;
+            if (regex.test(val)) {
+                return true;
+            } else {
+                regex = /^[a-zA-Z0-9._-]+@@motherson.com\s*$/;
+                if (regex.test(val)) {
+                    return true;
+                } else {
+                    Metro.toast.create("Enter a correct email", null, null, "bg-red fg-white");
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+<script>
+    var locales = Metro.utils.getLocales();
+</script>
+
+<script>
+    /*Sugererencias de correo*/
+        $(document).ready(function () {
+            // Inicializa Flexdatalist en el input
+            $('.flexdatalist').flexdatalist({
+                minLength: 1,
+                searchIn: ['value', 'name'],  // Buscar en el valor y en el nombre
+                searchByWord: true,
+                multiple: true,
+                textProperty: 'label',
+                valueProperty: 'value',
+                visibleProperties: ["value", "label"],
+                searchContain: true,
+                maxShownResults: 100,
+            });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Obtener el valor de RolUser
+        var rolUserValue = parseInt($("#RolUser").val());
+
+        // Configuración base para Flatpickr
+        var config = {
+            allowInput: true,
+            clickOpens: true, // Previene la apertura automática del calendario
+            dateFormat: "d-m-Y", // Formato DD-MM-YYYY
+            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+            onClose: function (selectedDates, dateStr, instance) {
+                if ($("#multipleDays").is(":checked")) {
+
+                    // Convertir las fechas seleccionadas a un string separado por comas
+                    var selectedDatesStr = selectedDates.map(function (date) {
+                        return instance.formatDate(date, "d-m-Y");
+                    }).join(',');
+
+                    // Asignar las fechas al input oculto
+                    $("#MultipleDates").val(selectedDatesStr);
+                }
+            }
+        };
+
+        // Inicializar los Datepickers
+        var datePicker = $("#Date").flatpickr(config);
+        var finishDatePicker = $("#FinishDate").flatpickr(config);
+
+        // Manejar el cambio en el checkbox multipleDays
+        $("#multipleDays").change(function () {
+            if ($(this).is(":checked")) {
+                // Desmarcar y deshabilitar el checkbox range
+                $("#range").prop("checked", false).prop("disabled", true);
+
+                // Limpiar y deshabilitar el input FinishDate
+                finishDatePicker.clear(); // Limpia el valor del Flatpickr
+                $("#FinishDate").prop("disabled", true);
+
+                // Cambiar el modo a "multiple" en el input Date
+                datePicker.set("mode", "multiple");
+            } else {
+                // Desmarcar multipleDays no habilitará FinishDate
+                $("#range").prop("disabled", false); // Habilitar range
+
+                // Limpiar el input Date
+                datePicker.clear();
+
+                // Cambiar el modo a "single" en el input Date
+                datePicker.set("mode", "single");
+            }
+        });
+    });
+</script>
+
+<style>
+    input[type="time"] {
+        border: none;
+        outline: none; /* Remueve el borde cuando el input está enfocado */
+        box-shadow: none; /* Remueve cualquier sombra que pueda estar generando la línea */
+        -webkit-appearance: none; /* Remueve el estilo predeterminado en navegadores WebKit como Chrome y Safari */
+        -moz-appearance: none; /* Remueve el estilo predeterminado en Firefox */
+        appearance: none; /* Remueve el estilo predeterminado en navegadores modernos */
+    }
+</style>

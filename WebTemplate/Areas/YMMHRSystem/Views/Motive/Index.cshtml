@@ -1,0 +1,97 @@
+﻿@model List<DtoMotive>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Motives of inputs/outputs";
+}
+<head>
+    <script>
+        $SaveMotive = '@Url.Action("SaveMotive", "Motive", new { area = "YMMHRSystem" })';
+        $LoadMotive = '@Url.Action("LoadMotive", "Motive", new { area = "YMMHRSystem" })';
+        $DeleteMotive = '@Url.Action("DeleteMotive", "Motive", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Motive.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Entry and exit reasons</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanSaveMotive"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' onclick="MotiveDetailDialog(0)"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="MotiveTable" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttMotives" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Motive</th>
+                        <th style="text-align: center">Created By</th>
+                        <th style="text-align: center">Date Added</th>
+                        <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var motive in Model)
+                    {
+                        <tr>
+                            <td style="text-align: center">
+                                <span>@motive.DescriptionMotive</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>@motive.UserCreated</span>
+                            </td>
+                            <td style="text-align: center">
+                                <span>@motive.DateAdded</span>
+                            </td>
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="MotiveDetailDialog(@motive.IdMotive)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                @if (HttpContext.Current.Session["CanDeleteMotive"].Equals(true))
+                                {
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteMotive(@motive.IdMotive)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="700" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="MotiveDetail" name="MotiveDetail" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p>- Motive already exists</p>
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteMotive" name="DeleteMotive" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteMotive()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteMotive')"> No</button>
+        </div>
+    </div>
+</body>

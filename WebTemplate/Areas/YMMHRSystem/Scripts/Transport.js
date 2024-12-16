@@ -56,12 +56,12 @@ $(document).ready(function () {
                 }
             },
         ],
-        dom: 'Bfrtip',
+        dom: '<"top"<"left"B><"right"f>>rtip', // Personalización del DOM
         responsive: true,
         searching: true,
-        info: true,
+        info: false,
         paging: true,
-        ordering: false,
+        ordering: true,
         scrollY: "70vh",
         scrollCollapse: true,
         initComplete: function () {
@@ -190,24 +190,27 @@ function AddExtraordinaryTransport() {
     $("#SaveTransport").removeClass('button my-control-colors');
     $("#SaveTransport").addClass('button');
     $("#Preloader").css("visibility", "visible");
-
     $.ajax({
         method: "POST",
         url: window.$SaveExtraordinaryTransport,
         cache: false,
         data: $("#ExtraTransportForm").serialize(),
         success: function (result) {
-            if (result === "true") {
+            console.log(result.success);
+            if (result.success) {
                 Metro.toast.create("Transport saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#ExtraordinaryTransportDetail');
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
+                // Actualizar el contenido del dialogo de error con el mensaje de error
+                $('#Error .dialog-content').text(result.message);
+
+                // Abrir el dialogo de error
                 Metro.dialog.open('#Error');
                 console.log(result.message);
             }
-
             $('#SaveTransport').attr('disabled', false);
             $("#SaveTransport").addClass('button my-control-colors');
             $("#SaveTransport").addClass('button');

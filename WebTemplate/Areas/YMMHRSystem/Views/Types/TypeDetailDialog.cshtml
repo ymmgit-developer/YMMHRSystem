@@ -1,0 +1,39 @@
+﻿@model DtoType
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+}
+<div class="dialog-title">Type</div>
+
+<div class="dialog-content">
+    <form id="TypeForm" data-role="validator" data-on-validate-form="AddType()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row mb-2">
+                    <div class="cell">
+                        <input type="text" name="DescriptionType" id="DescriptionTypeType" data-role="input" data-prepend="Description:" data-validate="required" autocomplete="off" value="@Model.DescriptionType">
+                        <span class="invalid_feedback">
+                            Enter a description
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("UserCreated", Model.UserCreated)
+        @Html.Hidden("DateAdded", Model.DateAdded)
+        <div class="row">
+            <div class="row mt-2 mb-2">
+                <div class="dialog-actions p-0 d-flex flex-justify-start">
+                    @if (HttpContext.Current.Session["CanSaveType"].Equals(true))
+                    {
+                        <div><button id="SaveType" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button></div>
+                    }
+                    <div><span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span></div>
+                    
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

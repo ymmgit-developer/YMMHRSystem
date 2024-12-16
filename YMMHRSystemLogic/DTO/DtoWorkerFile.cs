@@ -35,6 +35,7 @@ namespace YMMHRSystemLogic
         public string Stop { get; set; }
         public int AdmissionNumber { get; set; }
         public int DismissalNumber { get; set; }
+        public int AvailableVacationDays { get; set; }
         public List<DtoDismissal> DismissalList { get; set; } = new List<DtoDismissal>();
         public List<DtoAdmission> AdmissionList { get; set; } = new List<DtoAdmission>();
         public List<DtoWorkerAttachment> AttachmentList { get; set; } = new List<DtoWorkerAttachment>();

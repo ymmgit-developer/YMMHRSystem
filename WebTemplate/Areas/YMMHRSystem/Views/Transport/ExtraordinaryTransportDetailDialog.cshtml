@@ -24,18 +24,18 @@
                             <input type="text" name="AssociateName" id="AssociateName" data-role="input" readonly="readonly" data-prepend="Associate:" autocomplete="off" value="@Model.AssociateName">
                         }
                     </div>
-                    @if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                    @*@if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                     {
                         <div class="cell">
                             <input type="text" data-role="input" value="@Model.Cost" data-prepend="Cost: $" id="Cost" name="Cost">
                         </div>
-                    }
+                    }*@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        @if (Model.ExtraordinaryTransportId != 2)
+                        @if (Model.Status == 1)
                         {
-                            <input data-prepend="Arrival Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <input type="text" data-prepend="Arrival Date:" autocomplete="off" id="StartDate" name="StartDate" value="@Model.StartDate" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d %b %Y"*@ data-input-format="%d/%m/%Y">
                         }
                         else
                         {
@@ -44,14 +44,29 @@
 
                     </div>
                     <div class="cell-md-6">
-                        <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">
+                        @if (Model.Status == 1)
+                        {
+                            <div class="row">
+                                <div class="cell-12 border bd-gray">
+                                    <input style="font-size:15px;" type="time" class="form-control w-100" @*data-role="timepicker" data-seconds="false" data-value="@Model.StartTime"*@ value="@Model.StartTime" id="StartTime" name="StartTime">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="cell-12 border bd-gray">
+                                    <input style="font-size:15px;" type="time" class="form-control w-100" readonly="readonly" @*data-role="timepicker" data-seconds="false" data-value="@Model.StartTime"*@ value="@Model.StartTime" id="StartTime" name="StartTime">
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        @if (Model.ExtraordinaryTransportId != 2)
+                        @if (Model.Status == 1)
                         {
-                            <input data-prepend="Departure Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <input type="text" data-prepend="Departure Date:" autocomplete="off" id="FinishDate" name="FinishDate" value="@Model.FinishDate" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
                         }
                         else
                         {
@@ -59,7 +74,22 @@
                         }
                     </div>
                     <div class="cell-md-6">
-                        <input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+                        @if (Model.Status == 1)
+                        {
+                            <div class="row">
+                                <div class="cell-12 border bd-gray">
+                                    <input style="font-size:15px;" type="time" class="form-control w-100" @*data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime"*@ value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="cell-12 border bd-gray">
+                                    <input style="font-size:15px;" type="time" class="form-control w-100" readonly="readonly" @*data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime"*@ value="@Model.FinishTime" id="FinishTime" name="FinishTime">
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -72,11 +102,17 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell">
-                        <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value="">@Model.Motive</textarea>
+                        @if (Model.Status == 1)
+                        {
+                            <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value="">@Model.Motive</textarea>
+                        }
+                        else
+                        {
+                            <textarea data-role="textarea" data-prepend="Motive:" name="Motive" id="Motive" data-validate="required" autocomplete="off" value="" readonly="readonly">@Model.Motive</textarea>
+                        }
                     </div>
                 </div>
-                <div class="row">
-
+                @*<div class="row">
                     <div class="cell">
                         @if (Model.ShiftChange)
                         {
@@ -87,6 +123,10 @@
                             <input type="checkbox" data-role="checkbox" data-style="2" data-caption="Shift Change" class="shiftChangeCheck">
                         }
                     </div>
+                </div>*@
+                <div class="row" style="display:none;">
+                    <input id="TypeTransport" name="TypeTransport" value="0"/>
+                    <input id="ListMultiday" name="ListMultiday" value=""/>
                 </div>
             </div>
         </div>
@@ -118,12 +158,12 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+    //$(document).ready(function () {
 
-        setInterval(function () {
-            $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
-        }, 500);
-    });
+    //    setInterval(function () {
+    //        $("#Cost").val($("#Cost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+    //    }, 500);
+    //});
 
     $(".shiftChangeCheck").on("change", function (e) {
         if (e.target.checked) {
@@ -133,3 +173,14 @@
         }
     });
 </script>
+
+<style>
+    input[type="time"] {
+        border: none;
+        outline: none; /* Remueve el borde cuando el input está enfocado */
+        box-shadow: none; /* Remueve cualquier sombra que pueda estar generando la línea */
+        -webkit-appearance: none; /* Remueve el estilo predeterminado en navegadores WebKit como Chrome y Safari */
+        -moz-appearance: none; /* Remueve el estilo predeterminado en Firefox */
+        appearance: none; /* Remueve el estilo predeterminado en navegadores modernos */
+    }
+</style>

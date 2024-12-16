@@ -120,10 +120,10 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 dtoCoffeeBreak.Status = 2;
                 coffeeBreak.Save(dtoCoffeeBreak);
-
                 User user = new User();
                 List<string> contacts = emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList();
                 contacts.Add(user.GetUserEmail(dtoCoffeeBreak.CreatedBy));
+                contacts = contacts.Where(contact => !string.IsNullOrWhiteSpace(contact)).ToList(); // Filtrar la lista de contactos para eliminar valores vacíos o nulos
                 sendEmail.SendEmailTemplate("YMM HR System: Coffee Break Approval", "TemplateCoffeeBreakStart", new[,]
                     {
                         {"$APPLICANT$", dtoCoffeeBreak.Responsable},
@@ -153,7 +153,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
                 List<string> contacts = emailNotification.GetCoffeeBreakContacts(1).Split(',').ToList();
                 contacts.Add(user.GetUserEmail(dtoCoffeeBreak.CreatedBy));
-
+                contacts = contacts.Where(contact => !string.IsNullOrWhiteSpace(contact)).ToList(); // Filtrar la lista de contactos para eliminar valores vacíos o nulos
                 sendEmail.SendEmailTemplate("YMM HR System: Coffee Break Complete", "TemplateCoffeeBreakFinish", new[,]
 {
                         {"$APPLICANT$", dtoCoffeeBreak.Responsable},

@@ -1,0 +1,56 @@
+@model YMMHRSystemLogic.DtoSecondNotificationEntryExit
+@using YMMHRSystemLogic
+@{
+    Layout = null;
+    WorkerFile workerFile = new WorkerFile();
+    var associateList = workerFile.LoadMultiple();
+
+    User user = new User();
+    var userlist = user.LoadMultiple();
+
+    SecondNotificationEntryExit secondNotificationEntryExit = new SecondNotificationEntryExit();
+    List<DtoSecondNotificationEntryExit>secondUserNotifi = secondNotificationEntryExit.GetRecords();
+}
+<div class="dialog-title">Second Notification</div>
+
+<div class="dialog-content">
+    <form id="SecondApproverForm" data-role="validator" data-on-validate-form="AddRegisterSecond()" action="javascript:">
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="row flex-align-center flex-justify-between">
+                    <div><h6 style="color:black">Users</h6></div>
+                    <div class="container" style="overflow-y: auto;">
+                        <ul id="UsersList" data-role="list"
+                            data-cls-list="unstyled-list row flex-justify-center mt-4"
+                            data-cls-list-item="cell-sm-6 cell-md-4"
+                            data-show-pagination="true"
+                            data-items="15"
+                            data-show-items-steps="true"
+                            data-show-list-info="true"
+                            data-show-search="true">
+
+                            @foreach (var usuario in userlist.Where(u => u.Status == "1"))
+                            {
+                                if (!secondUserNotifi.Any(s => s.EmailToNotify == usuario.Email))
+                                {
+                                    string concatname = usuario.Name + " " + usuario.FirstSurname;
+                                    <li data-caption="@usuario.Name" data-userid="@usuario.UserId" data-email="@usuario.Email" data-show-pagination="true">
+                                        <input name="checkUserId" type="checkbox" data-role="checkbox" value="@usuario.UserId" data-caption="@concatname">
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="dialog-actions d-flex flex-justify-between w-100">
+                <div>
+                    <button id="SaveSecondApproverRelationship" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button>
+                    <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

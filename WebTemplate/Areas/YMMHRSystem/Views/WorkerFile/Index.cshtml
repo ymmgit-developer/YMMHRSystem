@@ -14,6 +14,7 @@
         $AdmitWorkerFile = '@Url.Action("AdmitWorkerFile", "WorkerFile", new { area = "YMMHRSystem" })';
         $AdmitWorker = '@Url.Action("AdmitWorker", "WorkerFile", new { area = "YMMHRSystem" })';
         $ImportWorkers = '@Url.Action("ImportWorkers", "WorkerFile", new { area = "YMMHRSystem" })';
+        $OnlyDismisWorker = '@Url.Action("OnlyDismisWorker", "WorkerFile", new {area = "YMMHRSystem" })';
     </script>
     <script src="~/Areas/YMMHRSystem/Scripts/WorkerFile.js"></script>
 </head>
@@ -76,10 +77,10 @@
                             </td>
 
                             <td style="text-align: center">
-                                <a class="button bg-black fg-white"  style="cursor: pointer;" href="@Url.Action("LoadWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" , nMR4z = item.WorkerFileId })"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                <a class="button bg-black fg-white" style="cursor: pointer;" href="@Url.Action("LoadWorkerFile", "WorkerFile", new { Area = "YMMHRSystem" , nMR4z = item.WorkerFileId })"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
                                 @if (HttpContext.Current.Session["CanDismissWorkerFile"].Equals(true) && item.Status && (item.DismissalNumber < 2))
                                 {
-                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="DismissWorkerFile(@item.WorkerFileId)"><span class="mif-cancel"></span><span class="actionButton"> Dismiss</span></a>
+                                    <a class="button bg-red fg-white" style="cursor: pointer;" onclick="OpenDialogToDismiss(@item.WorkerId, '@item.Names')"><span class="mif-cancel"></span><span class="actionButton"> Dismiss</span></a>
                                 }
                                 @if (HttpContext.Current.Session["CanRehireWorkerFile"].Equals(true) && item.Rehirable && (item.AdmissionNumber < 2))
                                 {
@@ -101,19 +102,19 @@
     </div>
 
     <div data-overlay="true" data-width="400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ImportDialog" name="ImportDialog" class="dialog container-fluid" data-role="dialog">
-            <div class="dialog-title">Import</div>
-            <div class="dialog-content">
-                <div class="row">
-                    <div class="cell-md-12">
-                        <input type="file" id="Url" name="Url" data-role="file" data-button-title="<span class='mif-folder mif-2x'></span>">
-                    </div>
+        <div class="dialog-title">Import</div>
+        <div class="dialog-content">
+            <div class="row">
+                <div class="cell-md-12">
+                    <input type="file" id="Url" name="Url" data-role="file" data-button-title="<span class='mif-folder mif-2x'></span>">
                 </div>
             </div>
-            <div class="dialog-actions d-flex flex-justify-between">
-                <a class="button my-button-colors" style="cursor: pointer; color: white;" href="@Url.Action("CreateDocument", "WorkerFile", new { area = "YMMHRSystem" })"><span class="mif-download"></span><span class="actionButton"> Download Template</span></a>
-                <button onclick="ImportWorkers()" class="button success"><span class="mif-checkmark"> Import</span></button>
-            </div>
         </div>
+        <div class="dialog-actions d-flex flex-justify-between">
+            <a class="button my-button-colors" style="cursor: pointer; color: white;" href="@Url.Action("CreateDocument", "WorkerFile", new { area = "YMMHRSystem" })"><span class="mif-download"></span><span class="actionButton"> Download Template</span></a>
+            <button onclick="ImportWorkers()" class="button success"><span class="mif-checkmark"> Import</span></button>
+        </div>
+    </div>
 
     <div data-overlay="true" data-default-action="false" data-role="dialog" id="preloader" class="dialog">
         <div class="dialog-content">
@@ -134,5 +135,21 @@
             <button class="button alert" onclick="Metro.dialog.close('#TemplateError')">OK</button>
         </div>
     </div>
+
+    @*<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DismissingDialog" name="DismissingDialog" class="dialog" data-role="dialog">
+        <div class="dialog-content">
+            <p>Are you sure about dismissing to [your name]?</p>
+            <div class="row">
+                <button class="button secondary">Secondary</button>
+                <button class="button alert">Alert</button>
+            </div>
+        </div>
+    </div>*@
 </body>
 
+@*<script>
+    function DismissWorkerK(WorkerFileId) {
+        alertify.message(WorkerFileId);
+        console.info(WorkerFileId);
+    }
+</script>*@

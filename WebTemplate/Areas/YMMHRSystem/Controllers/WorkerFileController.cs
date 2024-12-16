@@ -198,6 +198,16 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
         }
         /// <summary>
+        /// Dissmis a Worker. Ago, 2024
+        /// </summary>
+        /// <param name="WorkerFileId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult OnlyDismisWorker(int WorkerId) 
+        {
+            return workerFile.DismissWorkerWithoutWorkerFiles(WorkerId) ? Json("true", JsonRequestBehavior.AllowGet) : Json("false", JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
         /// Removes a dismissal file. 
         /// </summary>
         /// <param name="dismissalId"></param>

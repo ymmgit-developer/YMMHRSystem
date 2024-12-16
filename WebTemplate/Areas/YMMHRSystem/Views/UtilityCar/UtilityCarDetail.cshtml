@@ -90,7 +90,7 @@
                 <div class="cell-md-4">
                     @if (Model.Status <= 1)
                     {
-                        <input data-prepend="License Expiration:" data-min-date="@DateTime.Now" data-validate="required" id="LicenseExpiration" name="LicenseExpiration" value="@(Model.LicenseExpiration?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.LicenseExpiration?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                        <input data-prepend="License Expiration:" data-min-date="@DateTime.Now" data-validate="required" id="LicenseExpiration" name="LicenseExpiration" value="@(Model.LicenseExpiration?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.LicenseExpiration?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
                     }
                     else
                     {
@@ -104,7 +104,7 @@
                     {
                         if (Model.Status <= 1)
                         {
-                            <input data-prepend="Departure Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <input data-prepend="Departure Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
                         }
                         else
                         {
@@ -115,7 +115,7 @@
                     {
                         if (Model.Status <= 1)
                         {
-                            <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                            <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
                         }
                         else
                         {
@@ -124,12 +124,13 @@
                     }
                 </div>
                 <div class="cell-md-3">
-                    <input style="font-size:8px;" data-role="timepicker" data-validate="required" data-seconds="false" data-value="@Model.DepartureTime" id="DepartureTime" name="DepartureTime">
+                    @*<input style="font-size:8px;" data-role="timepicker" data-validate="required" data-seconds="false" data-value="@Model.DepartureTime" id="DepartureTime" name="DepartureTime">*@
+                    <input type="time" class="w-100" autocomplete="off" value="@Model.DepartureTime" style="width: 100%;" id="DepartureTime" name="DepartureTime" />
                 </div>
                 <div class="cell-md-3">
                     @if (Model.Status <= 1)
                     {
-                        <input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" data-validate="required" id="ArrivalDate" name="ArrivalDate" value="@(Model.ArrivalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ArrivalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
+                        <input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" data-validate="required" id="ArrivalDate" name="ArrivalDate" value="@(Model.ArrivalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ArrivalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y*@" data-input-format="%d/%m/%Y">
                     }
                     else
                     {
@@ -137,7 +138,8 @@
                     }
                 </div>
                 <div class="cell-md-3">
-                    <input style="font-size:8px;" data-validate="required" data-role="timepicker" data-seconds="false" data-value="@Model.ArrivalTime" id="ArrivalTime" name="ArrivalTime">
+                    @*<input style="font-size:8px;" data-validate="required" data-role="timepicker" data-seconds="false" data-value="@Model.ArrivalTime" id="ArrivalTime" name="ArrivalTime">*@
+                    <input type="time" class="w-100" autocomplete="off" data-value="@Model.ArrivalTime" style="width: 100%;" id="ArrivalTime" name="ArrivalTime" />
                 </div>
             </div>
             <div class="row mb-1">

@@ -1,5 +1,4 @@
 ﻿$(document).ready(function () {
-
     $('#dttDiner').DataTable({
         buttons: [
             {
@@ -33,6 +32,8 @@
             $("#DinerTable").show();
         }
     });
+});
+
 
 
     $('#dttExtraordinaryDiner').DataTable({
@@ -56,7 +57,7 @@
                 }
             },
         ],
-        dom: 'Bfrtip',
+        dom: '<"row"<"col-sm-6"B><"col-sm-6"f>>rtip',
         responsive: true,
         searching: true,
         info: true,
@@ -165,6 +166,7 @@ function GuestExtraordinaryDinerAddDialog() {
         method: "POST",
         url: window.$AddGuestExtraordinaryDiner,
         success: function (result) {
+            console.log(result);
             var dialog = Metro.getPlugin('#GuestExtraordinaryDinerAddDialog', 'dialog');
             dialog.setContent(result);
             setTimeout(function () { dialog.open(); }, 100);
@@ -187,7 +189,6 @@ function ExtraordinaryDinerDetailDialog(id) {
 }
 
 function AddExtraordinaryDiner() {
-
     $('#SaveDiner').attr('disabled', true);
     $("#SaveDiner").removeClass('button my-control-colors');
     $("#SaveDiner").addClass('button');
@@ -202,25 +203,27 @@ function AddExtraordinaryDiner() {
         cache: false,
         data: $("#ExtraDinerForm").serialize(),
         success: function (result) {
-            if (result === "true") {
+            console.log(result)
+            if (result == true) {
                 Metro.toast.create("Diner saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#ExtraordinaryDinerDetail');
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.dialog.open('#Error')
+                // Actualiza el contenido del diálogo con el mensaje específico del error
+                $("#Error .dialog-content").html("<p>" + result.message + "</p>");
+                Metro.dialog.open('#Error');
             }
 
             $('#SaveDiner').attr('disabled', false);
             $("#SaveDiner").addClass('button my-control-colors');
             $("#SaveDiner").addClass('button');
             $("#Preloader").css("visibility", "hidden");
-
         }
     });
-
 }
+
 
 function AddGuestExtraordinaryDiner() {
 
@@ -238,14 +241,17 @@ function AddGuestExtraordinaryDiner() {
         cache: false,
         data: $("#ExtraDinerForm").serialize(),
         success: function (result) {
-            if (result === "true") {
+            console.log(result);
+            console.log(result.message);
+            if (result == true) {
                 Metro.toast.create("Diner saved.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#ExtraordinaryDinerDetail');
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.dialog.open('#Error')
+                $("#Error .dialog-content").html("<p>" + result.message + "</p>");
+                Metro.dialog.open('#Error');
             }
 
             $('#SaveDiner').attr('disabled', false);

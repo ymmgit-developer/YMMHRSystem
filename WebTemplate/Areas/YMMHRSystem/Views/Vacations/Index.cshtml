@@ -1,0 +1,155 @@
+﻿@model List<DtoVacations>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Vacation Records";
+    List<DtoProcess> processList = ViewBag.Process;
+    List<DtoWorkerFile> workerfilesList = ViewBag.Workers;
+}
+
+<head>
+    <script>
+        /*Variables Global*/
+        $AddRecordVacations = '@Url.Action("AddRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $SaveRecordVacations = '@Url.Action("SaveRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $RecordVacationsView = '@Url.Action("GetRecordsVacationbyWorkerFileId", "Vacations", new { area = "YMMHRSystem" })';
+        $UpdateRecordVacations = '@Url.Action("UpdateRecordVacations", "Vacations", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Vacations.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Vacations Records</h5>
+        <div class="ml-auto pr-5">
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="VacationTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <table id="dttWorkerVacations" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Name</th>
+                        <th style="text-align: center">Admission Date</th>
+                        <th style="text-align: center">Available vacation days</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Vacation Request</th>
+                        <th style="text-align: center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var workerfile in workerfilesList)
+                    {
+                        if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
+                        {
+                            <tr>
+                                <td style="text-align: center">
+                                    <span>@workerfile.Names</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span>@workerfile.AdmissionDate.ToString().Substring(0, 10)</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span>@workerfile.AvailableVacationDays</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span>@workerfile.Process</span>
+                                </td>
+                                <td style="text-align: center">
+                                    @{
+                                        var statuses = new[] { "Pending", "Approved", "Rejected" };
+                                        var random = new Random();
+                                        var status = statuses[random.Next(statuses.Length)];
+                                        @status
+                                    }
+                                </td>
+                                <td style="text-align: center">
+                                    @if (true)/*HttpContext.Current.Session["CanRequestRecordVacation"].Equals(true)*/
+                                    {
+                                        <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                    }
+                                    @if (true)/*HttpContext.Current.Session["CanApproveRecordVacation"].Equals(true)*/
+                                    {
+                                        <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacations()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                    }
+                                    @if (true)/*HttpContext.Current.Session["CanDeleteRecordVacation"].Equals(true)*/
+                                    {
+                                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Decline</span></a>
+                                    }
+                                    <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog(@workerfile.WorkerFileId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            if (workerfile.Process.ToString() == Session["UserProcess"].ToString())
+                            {
+                                <tr>
+                                    <td style="text-align: center">
+                                        <span>@workerfile.Names</span>
+                                    </td>
+                                    <td style="text-align: center">
+                                        <span>@workerfile.AdmissionDate.ToString().Substring(10)</span>
+                                    </td>
+                                    <td style="text-align: center">
+                                        <span>@workerfile.AvailableVacationDays</span>
+                                    </td>
+                                    <td style="text-align: center">
+                                        <span>@workerfile.Process</span>
+                                    </td>
+                                    <td style="text-align: center">
+                                        @{
+                                            var statuses = new[] { "Pending", "Approved", "Rejected" };
+                                            var random = new Random();
+                                            var status = statuses[random.Next(statuses.Length)];
+                                            @status
+                                        }
+                                    </td>
+                                    <td style="text-align: center">
+                                        @if (true)/*HttpContext.Current.Session["CanRequestRecordVacation"].Equals(true)*/
+                                        {
+                                            <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="RequestVacations()"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                        }
+                                        @if (true)/*HttpContext.Current.Session["CanApproveRecordVacation"].Equals(true)*/
+                                        {
+                                            <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacations()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                        }
+                                        @if (true)/*HttpContext.Current.Session["CanDeleteRecordVacation"].Equals(true)*/
+                                        {
+                                            <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Decline</span></a>
+                                        }
+                                        <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog()"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div class="dialog" data-role="dialog" id="VacationAddDialog" name="VacationAddDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+    <div class="dialog" data-role="dialog" id="VacationDetailsDialog" name="VacationDetailsDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+    <div class="dialog" data-role="dialog" id="VacationEditDialog" name="VacationEditDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div data-overlay="true" data-width="500" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="Error" name="Error" class="dialog" data-role="dialog">
+        <div class="dialog-title">Error</div>
+        <div class="dialog-content">
+            <p></p> <!-- Este contenido será actualizado dinámicamente -->
+        </div>
+        <div class="dialog-actions ml-auto">
+            <button class="button alert" onclick="Metro.dialog.close('#Error')">OK</button>
+        </div>
+    </div>
+</body>

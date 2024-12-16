@@ -1,6 +1,6 @@
-﻿$(document).ready(function () {
-
-    $('#dttWorkerFiles').datatable({
+﻿console.warn("WorkerFile.js load succes");
+$(document).ready(function () {
+    $('#dttWorkerFiles').DataTable({
         buttons: [
             {
                 extend: 'copyHtml5',
@@ -21,7 +21,6 @@
                 }
             },
         ],  
-        dom: 'lftiprB',
         deferRender: true,
         responsive: true,
         compact: true,
@@ -61,42 +60,83 @@ function SaveWorkerFile() {
         });
 }
 
-function DismissWorkerFile(id) {
+//function DismissWorkerFile(id) {
 
+//    $.ajax({
+//        method: "POST",
+//        url: window.$DismissWorkerFile,
+//        data: { workerFileId: id },
+//        success: function (result) {
+//            var dialog = Metro.getPlugin('#DismissalDialog', 'dialog');
+//            dialog.setContent(result);
+//            setTimeout(function () { dialog.open(); }, 100);
+//        }
+//    });
+//}
+
+//function DismissWorker() {
+//    $("#Date").val($("#GetDate").val());
+//    var formdata = new FormData($('#WorkerDismissalForm').get(0));
+//    $.ajax({
+//        method: "POST",
+//        url: window.$DismissWorker,
+//        data: formdata,
+//        processData: false,
+//        contentType: false,
+//        success: function (result) {
+//            if (result === "true") {
+//                Metro.toast.create("Worker dismissed", null, null, "bg-green fg-white");
+//                setTimeout(function () {
+//                    location.reload();
+//                }, 1000);
+//            } else {
+//                Metro.toast.create("Error: Please attach PDF file only", null, null, "bg-red fg-white");
+//            }
+
+//        }
+//    });
+//}
+
+function OnlyDismisWorker(workerId) {
+    console.info(window.$OnlyDismisWorker);
     $.ajax({
         method: "POST",
-        url: window.$DismissWorkerFile,
-        data: { workerFileId: id },
+        url: window.$OnlyDismisWorker,
+        data: { WorkerId: workerId },
         success: function (result) {
-            var dialog = Metro.getPlugin('#DismissalDialog', 'dialog');
-            dialog.setContent(result);
-            setTimeout(function () { dialog.open(); }, 100);
-        }
-    });
-}
-
-function DismissWorker() {
-    $("#Date").val($("#GetDate").val());
-    var formdata = new FormData($('#WorkerDismissalForm').get(0));
-    $.ajax({
-        method: "POST",
-        url: window.$DismissWorker,
-        data: formdata,
-        processData: false,
-        contentType: false,
-        success: function (result) {
-            if (result === "true") {
+            if (result) {
                 Metro.toast.create("Worker dismissed", null, null, "bg-green fg-white");
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             } else {
-                Metro.toast.create("Error: Please attach PDF file only", null, null, "bg-red fg-white");
+                Metro.toast.create("Error", null, null, "bg-red fg-white");
+                console.error(result);
             }
-
         }
     });
+}
 
+function OpenDialogToDismiss(workerId, workername) {
+    Metro.dialog.create({
+        title: "Dismiss a worker",
+        content: "<div>Are you sure about dismissing to <strong>" + workername +  "</strong>?</div> ",
+        actions: [
+            {
+                caption: "Dismiss",
+                cls: "js-dialog-close alert",
+                onclick: function () {
+                    OnlyDismisWorker(workerId);
+                }
+            },
+            {
+                caption: "Cancel",
+                cls: "js-dialog-close",
+                onclick: function () {
+                }
+            }
+        ]
+    });
 }
 
 function AdmitWorkerFile(id) {

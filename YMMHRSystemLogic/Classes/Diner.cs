@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace YMMHRSystemLogic
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = diner, TableName = "Diner" });
 
                 mapping.Save();
+
             }
             catch (Exception ex)
             {
@@ -235,6 +237,8 @@ namespace YMMHRSystemLogic
                 List<DtoExtraordinaryDiner> extraDinerList = new List<DtoExtraordinaryDiner>();
                 if (userFilter == "")
                 {
+                    //mapping.Load<DtoExtraordinaryDiner>("SELECT TOP 300 * FROM (SELECT DISTINCT DateAdded, ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, TypeCost, Lading, LadingCost, Motive, UserCreated, UserModified, Status, CreatedBy, Contacts FROM ExtraordinaryDiner) AS TempTable ORDER BY Date DESC, Status", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
+                    //mapping.Load<DtoExtraordinaryDiner>("EXEC GetUniqueExtraordinaryDiner;", "GetUniqueExtraordinaryDiner", new DtoExtraordinaryDiner());
                     mapping.Load<DtoExtraordinaryDiner>("SELECT TOP 200 ExtraordinaryDinerId, AssociateName, Process, Date, Time, Type, Motive, TypeCost, Lading, LadingCost, Motive, DateAdded, UserCreated, UserModified, Status, CreatedBy, Contacts FROM ExtraordinaryDiner ORDER BY ExtraordinaryDinerId DESC, Status", "ExtraordinaryDiner", new DtoExtraordinaryDiner());
                 }
                 else
@@ -439,5 +443,50 @@ namespace YMMHRSystemLogic
 
         }
         #endregion
+
+        /// <summary>
+        /// Date validation. 
+        /// </summary>
+        /// <param name="dateOrdered"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (bool success, string message) ValidateDinerDate(DateTime dateOrdered, string time)
+        {
+            dateOrdered = Convert.ToDateTime(dateOrdered.ToString("dd-MM-yyyy") + " " + time);
+
+            if (dateOrdered.Subtract(DateTime.Now).TotalHours < 4 || dateOrdered < DateTime.Now)
+            {
+                return (false, "Please request diner within 4-hour window.");
+            }
+
+            if (dateOrdered.Subtract(DateTime.Now).Days == 1)
+            {
+                TimeSpan deadline = TimeSpan.Parse("16:56", CultureInfo.InvariantCulture);
+                if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                {
+                    return (false, "Please request next-day diner earlier than 4:56 PM.");
+                }
+            }
+
+            if ((dateOrdered.DayOfWeek == DayOfWeek.Saturday || dateOrdered.DayOfWeek == DayOfWeek.Sunday) && DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+            {
+                TimeSpan deadline = TimeSpan.Parse("10:30", CultureInfo.InvariantCulture);
+                if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                {
+                    return (false, "Please request Saturday diner earlier than 10:30 AM Friday.");
+                }
+            }
+
+            if (dateOrdered.Day == DateTime.Now.Day)
+            {
+                TimeSpan deadline = TimeSpan.Parse("15:30", CultureInfo.InvariantCulture);
+                if (TimeSpan.Compare(DateTime.Now.TimeOfDay, deadline) == 1)
+                {
+                    return (false, "Please request same-day diner earlier than 3:30 PM.");
+                }
+            }
+
+            return (true, string.Empty); // Validación exitosa
+        }
     }
 }
