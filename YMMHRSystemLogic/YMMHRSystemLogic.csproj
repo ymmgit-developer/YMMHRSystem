@@ -180,6 +180,7 @@
     <Compile Include="Classes\FirstNotificationEntryExit.cs" />
     <Compile Include="Classes\Graph.cs" />
     <Compile Include="Classes\EmailNotification.cs" />
+    <Compile Include="Classes\HistoryAnniversary.cs" />
     <Compile Include="Classes\Motive.cs" />
     <Compile Include="Classes\EntryExiNotifications.cs" />
     <Compile Include="Classes\SecondNotificationEntryExit.cs" />
@@ -191,6 +192,8 @@
     <Compile Include="Classes\GiftAssociate.cs" />
     <Compile Include="Classes\CoffeeBreak.cs" />
     <Compile Include="Classes\Room.cs" />
+    <Compile Include="Classes\VacationAuthorizations.cs" />
+    <Compile Include="Classes\VacationDayUsage.cs" />
     <Compile Include="Classes\Vacations.cs" />
     <Compile Include="Classes\Vehicle.cs" />
     <Compile Include="Classes\Translation.cs" />
@@ -223,6 +226,7 @@
     <Compile Include="DTO\DtoFirstNotificationEntryExit.cs" />
     <Compile Include="DTO\DtoFlightReservation.cs" />
     <Compile Include="DTO\DtoHeadCount.cs" />
+    <Compile Include="DTO\DtoHistoryAnniversary.cs" />
     <Compile Include="DTO\DtoMotive.cs" />
     <Compile Include="DTO\DtoSalary.cs" />
     <Compile Include="DTO\DtoSecondNotificationEntryExit.cs" />
@@ -238,7 +242,10 @@
     <Compile Include="DTO\DtoTaxiReservation.cs" />
     <Compile Include="DTO\DtoPassengerDetail.cs" />
     <Compile Include="DTO\DtoType.cs" />
+    <Compile Include="DTO\DtoUserList.cs" />
     <Compile Include="DTO\DtoUtilityCar.cs" />
+    <Compile Include="DTO\DtoVacationAuthorizations.cs" />
+    <Compile Include="DTO\DtoVacationDayUsage.cs" />
     <Compile Include="DTO\DtoVacationRecordView.cs" />
     <Compile Include="DTO\DtoVehicle.cs" />
     <Compile Include="DTO\DtoCoffeeBreak.cs" />
@@ -297,6 +304,7 @@
     <Compile Include="DTO\DtoWorkerFile.cs" />
     <Compile Include="DTO\DtoEntryExiNotifications.cs" />
     <Compile Include="DTO\DtoVacations.cs" />
+    <Compile Include="DTO\DtoWorkerList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

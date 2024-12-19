@@ -68,15 +68,15 @@
                                     }
                                 </td>
                                 <td style="text-align: center">
-                                    @if (true)/*HttpContext.Current.Session["CanRequestRecordVacation"].Equals(true)*/
+                                    @if (HttpContext.Current.Session["CanCreateVacationRequest"].Equals(true))
                                     {
                                         <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
                                     }
-                                    @if (true)/*HttpContext.Current.Session["CanApproveRecordVacation"].Equals(true)*/
+                                    @if (HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true))
                                     {
-                                        <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacations()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                        <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsRH()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
                                     }
-                                    @if (true)/*HttpContext.Current.Session["CanDeleteRecordVacation"].Equals(true)*/
+                                    @if (HttpContext.Current.Session["CanDeleteVacationRequest"].Equals(true))
                                     {
                                         <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Decline</span></a>
                                     }
@@ -110,17 +110,9 @@
                                         }
                                     </td>
                                     <td style="text-align: center">
-                                        @if (true)/*HttpContext.Current.Session["CanRequestRecordVacation"].Equals(true)*/
+                                        @if (HttpContext.Current.Session["CanCreateVacationRequest"].Equals(true))
                                         {
                                             <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="RequestVacations()"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
-                                        }
-                                        @if (true)/*HttpContext.Current.Session["CanApproveRecordVacation"].Equals(true)*/
-                                        {
-                                            <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacations()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
-                                        }
-                                        @if (true)/*HttpContext.Current.Session["CanDeleteRecordVacation"].Equals(true)*/
-                                        {
-                                            <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Decline</span></a>
                                         }
                                         <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog()"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
                                     </td>

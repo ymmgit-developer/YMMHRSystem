@@ -1,0 +1,105 @@
+﻿@model List<DtoVacationAuthorizations>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Vacation Authorization Notification";
+    List<DtoUser> usersList = ViewBag.Users;
+    List<DtoWorkerFile> workerfilesList = ViewBag.Workers;
+}
+
+<head>
+    <script>
+        /*Variables Global*/
+        $AddRecord = '@Url.Action("Add", "VacationAuthorizations", new { area = "YMMHRSystem" })';
+        $SaveRecord = '@Url.Action("Save", "VacationAuthorizations", new { area = "YMMHRSystem" })';
+        $DeleteRecord = '@Url.Action("Delete", "VacationAuthorizations", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/AuthorizationVacations.js"></script>
+</head>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Vacations Records</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanCreateVacationAuthorizationRecord"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new register" data-position='auto' onclick="AuthorizationVacationAddDialog()"><span class="mif-plus"></span><span class="actionButton"> New </span></a>
+            }
+
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-5">
+        <div id="VacationAuthorizationTable" data-step="2" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttVacationAuthorization" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Applicant</th>
+                        <th style="text-align: center">Authorizer</th>
+                        <th style="text-align: center">Date Added</th>
+                        <th style="text-align: center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var dtovacationuthorizations in Model)
+                    {
+                        foreach (var workerfiles in workerfilesList)
+                        {
+                            foreach (var user in usersList)
+                            {
+                                if (workerfiles.WorkerFileId == dtovacationuthorizations.WorkerFileId && user.UserId == dtovacationuthorizations.UserId)
+                                {
+                                    <tr>
+                                        <td style="text-align: center">
+                                            @workerfiles.Names.ToString()
+                                        </td>
+
+                                        <td style="text-align: center">
+                                            @user.Name.ToString() @user.FirstSurname.ToString()
+                                        </td>
+
+                                        <td style="text-align: center">
+                                            @dtovacationuthorizations.DateAdded
+                                        </td>
+                                        <td style="text-align: center">
+                                            @if (HttpContext.Current.Session["CanDeleteVacationAuthorizationRecord"].Equals(true))
+                                            {
+                                                <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteVacationsAuthorization(@dtovacationuthorizations.VacationAuthorizationsId)"><span class="mif-cancel"></span><span class="actionButton"> Delete</span></a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div data-overlay="true" data-width="1400" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AuthorizationRecordAdd" name="AuthorizationRecordAdd" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-width="700" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="AuthorizationRecordEdit" name="AuthorizationRecordEdit" class="dialog" data-role="dialog">
+
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="DeleteAuthorizationRecord" name="DeleteAuthorizationRecord" class="dialog" data-role="dialog">
+        <div class="dialog-title">Delete</div>
+        <div class="dialog-content"> Are you sure you want to delete this item?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="DeleteAuthorizationRecord()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#DeleteAuthorizationRecord')"> No</button>
+        </div>
+    </div>
+</body>

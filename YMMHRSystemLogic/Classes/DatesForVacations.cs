@@ -31,6 +31,20 @@ namespace YMMHRSystemLogic
                 return false;
             }
         }
+        public bool Delete(long VacationId)
+        {
+            try
+            {
+                string query = "DELETE DatesForVacations WHERE VacationId =" + VacationId;
+                oDatabase.ExecuteNonQuery(query, "Delete Register Date in DatesForVacations");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Delete Dates for Vacations", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Delete");
+                return false;
+            }
+        }
         #endregion
 
         #region Process Methods

@@ -5,12 +5,13 @@
     WorkerFile workerFile = new WorkerFile();
     var associateList = workerFile.LoadMultiple();
     var worker = ViewBag.Workerfile;
+    var monthsOld = ViewBag.MonthsOld;
 }
 
 <head>
     <script>
         /*Variables Global*/
-        var $Age;
+        var $monthsAge = @ViewBag.MonthsOld;
     </script>
 </head>
 
@@ -104,6 +105,7 @@
         flatpickr("#DatesVacation", {
             mode: "multiple", // Permite selección de múltiples fechas
             inline: true,
+            maxDate: new Date().fp_incr(179),// 179 days from now
             dateFormat: "Y-m-d", // Formato de fecha
             disable: [
                 function (date) {

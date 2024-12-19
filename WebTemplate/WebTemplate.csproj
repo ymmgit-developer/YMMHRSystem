@@ -236,6 +236,7 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\GiftAssociateController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\CoffeeBreakController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\RoomController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\VacationAuthorizationsController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\VacationsController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\VehicleController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\TranslationController.cs" />
@@ -254,6 +255,8 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\TransportController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\BusinessTripController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\WorkerFileController.cs" />
+    <Content Include="Areas\YMMHRSystem\Views\Shared\MultiSelectUserList.cshtml" />
+    <None Include="Areas\YMMHRSystem\Views\VacationAuthorizations\AuthorizationAddDialog.cshtml" />
     <Compile Include="Areas\YMMHRSystem\YMMHRSystemAreaRegistration.cs" />
     <Compile Include="Controllers\Error\ErrorController.cs" />
     <Compile Include="Controllers\Home\HomeController.cs" />
@@ -267,6 +270,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\YMMHRSystem\Scripts\AuthorizationVacations.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\CheckInOut.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\EmailNotification.js" />
     <Content Include="Areas\YMMHRSystem\Scripts\DinerGraph.js" />
@@ -473,6 +477,9 @@
     <Content Include="Areas\YMMHRSystem\Views\Vacations\Index.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Vacations\VacationAddDialog.cshtml" />
     <Content Include="Areas\YMMHRSystem\Views\Vacations\VacationViewRecordsDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Vacations\VacationEditDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Vacations\Authorizations.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\VacationAuthorizations\Index.cshtml" />
     <None Include="Properties\PublishProfiles\HRSystem.pubxml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />

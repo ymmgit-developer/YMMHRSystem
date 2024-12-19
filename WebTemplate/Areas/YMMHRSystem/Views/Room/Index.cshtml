@@ -62,7 +62,7 @@
                             </td>
 
                             <td style="text-align: center">
-                                <a class="button bg-black fg-white"  style="cursor: pointer;" onclick="RoomDetailDialog(@item.RoomId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                <a class="button bg-black fg-white"  style="cursor: pointer;" onclick="RoomDetailDialog(@item.RoomId)"><span class="mif-pencil"></span><span class="actionButton"> View</span></a>
                                 @if (HttpContext.Current.Session["CanDeleteRoom"].Equals(true))
                                 {
                                     <a class="button bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRoom(@item.RoomId)"><span class="mif-bin"></span><span class="actionButton"> Delete</span></a>

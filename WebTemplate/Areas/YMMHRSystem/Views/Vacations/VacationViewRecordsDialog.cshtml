@@ -9,6 +9,7 @@
     <script>
         /*Variables Global*/
         $EditRecordVacation = '@Url.Action("EditRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $ApproveBossRecord = '@Url.Action("ApproveBossRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
     </script>
 </head>
 
@@ -46,16 +47,41 @@
                             <span>@data.GralStatus</span>
                         </td>
                         <td style="text-align: center">
-                            <a class="button small bg-gray fg-black" style="cursor: pointer;" onclick="">
-                                <span class="mif-backward"></span><span class="actionButton"> Revert</span>
-                            </a>
-                            <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsEditDialog(@data.VacationId)">
-                                <span class="mif-eye"></span><span class="actionButton"> Edit</span></a>
+                            @if (HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true) && !@data.BossAuthorization)
+                            {
+                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsBoss(@data.VacationId)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                            }
+                            @if (HttpContext.Current.Session["CanDeleteVacationRequest"].Equals(true) && @data.GralStatus != 3)
+                            {
+                                <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Delete</span></a>
+                            }
+                            @if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                            {
+                                <a class="button small bg-gray fg-black" style="cursor: pointer;" onclick="RevertRecordVacation(@data.VacationId)">
+                                    <span class="mif-backward"></span><span class="actionButton"> Revert</span>
+                                </a>
+                            }
+                            @if (!data.Blocked)
+                            {
+                                <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsEditDialog(@data.VacationId)">
+                                    <span class="mif-eye"></span><span class="actionButton"> Edit</span>
+                                </a>
+                            }
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+    </div>
+</div>
+
+<!---------------------------------------DIALOGS ------------------------------------------>
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="VacationApprovalConfirmationDialog" name="VacationApprovalConfirmationDialog" class="dialog" data-role="dialog">
+    <div class="dialog-title">Approve</div>
+    <div class="dialog-content"> Are you sure you want to approve this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="BossApprovingVacations()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#VacationApprovalConfirmationDialog')"> No</button>
     </div>
 </div>
 
@@ -110,8 +136,7 @@
         });
     });
 
-    function RecordsVacationsEditDialog(vacationId)
-    {
+    function RecordsVacationsEditDialog(vacationId) {
         $.ajax({
             method: "POST",
             url: window.$EditRecordVacation,

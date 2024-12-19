@@ -122,4 +122,31 @@ function RecordsVacationsDetailDialog(workerFileId)
     });
 }
 
+function RecordApproveVacationsBoss(VacationId)
+{
+    var dialog = Metro.getPlugin('#VacationApprovalConfirmationDialog', 'dialog');
+    dialog.open();
+    window.$VacationBossAuthorizations = VacationId;
+}
 
+function BossApprovingVacations() {
+    $.ajax({
+        method: "POST",
+        url: window.$ApproveBossRecord,
+        data: { VacationId: window.$VacationBossAuthorizations },
+        success: function (result) {
+            if (result.success) {
+                Metro.toast.create("Vacation approved!", null, null, "bg-green fg-white");
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            } else {
+                Metro.toast.create(result.message, null, null, "bg-red fg-white");
+            }
+
+        }
+    });
+}
+
+function RecordApproveVacationsHR()
+{ }

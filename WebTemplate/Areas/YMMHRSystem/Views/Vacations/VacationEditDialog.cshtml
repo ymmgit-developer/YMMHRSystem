@@ -1,10 +1,12 @@
-@using YMMHRSystemLogic
+ï»¿@using YMMHRSystemLogic
 @model DtoVacations
 
 @{
     WorkerFile workerFile = new WorkerFile();
     var associateList = workerFile.LoadMultiple();
     var datesString = ViewBag.Dates;
+    string date = "";
+    DateTime dateformated = DateTime.Now;
 }
 
 <head>
@@ -33,7 +35,7 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center">
-                                    @foreach( var associate in associateList)
+                                    @foreach (var associate in associateList)
                                     {
                                         if (associate.WorkerFileId == @Model.WorkerFileId)
                                         {
@@ -61,9 +63,9 @@
                     <div class="cell-md-6">
                         <div class="row mb-2">
                             <div class="container">
-                                @foreach(var associate in associateList)
+                                @foreach (var associate in associateList)
                                 {
-                                    if(associate.WorkerFileId == @Model.WorkerFileId)
+                                    if (associate.WorkerFileId == @Model.WorkerFileId)
                                     {
                                         <input type="text" data-role="input" data-prepend="Vacation days available: " id="AvailableVacationDays" name="AvailableVacationDays" value="@associate.AvailableVacationDays" readonly>
                                     }
@@ -72,14 +74,15 @@
                         </div>
                         <div class="row mb-2">
                             <div class="container">
-                                @foreach(var associate in associateList)
+                                @foreach (var associate2 in associateList)
                                 {
-                                    if (associate.WorkerFileId == @Model.WorkerFileId)
+                                    if (associate2.WorkerFileId == @Model.WorkerFileId)
                                     {
-                                        var dateformated = @associate.AdmissionDate?.ToString("yyyy-MM-dd");
-                                        <input type="date" data-role="input" data-prepend="Admission date: " id="admissionDate" name="admissionDate" value="@dateformated" placeholder="YYYY-MM-DD" title="MM-DD-AAAA" readonly>
+                                        date = @associate2.AdmissionDate.ToString();
+                                        dateformated = DateTime.Parse(date);
                                     }
                                 }
+                                <input type="date" data-role="input" data-prepend="Admission date: " id="admissionDate" name="admissionDate" value="@dateformated.ToString("yyyy-MM-dd")" placeholder="YYYY-MM-DD" title="MM-DD-AAAA" readonly>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -94,17 +97,17 @@
                         </div>
                         <div class="row mb-2">
                             <div class="container">
-                                @foreach (var associate in associateList)
+                                @foreach (var associate3 in associateList)
                                 {
-                                    if (associate.WorkerFileId == @Model.WorkerFileId)
+                                    if (associate3.WorkerFileId == @Model.WorkerFileId)
                                     {
                                         <textarea data-role="textarea" id="Comments" name="Comments">@Model.Comments.ToString()</textarea>
                                     }
                                 }
                             </div>
                         </div>
-                        <div style="">
-                            <input type="hidden" id="VacationId" name="VacationId"  value="@Model.VacationId"/>
+                        <div style="display: none">
+                            <input type="text" id="VacationId" name="VacationId" value="@Model.VacationId" />
                         </div>
                     </div>
                     <div class="cell-md-6">
@@ -133,11 +136,11 @@
         const availableDaysInput = document.getElementById("AvailableVacationDays");
         const remainingDaysInput = document.getElementById("RemainingVacationDays");
 
-        // Inicializar el campo de días restantes con el valor inicial disponible
+        // Inicializar el campo de dÃ­as restantes con el valor inicial disponible
         remainingDaysInput.value = availableDaysInput.value;
 
         flatpickr("#DatesVacation", {
-            mode: "multiple", // Permite selección de múltiples fechas
+            mode: "multiple", // Permite selecciÃ³n de mÃºltiples fechas
             inline: true,
             dateFormat: "Y-m-d", // Formato de fecha
             disable: [
@@ -147,16 +150,16 @@
                 }
             ],
             locale: {
-                firstDayOfWeek: 0 // Define el lunes como el primer día de la semana
+                firstDayOfWeek: 0 // Define el lunes como el primer dÃ­a de la semana
             },
             onChange: function (selectedDates) {
-                // Obtener el total de días disponibles
+                // Obtener el total de dÃ­as disponibles
                 const availableDays = parseInt(availableDaysInput.value, 10);
 
-                // Calcular los días restantes
+                // Calcular los dÃ­as restantes
                 const remainingDays = availableDays - selectedDates.length;
 
-                // Actualizar el campo de días restantes
+                // Actualizar el campo de dÃ­as restantes
                 remainingDaysInput.value = remainingDays >= 0 ? remainingDays : 0;
             }
         });
@@ -173,7 +176,7 @@
         let months = currentDate.getMonth() - admissionDate.getMonth();
         let days = currentDate.getDate() - admissionDate.getDate();
 
-        // Ajustar meses y días negativos
+        // Ajustar meses y dÃ­as negativos
         if (days < 0) {
             months--;
             days += new Date(admissionDate.getFullYear(), admissionDate.getMonth() + 1, 0).getDate();

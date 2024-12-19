@@ -1,0 +1,65 @@
+@model List<DtoUser>
+@using YMMHRSystemLogic;
+@{
+    Layout = null;
+}
+<div class="dialog-title">User Importer</div>
+
+<div class="dialog-content">
+    <div class="container-fluid">
+        <div id="UserTable">
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttUsers" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Names</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        if (item.Status.Equals("1"))
+                        {
+                            <tr id="@item.UserId">
+
+                                <td style="text-align: center">
+                                    <span> @item.Name @item.FirstSurname</span>
+                                </td>
+
+                                <td style="text-align: center">
+                                    <span> @item.Process </span>
+                                </td>
+
+                                <td style="text-align: center">
+                                    <a id="Select" class="button my-control-colors fg-white" style="cursor: pointer;" onclick="SelectUsers('@item.Name', '@item.Process', @item.WorkerId)"><span class="mif-plus"></span><span class="actionButton"> Add</span></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dialog-actions d-flex flex-justify-end w-100">
+    <a class="button my-control-colors fg-white" onclick="Metro.dialog.close('#MultiSelectUserImporter')"><span class="mif-checkmark"> Finish</span></a>
+</div>
+<script>
+    var tableUsers;
+    $(document).ready(function () {
+
+        tableUsers = $('#dttUsers').DataTable({
+            responsive: true,
+            retrieve: true,
+            searching: true,
+            info: false,
+            compact: true,
+            paging: false,
+            ordering: false,
+            scrollY: "50vh",
+            scrollCollapse: true,
+        });
+    });
+</script>
