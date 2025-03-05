@@ -297,6 +297,28 @@ namespace YMMHRSystemLogic
 
         }
 
+        public List<string> GetBossNotificationVacations(long WorkerFileId)
+        {
+            try
+            {
+                List<string> notifyTo = new List<string>();
+                DataRow dataRow = null;
+                string sqlString = "SELECT U.Email FROM Users U JOIN VacationAuthorizations VA ON (U.UserId = VA.UserId) WHERE VA.WorkerFileId = " + WorkerFileId.ToString();
+                dataRow = oDatabase.GetRow(sqlString, "Get Email Boss Notification Vacations");
+
+                if (dataRow == null)
+                    return notifyTo; // Retorna una lista vacía en lugar de una cadena vacía
+
+                notifyTo.Add(dataRow["Email"].ToString());
+                return notifyTo; // Retorna la lista con el email obtenido
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get Boss Notification Vacations", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetBossNotificationVacations");
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// Save Extra Diner Contacts
         /// </summary>
@@ -662,7 +684,13 @@ namespace YMMHRSystemLogic
         public void FirstApprovalNotification(string IdApplicant, string Applicant, string Type, string Motive, DateTime DateFor, string TimeFor)
         {
             FirstNotificationEntryExit firstNotificationEntryExit = new FirstNotificationEntryExit();
-            var notifyToList = new List<string> { firstNotificationEntryExit.GetNotifyTo(IdApplicant) };
+            List<DtoEmailToNotify> dtoEmailToNotifies = new List<DtoEmailToNotify>();
+            List<string> notifyToList = new List<string>();
+            dtoEmailToNotifies = firstNotificationEntryExit.GetNotifyTo(IdApplicant);
+            foreach (var item in dtoEmailToNotifies)
+            {
+                notifyToList.Add(item.EmailToNotify.ToString());
+            }
 
             sendEmail.SendEmailTemplate("YMM HR System: Request for approval Entry/Exit"
                 , "TemplateFirstApproval", new[,] { 
@@ -679,9 +707,16 @@ namespace YMMHRSystemLogic
         {
             EntryExitAuthorization entryExitAuthorization = new EntryExitAuthorization();
             SecondNotificationEntryExit secondnotify = new SecondNotificationEntryExit();
+            List<DtoEmailToNotify> dtoEmailToNotifies = new List<DtoEmailToNotify>();
+            List<string> notifyToList = new List<string>();
             DtoEntryExitAuthorization data = entryExitAuthorization.GetRecord(IdRecordsInOut);
+            dtoEmailToNotifies = secondnotify.GetNotifyTo();
             Motive motive = new Motive();
             Types types = new Types();
+            foreach(var item in dtoEmailToNotifies)
+            {
+                notifyToList.Add(item.EmailToNotify.ToString());
+            }
             sendEmail.SendEmailTemplate("YMM HR System: Request for approval Entry/Exit"
                 , "TemplateSecondApproval", new[,] {
                 { "$APPLICANT$", data.Associate.ToString() },
@@ -690,7 +725,29 @@ namespace YMMHRSystemLogic
                 { "$DATEFOR$", data.DateFor.ToString("dd/MM/yyyy") },
                 { "$TIMEFOR$", data.TimeFor.ToString() } }
             , sendEmail.GetAdminEmail()
-            , secondnotify.GetNotifyTo());
+            , notifyToList);
+        }
+
+        public void CompleteApprovalNotification(int IdRecordsInOut)
+        {
+            EntryExitAuthorization entryExitAuthorization = new EntryExitAuthorization();
+            DtoEntryExitAuthorization data = entryExitAuthorization.GetRecord(IdRecordsInOut);
+            User user = new User();
+            Motive motive = new Motive();
+            Types types = new Types();
+            string emailUser = user.GetEmailbyName(data.CreateBy);
+            List<string> notifyToList = new List<string>();
+            notifyToList.Add(emailUser);
+
+            sendEmail.SendEmailTemplate("YMM HR System: Request for approval Entry/Exit"
+                , "TemplateCompleteApproval", new[,] {
+                { "$APPLICANT$", data.Associate.ToString() },
+                { "$TYPE$", types.GetTypeDescription(data.IdType) },
+                { "$MOTIVE$", motive.GetMotiveDescription(data.IdMotive) },
+                { "$DATEFOR$", data.DateFor.ToString("dd/MM/yyyy") },
+                { "$TIMEFOR$", data.TimeFor.ToString() } }
+            , sendEmail.GetAdminEmail()
+            , notifyToList);
         }
         #endregion
     }

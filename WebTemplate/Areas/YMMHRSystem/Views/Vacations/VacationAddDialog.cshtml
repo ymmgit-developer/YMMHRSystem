@@ -6,6 +6,7 @@
     var associateList = workerFile.LoadMultiple();
     var worker = ViewBag.Workerfile;
     var monthsOld = ViewBag.MonthsOld;
+    int daysAvaible = ViewBag.DaysAvaible;
 }
 
 <head>
@@ -49,7 +50,7 @@
                     <div class="cell-md-6">
                         <div class="row mb-2">
                             <div class="container">
-                                <input type="text" data-role="input" data-prepend="Vacation days available: " id="AvailableVacationDays" name="AvailableVacationDays" value="@worker.AvailableVacationDays" readonly>
+                                <input type="text" data-role="input" data-prepend="Vacation days available: " id="AvailableVacationDays" name="AvailableVacationDays" value="@daysAvaible" readonly>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -106,6 +107,7 @@
             mode: "multiple", // Permite selección de múltiples fechas
             inline: true,
             maxDate: new Date().fp_incr(179),// 179 days from now
+            minDate: new Date().fp_incr(-60), // 1 day from now
             dateFormat: "Y-m-d", // Formato de fecha
             disable: [
                 function (date) {

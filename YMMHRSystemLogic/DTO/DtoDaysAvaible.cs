@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace YMMHRSystemLogic
 {
-    public class DtoDatesForVacations
+    public class DtoDaysAvaible
     {
-        [Key] public long DatesForVacationsId {  get; set; }
-        public long VacationId { get; set; }
-        public DateTime Date {  get; set; }
+        [Key] public long WorkerFileId { get; set; }
+        public int DaysAvaible { get; set; }
     }
 }

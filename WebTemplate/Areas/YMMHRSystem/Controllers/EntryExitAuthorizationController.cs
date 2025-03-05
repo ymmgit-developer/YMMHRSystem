@@ -210,6 +210,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     if(EntryExitAuthorization.ApproveRecords(2, HttpContext.Session["UserName"].ToString(), IdRecordsInOut)) 
                     {
                         EntryExitAuthorization.ChangeCurrentStatus(2, IdRecordsInOut);
+                        emailNotification.CompleteApprovalNotification(IdRecordsInOut);
                     }
                 }
                 return Json(true, JsonRequestBehavior.AllowGet);

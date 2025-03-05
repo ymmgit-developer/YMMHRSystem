@@ -104,18 +104,41 @@ namespace YMMHRSystemLogic.Classes
         {
             try
             {
+                // Inicializa el mapeador y la lista
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
-                List<DtoVacationAuthorizations> dtoDtoVacationAuthorizationsList = new List<DtoVacationAuthorizations>();
-                mapping.Load<DtoVacationAuthorizations>("SELECT WorkerFileId FROM VacationAuthorizations WHERE UserId =  " + UserId.ToString(), "VacationAuthorizations", new DtoVacationAuthorizations());
-                dtoDtoVacationAuthorizationsList.AddRange(mapping.dtoList.Select(renglon => (DtoVacationAuthorizations)renglon.Dto));
-                return dtoDtoVacationAuthorizationsList;
+                List<DtoVacationAuthorizations> dtoVacationAuthorizationsList = new List<DtoVacationAuthorizations>();
+
+                // Ejecuta la consulta
+                mapping.Load<DtoVacationAuthorizations>("SELECT * FROM VacationAuthorizations WHERE UserId = " + UserId.ToString(), "VacationAuthorizations", new DtoVacationAuthorizations());
+                //mapping.Load<long>(query, "VacationAuthorizations", new long());
+
+                // Verifica si se retornaron resultados
+                if (mapping.dtoList != null && mapping.dtoList.Any())
+                {
+                    // Realiza el mapeo de los resultados
+                    dtoVacationAuthorizationsList.AddRange(
+                        mapping.dtoList
+                               .Select(renglon => (DtoVacationAuthorizations)renglon.Dto)
+                    );
+                }
+
+                return dtoVacationAuthorizationsList;
             }
             catch (Exception ex)
             {
-                log.WriteToErrorLog("HR System", "Get Vacation Authorizations Records by WorkerField", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "NotifyTheApprover");
-                throw ex;
+                // Loguea el error con más información contextual
+                log.WriteToErrorLog("HR System",
+                                    "Get Vacation Authorizations Records by WorkerField",
+                                    UserId.ToString(),
+                                    ex.Message,
+                                    ex.StackTrace,
+                                    "NotifyTheApprover");
+
+                // Lanza una nueva excepción con detalles claros
+                throw new InvalidOperationException("Error fetching vacation authorizations for the specified UserId.", ex);
             }
         }
+
         #endregion
     }
 }

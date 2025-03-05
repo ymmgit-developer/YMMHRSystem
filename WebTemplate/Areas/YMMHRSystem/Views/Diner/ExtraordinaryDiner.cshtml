@@ -66,13 +66,13 @@
 
                             <td style="text-align: center">
                                 @*@if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
-                                    {
-                                        <span> @item.Count </span>
-                                    }
-                                    else
-                                    {
-                                        <span> @item.AssociateName </span>
-                                    }*@
+            {
+                <span> @item.Count </span>
+            }
+            else
+            {
+                <span> @item.AssociateName </span>
+            }*@
                                 <span> @item.AssociateName </span>
                             </td>
 
@@ -89,14 +89,21 @@
                             </td>
 
                             <td style="text-align: center">
-                                <span> @(item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled") </span>
+                                @{
+                                    var statusLabel = item.Status == 1 ? "Generated" :
+                                                      item.Status == 3 ? "Confirmed" : "Cancelled";
+                                    var statusClass = item.Status == 1 ? "bg-blue fg-white" :
+                                                      item.Status == 3 ? "bg-green fg-white" :
+                                                      "bg-red fg-white";
+                                }
+                                <kbd class="@statusClass">@statusLabel</kbd>
                             </td>
 
                             <td style="text-align: center">
                                 <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="ExtraordinaryDinerDetailDialog(@item.ExtraordinaryDinerId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
                                 @if (HttpContext.Current.Session["CanCancelExtraordinaryDiner"].Equals(true))
                                 {
-                                    if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                                    if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) && item.Status != 3 && item.Status != 2)
                                     {
                                         <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelExtraordinaryDiner(@item.ExtraordinaryDinerId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
                                     }

@@ -503,6 +503,7 @@
     <Content Include="Scripts\Role.js" />
     <Content Include="Scripts\AdminRole.js" />
     <Content Include="Scripts\User.js" />
+    <Content Include="Templates\TemplateCompleteApproval.html" />
     <Content Include="Templates\TemplateExtraDinerConfirmation.html" />
     <Content Include="Templates\TemplateExtraTransportConfirmation.html" />
     <Content Include="Templates\TemplateFirstApproval.html" />
@@ -527,6 +528,11 @@
     <Content Include="Templates\TemplateCoffeeBreakStart.html" />
     <Content Include="Templates\TemplateUtilityCarStart.html" />
     <Content Include="Templates\TemplateUtilityCarRequest.html" />
+    <Content Include="Templates\TemplateVacationApproval.html" />
+    <Content Include="Templates\TemplateVacationApprovalBoss.html" />
+    <Content Include="Templates\TemplateVacationApprovalHr.html" />
+    <Content Include="Templates\TemplateVacationCancelled.html" />
+    <Content Include="Templates\TemplateVacationReverted.html" />
     <Content Include="Templates\TemplateVehicleService.html" />
     <Content Include="Templates\TemplateVehicleVerification.html" />
     <Content Include="Templates\TemplateExtraTransportRequest.html" />

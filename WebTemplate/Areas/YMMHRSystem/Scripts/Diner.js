@@ -35,7 +35,7 @@
 });
 
 
-
+$(document).ready(function () {
     $('#dttExtraordinaryDiner').DataTable({
         buttons: [
             {
@@ -69,7 +69,6 @@
             $("#ExtraordinaryDinerTable").show();
         }
     });
-
 });
 
 function DinerDetailDialog(id) {
@@ -197,31 +196,40 @@ function AddExtraordinaryDiner() {
     $("#Type").val($("#SelectType option:selected").text());
     $("#Cost").val($("#SelectType option:selected").val());
 
-    $.ajax({
-        method: "POST",
-        url: window.$SaveExtraordinaryDiner,
-        cache: false,
-        data: $("#ExtraDinerForm").serialize(),
-        success: function (result) {
-            console.log(result)
-            if (result == true) {
-                Metro.toast.create("Diner saved.", null, null, "bg-green fg-white");
-                Metro.dialog.close('#ExtraordinaryDinerDetail');
-                setTimeout(function () {
-                    location.reload();
-                }, 1000);
-            } else {
-                // Actualiza el contenido del diálogo con el mensaje específico del error
-                $("#Error .dialog-content").html("<p>" + result.message + "</p>");
-                Metro.dialog.open('#Error');
-            }
+    console.log($("#Contacts").val());
 
-            $('#SaveDiner').attr('disabled', false);
-            $("#SaveDiner").addClass('button my-control-colors');
-            $("#SaveDiner").addClass('button');
-            $("#Preloader").css("visibility", "hidden");
-        }
-    });
+    if (validarCorreos($("#Contacts").val()))
+    {
+        $.ajax({
+            method: "POST",
+            url: window.$SaveExtraordinaryDiner,
+            cache: false,
+            data: $("#ExtraDinerForm").serialize(),
+            success: function (result) {
+                console.log("Result: " + result.success)
+                if (result.success) {
+                    Metro.toast.create("Diner saved.", null, null, "bg-green fg-white");
+                    Metro.dialog.close('#ExtraordinaryDinerDetail');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    // Actualiza el contenido del diálogo con el mensaje específico del error
+                    $("#Error .dialog-content").html("<p>" + result.message + "</p>");
+                    Metro.dialog.open('#Error');
+                }
+
+                $('#SaveDiner').attr('disabled', false);
+                $("#SaveDiner").addClass('button my-control-colors');
+                $("#SaveDiner").addClass('button');
+                $("#Preloader").css("visibility", "hidden");
+            }
+        });      
+    }
+    else
+    {
+        alert("Correo inválido encontrado: " + validarCorreos($("#Contacts").val()).correoInvalido);
+    }
 }
 
 
@@ -319,7 +327,30 @@ function SelectAssociates(names, process, id) {
     }
 }
 
+function validarCorreos(contacts) {
+    // Expresión regular para validar el formato nombre.apellido@motherson.com
+    const regex = /^[a-zA-Z]+\.[a-zA-Z]+@motherson\.com$/;
 
+    // Dividir la lista de correos por comas
+    const correos = contacts.split(',');
+
+    // Recorrer cada correo en la lista
+    for (let correo of correos) {
+        // Eliminar espacios en blanco alrededor del correo
+        const correoTrimmed = correo.trim();
+
+        // Verificar si el correo NO coincide con la expresión regular
+        if (!regex.test(correoTrimmed)) {
+            // Enviar una alerta indicando el correo inválido
+            alert(`Correo inválido encontrado: ${correoTrimmed}`);
+            // Retornar false y el correo inválido
+            return { valido: false, correoInvalido: correoTrimmed };
+        }
+    }
+
+    // Si todos los correos son válidos, retornar true
+    return { valido: true };
+}
 
 
 

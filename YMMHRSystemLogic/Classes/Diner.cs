@@ -153,6 +153,18 @@ namespace YMMHRSystemLogic
                 User user = new User();
 
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
+
+                foreach (var associateName in extraDiner.WorkerList)
+                {
+                    extraDiner.AssociateName = associateName.Names;
+                    extraDiner.Process = associateName.Process;
+                }
+                if (extraDiner.Status != 3)
+                {
+                    extraDiner.DateAdded = DateTime.Now;
+                    extraDiner.Status = 1;
+                    extraDiner.CreatedBy = userId;
+                }
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = extraDiner, TableName = "ExtraordinaryDiner" });
 
                 mapping.Save();
@@ -190,7 +202,7 @@ namespace YMMHRSystemLogic
                 }
 
                 mapping.Save();
-
+                
                 if (extraDinerList[0].Status != 3)
                 {
                     emailTitle = "YMM HR System: Extra Diner Request";
@@ -209,7 +221,9 @@ namespace YMMHRSystemLogic
                     List<string> ccContacts = extraDinerList[0].Contacts.Split(',').ToList();
                     contacts.AddRange(ccContacts.Distinct());
                 }
-                sendEmail.SendEmailTemplate(emailTitle, templateName, new[,]
+                if (sendEmail.CheckStructureMail(contacts))
+                {
+                    sendEmail.SendEmailTemplate(emailTitle, templateName, new[,]
                 {
                         {"$APPLICANT$", extraDinerList[0].UserCreated},
                         {"$TYPE$", extraDinerList[0].Type},
@@ -218,6 +232,11 @@ namespace YMMHRSystemLogic
                         {"$TIME$", extraDinerList[0].Time.ToString()},
                         {"$MOTIVE$", extraDinerList[0].Motive}
                  }, sendEmail.GetAdminEmail(), contacts);
+                }
+                else
+                {
+                    log.WriteToErrorLog("HR System", "Send Email Extra Diner", SQLTools.userId.ToString(), "Error validate email", "" , "SaveMultipleExtra");
+                }
             }
             catch (Exception ex)
             {
@@ -450,7 +469,7 @@ namespace YMMHRSystemLogic
         /// <param name="dateOrdered"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public (bool success, string message) ValidateDinerDate(DateTime dateOrdered, string time)
+        public (bool success, string message) ValidateDinerDate(DateTime dateOrdered, TimeSpan time)
         {
             dateOrdered = Convert.ToDateTime(dateOrdered.ToString("dd-MM-yyyy") + " " + time);
 

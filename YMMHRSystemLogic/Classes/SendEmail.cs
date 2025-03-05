@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmailComponent;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace YMMHRSystemLogic
 {
@@ -241,6 +242,31 @@ namespace YMMHRSystemLogic
             {
                 log.WriteToErrorLog("HR System", "Get Admin Email", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetAdminEmail");
                 throw ex;
+            }
+        }
+
+        public Boolean CheckStructureMail(List<string> ListMail)
+        {
+            try
+            {
+                // Expresión regular para validar el formato del correo
+                string pattern = @"^[a-zA-Z]+\.[a-zA-Z]+@motherson\.com$";
+                Regex regex = new Regex(pattern);
+
+                foreach (string email in ListMail)
+                {
+                    if (!regex.IsMatch(email))
+                    {
+                        // Si algún correo no cumple con el formato, retornamos false
+                        return false;
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Check Structure Mail", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "CheckStructureMail");
+                return false;
             }
         }
 

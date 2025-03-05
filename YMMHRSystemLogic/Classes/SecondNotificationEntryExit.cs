@@ -89,24 +89,14 @@ namespace YMMHRSystemLogic
         #endregion
 
         #region Process methods
-        public List<string> GetNotifyTo()
+        public List<DtoEmailToNotify> GetNotifyTo()
         {
             try
             {
-                string[] sqlString = { "SELECT EmailToNotify FROM SecondNotificationEntryExit" };
-                List<DataRow> rows = oDatabase.GetMultipleRow(sqlString, "Get mails for second notification");
-                List<string> listToNotify = new List<string>();
-                if (rows != null && rows.Any())
-                {
-                    foreach (DataRow row in rows)
-                    {
-                        string email = row["EmailToNotify"]?.ToString();
-                        if (!string.IsNullOrEmpty(email))
-                        {
-                            listToNotify.Add(email);
-                        }
-                    }
-                }
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoEmailToNotify> listToNotify = new List<DtoEmailToNotify>();
+                mapping.Load<DtoEmailToNotify>("SELECT EmailToNotify FROM SecondNotificationEntryExit", "SecondNotificationEntryExit", new DtoEmailToNotify());
+                listToNotify.AddRange(mapping.dtoList.Select(renglon => (DtoEmailToNotify)renglon.Dto));
                 return listToNotify;
             }
             catch (Exception ex)

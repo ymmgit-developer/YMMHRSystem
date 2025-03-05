@@ -1,5 +1,57 @@
 $(document).ready(function () {
     $('#dttWorkerVacations').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copyHtml5',
+                text: 'Copy',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4], // Especificar columnas a exportar
+                    format: {
+                        header: function (data, columnIdx) {
+                            // Personalizar encabezados según el índice de la columna
+                            switch (columnIdx) {
+                                case 3: return 'Process';
+                                case 4: return 'Status of last request';
+                                default: return data; // Retornar el encabezado original para otras columnas
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4],
+                    format: {
+                        header: function (data, columnIdx) {
+                            switch (columnIdx) {
+                                case 3: return 'Process';
+                                case 4: return 'Status of last request';
+                                default: return data;
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4],
+                    format: {
+                        header: function (data, columnIdx) {
+                            switch (columnIdx) {
+                                case 3: return 'Process';
+                                case 4: return 'Status of last request';
+                                default: return data;
+                            }
+                        }
+                    }
+                }
+            }
+        ],
         responsive: true,
         searching: true,
         info: true,
@@ -19,24 +71,23 @@ $(document).ready(function () {
 
                         // Crear el elemento <select>
                         let select = $('<select><option value="">All</option></select>')
-                            .appendTo($(column.header()).empty()) // Reemplazar contenido del encabezado
+                            .appendTo($(column.header()).empty())
                             .on('change', function () {
-                                // Filtrar según la selección del usuario
                                 let val = $.fn.dataTable.util.escapeRegex($(this).val());
                                 column
                                     .search(val ? '^' + val + '$' : '', true, false)
                                     .draw();
                             });
 
-                        // Poblar el <select> con opciones únicas, limpiando etiquetas HTML
+                        // Poblar el <select> con opciones únicas
                         column
                             .nodes()
-                            .to$() // Convertir los nodos a objetos jQuery
+                            .to$()
                             .map(function () {
-                                return $(this).text().trim(); // Extraer el texto limpio
+                                return $(this).text().trim();
                             })
-                            .get() // Convertir a un array estándar
-                            .filter((v, i, self) => self.indexOf(v) === i) // Eliminar duplicados
+                            .get()
+                            .filter((v, i, self) => self.indexOf(v) === i)
                             .sort()
                             .forEach(function (d) {
                                 select.append('<option value="' + d + '">' + d + '</option>');
@@ -46,6 +97,8 @@ $(document).ready(function () {
         }
     });
 });
+
+
 
 function VacationsRequestDialog(workerFileId)
 {
@@ -110,14 +163,21 @@ function UpdateVacations() {
 
 function RecordsVacationsDetailDialog(workerFileId)
 {
+    console.log(window.$RecordVacationsView);
+    console.log(workerFileId)
     $.ajax({
         method: "POST",
         url: window.$RecordVacationsView,
         data: { WorkerFileId: workerFileId },
         success: function (result) {
+            console.log(result);
             var dialog = Metro.getPlugin("#VacationDetailsDialog", "dialog");
             dialog.setContent(result);
             setTimeout(function () { dialog.open(); }, 100);
+        },
+        error: function (result)
+        {
+            console.error(result);
         }
     });
 }
@@ -148,5 +208,84 @@ function BossApprovingVacations() {
     });
 }
 
-function RecordApproveVacationsHR()
-{ }
+function RecordApproveVacationsHR(VacationId)
+{
+    var dialog = Metro.getPlugin('#VacationApprovalHRConfirmationDialog', 'dialog');
+    dialog.open();
+    window.$VacationHRAuthorizations = VacationId;
+}
+
+function HrApprovingVacations()
+{
+    $.ajax({
+        method: "POST",
+        url: window.$ApproveHrRecord,
+        data: { VacationId: window.$VacationHRAuthorizations },
+        success: function (result) {
+            if (result.success) {
+                Metro.toast.create("Vacation approved!", null, null, "bg-green fg-white");
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            } else {
+                Metro.toast.create(result.message, null, null, "bg-red fg-white");
+            }
+
+        }
+    });
+}
+
+function ConfirmCancelRecordVacations(VacationId)
+{
+    var dialog = Metro.getPlugin('#VacationCancelDialog', 'dialog');
+    dialog.open();
+    window.$VacationCancellation = VacationId;
+}
+
+function CancelRecordVacations()
+{
+    $.ajax({
+        method: "POST",
+        url: window.$CancelRecord,
+        data: { VacationId: window.$VacationCancellation },
+        success: function (result) {
+            if (result.success) {
+                Metro.toast.create("Vacation canceled.", null, null, "bg-green fg-white");
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            } else {
+                Metro.toast.create(result.message, null, null, "bg-red fg-white");
+            }
+
+        }
+    });
+}
+
+function ConfirmDRevertRecordVacation(VacationId)
+{
+    var dialog = Metro.getPlugin('#VacationRevertDialog', 'dialog');
+    dialog.open();
+    window.$VacationRevert = VacationId;
+}
+
+function RevertRecordVacation()
+{
+    $.ajax({
+        method: "POST",
+        url: window.$RevertRecord,
+        data: { VacationId: window.$VacationRevert },
+        success: function (result) {
+            if (result.success) {
+                Metro.toast.create("Vacation reverted.", null, null, "bg-green fg-white");
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            } else {
+                Metro.toast.create(result.message, null, null, "bg-red fg-white");
+            }
+
+        }
+    });
+}
+

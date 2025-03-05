@@ -21,7 +21,8 @@ namespace WebTemplate.Controllers
             {
                 HttpContext.Session["WorkerFileName"] = workerFile.GetWorkerFileName(long.Parse(user.GetWorkerId(long.Parse(HttpContext.Session["UserId"].ToString()))));
                 HttpContext.Session["UserProcess"] = user.GetProcessbyUser(long.Parse(HttpContext.Session["UserId"].ToString()));
-
+                HttpContext.Session["WorkerId"] = user.GetWorkerId(long.Parse(HttpContext.Session["UserId"].ToString()));
+                HttpContext.Session["WorkerFileId"] = workerFile.GetWorkerFileId(user.GetWorkerId(long.Parse(HttpContext.Session["UserId"].ToString())));
                 if (Permission.QueryPermission("WORKERFILE.VIEW", long.Parse(HttpContext.Session["UserId"].ToString())))
                 {
                     HttpContext.Session["CanSaveWorkerFile"] = Permission.QueryPermission("WORKERFILE.REGISTER", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;

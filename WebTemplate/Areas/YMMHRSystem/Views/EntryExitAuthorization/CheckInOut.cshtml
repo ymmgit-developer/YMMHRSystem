@@ -45,8 +45,8 @@
                         <th style="text-align: center">Process</th>
                         <th style="text-align: center">Associates</th>
                         <th style="text-align: center">Type</th>
-                        <th style="text-align: center">For time</th>
                         <th style="text-align: center">For date</th>
+                        <th style="text-align: center">For time</th>
                         <th style="text-align: center">Status</th>
                         <th style="text-align: center" data-step="3" data-intro="These are the action buttons for editing, viewing or deleting"
                             data-position='auto'>Actions</th>
@@ -75,24 +75,24 @@
                                 }
                             </td>
                             <td style="text-align: center">
-                                <span>@record.TimeFor</span>
-                            </td>
-                            <td style="text-align: center">
                                 <span>@record.DateFor.ToString("dd/MM/yyyy")</span>
+                            </td>
+                            <td style="text-align: center"> 
+                                <span>@record.TimeFor</span>
                             </td>
                             <td style="text-align: center">
                                 <span>
                                     @if (record.CurrentState == 0)
                                     {
-                                        <text>Created</text>
+                                        <kbd class="bg-blue fg-white">Created</kbd>
                                     }
                                     else if (record.CurrentState == 1)
                                     {
-                                        <text>First approval: Ok</text>
+                                        <kbd class="bg-orange fg-white">First approval: Ok</kbd>
                                     }
                                     else if (record.CurrentState == 2)
                                     {
-                                        <text>Complete approvals</text>
+                                        <kbd class="bg-green fg-white">Complete approvals</kbd>
                                     }
                                 </span>
                             </td>

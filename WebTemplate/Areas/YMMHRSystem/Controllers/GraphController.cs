@@ -1198,6 +1198,8 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
+                WorkerFile workerFile = new WorkerFile();
+                ViewBag.Workerfiles = workerFile.LoadMultiple(1);
                 if (Permission.QueryPermission("RECORD.VIEW", long.Parse(HttpContext.Session["UserId"].ToString())))
                 {
                     return View("~/Areas/YMMHRSystem/Views/Graph/Record.cshtml");
@@ -1713,21 +1715,22 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             // Definir encabezados
             worksheet.Cells[1, 1].Value = "IdRecord";
             worksheet.Cells[1, 2].Value = "Associate";
-            worksheet.Cells[1, 3].Value = "Process";
-            worksheet.Cells[1, 4].Value = "DateFor";
-            worksheet.Cells[1, 8].Value = "TimeFor";
-            worksheet.Cells[1, 5].Value = "Type";
-            worksheet.Cells[1, 6].Value = "Salary";
-            worksheet.Cells[1, 7].Value = "Motive";
-            worksheet.Cells[1, 9].Value = "First Authorization";
-            worksheet.Cells[1, 10].Value = "First Authorized By";
-            worksheet.Cells[1, 11].Value = "Second Authorization";
-            worksheet.Cells[1, 12].Value = "Second Authorized By";
-            worksheet.Cells[1, 13].Value = "Current State";
-            worksheet.Cells[1, 14].Value = "Created By";
-            worksheet.Cells[1, 15].Value = "Creation Date";
+            worksheet.Cells[1, 3].Value = "WorkerId";
+            worksheet.Cells[1, 4].Value = "Process";
+            worksheet.Cells[1, 5].Value = "DateFor";
+            worksheet.Cells[1, 6].Value = "TimeFor";
+            worksheet.Cells[1, 7].Value = "Type";
+            worksheet.Cells[1, 8].Value = "Salary";
+            worksheet.Cells[1, 9].Value = "Motive";
+            worksheet.Cells[1, 10].Value = "First Authorization";
+            worksheet.Cells[1, 11].Value = "First Authorized By";
+            worksheet.Cells[1, 12].Value = "Second Authorization";
+            worksheet.Cells[1, 13].Value = "Second Authorized By";
+            worksheet.Cells[1, 14].Value = "Current State";
+            worksheet.Cells[1, 15].Value = "Created By";
+            worksheet.Cells[1, 16].Value = "Creation Date";
 
-            var range = worksheet.Cells[1, 1, 1, 13];
+            var range = worksheet.Cells[1, 1, 1, 16];
             range.Style.Font.Bold = true;
 
             // Llenar datos
@@ -1736,19 +1739,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             {
                 worksheet.Cells[row, 1].Value = item.IdRecordsInOut;
                 worksheet.Cells[row, 2].Value = item.Associate;
-                worksheet.Cells[row, 3].Value = item.Process;
-                worksheet.Cells[row, 4].Value = item.DateFor.ToShortDateString();
-                worksheet.Cells[row, 8].Value = item.TimeFor.ToString();
-                worksheet.Cells[row, 5].Value = types.GetTypeDescription(item.IdType);
-                worksheet.Cells[row, 6].Value = item.IdSalary == 1 ? "Sin Goce" : "Con Goce";
-                worksheet.Cells[row, 7].Value = motive.GetMotiveDescription(item.IdMotive);               
-                worksheet.Cells[row, 9].Value = item.FirtsAuthorization.HasValue ? (item.FirtsAuthorization.Value ? "Yes" : "No") : "N/A";
-                worksheet.Cells[row, 10].Value = item.FirtsAuthorizedby;
-                worksheet.Cells[row, 11].Value = item.SecondAuthorization.HasValue ? (item.SecondAuthorization.Value ? "Yes" : "No") : "N/A";
-                worksheet.Cells[row, 12].Value = item.SecondAuthorizedby;
-                worksheet.Cells[row, 13].Value = item.CurrentState;
-                worksheet.Cells[row, 14].Value = item.CreateBy;
-                worksheet.Cells[row, 15].Value = item.CreateDate?.ToShortDateString();
+                worksheet.Cells[row, 3].Value = item.WorkerId;
+                worksheet.Cells[row, 4].Value = item.Process;
+                worksheet.Cells[row, 5].Value = item.DateFor.ToShortDateString();
+                worksheet.Cells[row, 6].Value = item.TimeFor.ToString();
+                worksheet.Cells[row, 7].Value = types.GetTypeDescription(item.IdType);
+                worksheet.Cells[row, 8].Value = item.IdSalary == 1 ? "Sin Goce" : "Con Goce";
+                worksheet.Cells[row, 9].Value = motive.GetMotiveDescription(item.IdMotive);               
+                worksheet.Cells[row, 10].Value = item.FirtsAuthorization.HasValue ? (item.FirtsAuthorization.Value ? "Yes" : "No") : "N/A";
+                worksheet.Cells[row, 11].Value = item.FirtsAuthorizedby;
+                worksheet.Cells[row, 12].Value = item.SecondAuthorization.HasValue ? (item.SecondAuthorization.Value ? "Yes" : "No") : "N/A";
+                worksheet.Cells[row, 13].Value = item.SecondAuthorizedby;
+                worksheet.Cells[row, 14].Value = item.CurrentState == 0 ? "Pending" : item.CurrentState == 1 ? "1 st approval: Ok" : "Fully approved";
+                worksheet.Cells[row, 15].Value = item.CreateBy;
+                worksheet.Cells[row, 16].Value = item.CreateDate?.ToShortDateString();
                 row++;
             }
 
@@ -1772,6 +1776,70 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             Response.AddHeader("content-length", bin.Length.ToString());
             Response.AddHeader("content-disposition", "attachment; filename=\"AccessAuthorizationRecords.xlsx\"");
+            Response.OutputStream.Write(bin, 0, bin.Length);
+
+            // Cleanup
+            Response.Flush();
+        }
+
+        public void ExportVacations(DateTime startDate, DateTime endDate, long workerId)
+        {
+            // Instanciar la clase de Vacations y obtener los datos
+            Vacations vacations = new Vacations();
+            List<DtoReportVacations> dtoReportVacations = vacations.LoadReportVacations(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), workerId);
+
+            // Crear el paquete de Excel y la hoja de trabajo
+            ExcelPackage excelPackage = new ExcelPackage();
+            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("VacationRecords");
+
+            // Definir encabezados
+            worksheet.Cells[1, 1].Value = "VacationId";
+            worksheet.Cells[1, 2].Value = "DateRequest";
+            worksheet.Cells[1, 3].Value = "Names";
+            worksheet.Cells[1, 4].Value = "DaysRequest";
+            worksheet.Cells[1, 5].Value = "GralStatus";
+            worksheet.Cells[1, 6].Value = "Date";
+            worksheet.Cells[1, 7].Value = "Comments";
+
+            // Aplicar estilo a los encabezados
+            var headerRange = worksheet.Cells[1, 1, 1, 7];
+            headerRange.Style.Font.Bold = true;
+
+            // Llenar datos en la hoja de trabajo
+            int row = 2;
+            foreach (var item in dtoReportVacations)
+            {
+                worksheet.Cells[row, 1].Value = item.VacationId;
+                worksheet.Cells[row, 2].Value = item.DateRequest.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 3].Value = item.Names;
+                worksheet.Cells[row, 4].Value = item.DaysRequest;
+                worksheet.Cells[row, 5].Value = item.GralStatus == 1 ? "Pending" : item.GralStatus == 2 ? "Approved" : "Rejected";
+                worksheet.Cells[row, 6].Value = item.Date.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 7].Value = item.Comments;
+                row++;
+            }
+
+            // Estilizar columnas
+            var range = worksheet.Cells[worksheet.Dimension.Address];
+            range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            range.AutoFitColumns();
+
+            // Ajustar el ancho de las columnas
+            for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+            {
+                worksheet.Column(col).Width = worksheet.Column(col).Width + 5;
+            }
+
+            // Convertir el archivo Excel en un arreglo de bytes
+            byte[] bin = excelPackage.GetAsByteArray();
+
+            // Enviar el archivo al cliente
+            Response.ClearHeaders();
+            Response.Clear();
+            Response.Buffer = true;
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.AddHeader("content-length", bin.Length.ToString());
+            Response.AddHeader("content-disposition", "attachment; filename=\"VacationRecords.xlsx\"");
             Response.OutputStream.Write(bin, 0, bin.Length);
 
             // Cleanup

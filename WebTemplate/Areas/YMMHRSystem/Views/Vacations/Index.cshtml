@@ -6,6 +6,9 @@
     ViewBag.Title = "Vacation Records";
     List<DtoProcess> processList = ViewBag.Process;
     List<DtoWorkerFile> workerfilesList = ViewBag.Workers;
+    List<DtoVacationAuthorizations> WorkerFileIdAllowedToPassToIndex = ViewBag.WorkerFileIdAllowedToPassToIndex as List<DtoVacationAuthorizations>;
+    List<DtoDaysAvaible> daysAvaibleGral = ViewBag.DaysAvaible;
+    List<DtoStatusGral> statusGral = ViewBag.Status;
 }
 
 <head>
@@ -54,31 +57,61 @@
                                     <span>@workerfile.AdmissionDate.ToString().Substring(0, 10)</span>
                                 </td>
                                 <td style="text-align: center">
-                                    <span>@workerfile.AvailableVacationDays</span>
+                                    @foreach (var daysAvaibles in daysAvaibleGral)
+                                    {
+                                        if (daysAvaibles.WorkerFileId == workerfile.WorkerFileId)
+                                        {
+                                            <span>@daysAvaibles.DaysAvaible</span>
+                                        }
+                                    }
                                 </td>
                                 <td style="text-align: center">
                                     <span>@workerfile.Process</span>
                                 </td>
                                 <td style="text-align: center">
-                                    @{
-                                        var statuses = new[] { "Pending", "Approved", "Rejected" };
-                                        var random = new Random();
-                                        var status = statuses[random.Next(statuses.Length)];
-                                        @status
+                                    @foreach (var statusgral in statusGral)
+                                    {
+                                        if (statusgral.WorkerFileId == workerfile.WorkerFileId)
+                                        {
+                                            if (statusgral.GralStatus == 1)
+                                            {
+                                                <kbd class="bg-blue fg-white">Pending boss approval</kbd>
+                                            }
+                                            else if (statusgral.GralStatus == 2)
+                                            {
+                                                <kbd class="bg-orange fg-white">Pending HR approval</kbd>
+                                            }
+                                            else if (statusgral.GralStatus == 3)
+                                            {
+                                                <kbd class="bg-green fg-white">Approved</kbd>
+                                            }
+                                            else if (statusgral.GralStatus == 4)
+                                            {
+                                                <kbd class="bg-red fg-white">Canceled</kbd>
+                                            }
+                                            else if (statusgral.GralStatus == 5)
+                                            {
+                                                <kbd class="bg-black fg-white">Reverted</kbd>
+                                            }
+                                            else
+                                            {<kbd class="bg-gray fg-white">Not defined</kbd>}
+                                        }
                                     }
                                 </td>
                                 <td style="text-align: center">
                                     @if (HttpContext.Current.Session["CanCreateVacationRequest"].Equals(true))
                                     {
-                                        <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
-                                    }
-                                    @if (HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true))
-                                    {
-                                        <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsRH()"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
-                                    }
-                                    @if (HttpContext.Current.Session["CanDeleteVacationRequest"].Equals(true))
-                                    {
-                                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Decline</span></a>
+                                        if (workerfile.WorkerFileId == long.Parse(Session["WorkerFileId"].ToString()))
+                                        {
+                                            <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                        }
+                                        foreach (var workerFileAllowedToPass in WorkerFileIdAllowedToPassToIndex)
+                                        {
+                                            if ((workerFileAllowedToPass.WorkerFileId == workerfile.WorkerFileId))
+                                            {
+                                                <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                            }
+                                        }
                                     }
                                     <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog(@workerfile.WorkerFileId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
                                 </td>
@@ -96,25 +129,73 @@
                                         <span>@workerfile.AdmissionDate.ToString().Substring(10)</span>
                                     </td>
                                     <td style="text-align: center">
-                                        <span>@workerfile.AvailableVacationDays</span>
+                                        @foreach (var daysAvaibles in daysAvaibleGral)
+                                        {
+                                            if (daysAvaibles.WorkerFileId == workerfile.WorkerFileId)
+                                            {
+                                                <span>@daysAvaibles.DaysAvaible</span>
+                                            }
+                                        }
                                     </td>
                                     <td style="text-align: center">
                                         <span>@workerfile.Process</span>
                                     </td>
                                     <td style="text-align: center">
-                                        @{
-                                            var statuses = new[] { "Pending", "Approved", "Rejected" };
-                                            var random = new Random();
-                                            var status = statuses[random.Next(statuses.Length)];
-                                            @status
+                                        @foreach (var statusgral in statusGral)
+                                        {
+                                            if (statusgral.WorkerFileId == workerfile.WorkerFileId)
+                                            {
+                                                if (statusgral.GralStatus == 1)
+                                                {
+                                                    <kbd class="bg-blue fg-white">Pending boss approval</kbd>
+                                                }
+                                                else if (statusgral.GralStatus == 2)
+                                                {
+                                                    <kbd class="bg-orange fg-white">Pending HR approval</kbd>
+                                                }
+                                                else if (statusgral.GralStatus == 3)
+                                                {
+                                                    <kbd class="bg-green fg-white">Approved</kbd>
+                                                }
+                                                else if (statusgral.GralStatus == 4)
+                                                {
+                                                    <kbd class="bg-red fg-white">Canceled</kbd>
+                                                }
+                                                else if (statusgral.GralStatus == 5)
+                                                {
+                                                    <kbd class="bg-black fg-white">Reverted</kbd>
+                                                }
+                                                else
+                                                {<kbd class="bg-gray fg-white">Not defined</kbd>}
+                                            }
                                         }
                                     </td>
                                     <td style="text-align: center">
                                         @if (HttpContext.Current.Session["CanCreateVacationRequest"].Equals(true))
                                         {
-                                            <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="RequestVacations()"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                            if (workerfile.WorkerFileId == long.Parse(Session["WorkerFileId"].ToString()))
+                                            {
+                                                <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                            }
+                                            foreach (var workerFileAllowedToPass in WorkerFileIdAllowedToPassToIndex)
+                                            {
+                                                if ((workerFileAllowedToPass.WorkerFileId == workerfile.WorkerFileId))
+                                                {
+                                                    <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="VacationsRequestDialog(@workerfile.WorkerFileId)"><span class="mif-add"></span><span class="actionButton"> Request</span></a>
+                                                }
+                                            }
                                         }
-                                        <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog()"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                        @if (workerfile.WorkerFileId == long.Parse(Session["WorkerFileId"].ToString()))
+                                        {
+                                            <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog(@workerfile.WorkerFileId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                        }
+                                        @foreach (var workerFileAllowedToPass in WorkerFileIdAllowedToPassToIndex)
+                                        {
+                                            if ((workerFileAllowedToPass.WorkerFileId == workerfile.WorkerFileId))
+                                            {
+                                                <a class="button small bg-black fg-white" style="cursor: pointer;" onclick="RecordsVacationsDetailDialog(@workerfile.WorkerFileId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                            }
+                                        }
                                     </td>
                                 </tr>
                             }

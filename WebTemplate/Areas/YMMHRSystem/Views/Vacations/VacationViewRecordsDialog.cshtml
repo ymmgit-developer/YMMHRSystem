@@ -3,6 +3,7 @@
 
 @{
     ViewBag.Title = "Vacation Records Details";
+    List<DtoVacationAuthorizations> ListWorkerFileAllowedToPass = ViewBag.WorkerFileIdAllowedToPass as List<DtoVacationAuthorizations>;
 }
 
 <head>
@@ -10,6 +11,9 @@
         /*Variables Global*/
         $EditRecordVacation = '@Url.Action("EditRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
         $ApproveBossRecord = '@Url.Action("ApproveBossRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $ApproveHrRecord = '@Url.Action("ApproveHRRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $CancelRecord = '@Url.Action("CancelRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
+        $RevertRecord = '@Url.Action("RevertRegisterVacation", "Vacations", new { area = "YMMHRSystem" })';
     </script>
 </head>
 
@@ -44,20 +48,55 @@
                             <span>@data.Comments</span>
                         </td>
                         <td style="text-align: center">
-                            <span>@data.GralStatus</span>
+                            @if (data.GralStatus == 1)
+                            {
+                                <kbd class="bg-blue fg-white">Pending boss approval</kbd>
+                            }
+                            else if (data.GralStatus == 2)
+                            {
+                                <kbd class="bg-orange fg-white">Pending HR approval</kbd>
+                            }
+                            else if (data.GralStatus == 3)
+                            {
+                                <kbd class="bg-green fg-white">Approved</kbd>
+                            }
+                            else if (data.GralStatus == 4)
+                            {
+                                <kbd class="bg-red fg-white">Canceled</kbd>
+                            }
+                            else
+                            {
+                                <kbd class="bg-gray fg-white">Reverted</kbd>
+                            }
                         </td>
                         <td style="text-align: center">
-                            @if (HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true) && !@data.BossAuthorization)
+                            @if (HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true) && !@data.BossAuthorization && data.GralStatus != 4)
                             {
-                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsBoss(@data.VacationId)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                foreach (var workerFileAllowedToPass in ListWorkerFileAllowedToPass)
+                                {
+                                    if (workerFileAllowedToPass.WorkerFileId == @data.WorkerFileId)
+                                    {
+                                        <a class="button small bg-blue fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsBoss(@data.VacationId)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm Boss</span></a>
+                                    }
+                                }
                             }
-                            @if (HttpContext.Current.Session["CanDeleteVacationRequest"].Equals(true) && @data.GralStatus != 3)
+                            @if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) &&(HttpContext.Current.Session["CanApproveVacationRequest"].Equals(true)) && @data.GralStatus == 2 && data.GralStatus != 4)
                             {
-                                <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmDeleteRecordVacations()"><span class="mif-cancel"></span><span class="actionButton"> Delete</span></a>
+                                <a class="button small bg-orange fg-white" style="cursor: pointer;" onclick="RecordApproveVacationsHR(@data.VacationId)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm HR</span></a>
                             }
-                            @if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                            @if (HttpContext.Current.Session["CanDeleteVacationRequest"].Equals(true) && @data.GralStatus != 3 && data.GralStatus != 4)
                             {
-                                <a class="button small bg-gray fg-black" style="cursor: pointer;" onclick="RevertRecordVacation(@data.VacationId)">
+                                foreach (var workerFileAllowedToPass in ListWorkerFileAllowedToPass)
+                                {
+                                    if (workerFileAllowedToPass.WorkerFileId == @data.WorkerFileId || (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))))
+                                    {
+                                        <a class="button small bg-red fg-white" style="cursor: pointer;" onclick="ConfirmCancelRecordVacations(@data.VacationId)"><span class="mif-cancel"></span><span class="actionButton"> Cancel</span></a>
+                                    }
+                                }
+                            }
+                            @if ((Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"]))) && @data.GralStatus == 3 && data.GralStatus != 4)
+                            {
+                                <a class="button small bg-gray fg-black" style="cursor: pointer;" onclick="ConfirmDRevertRecordVacation(@data.VacationId)">
                                     <span class="mif-backward"></span><span class="actionButton"> Revert</span>
                                 </a>
                             }
@@ -85,6 +124,33 @@
     </div>
 </div>
 
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="VacationApprovalHRConfirmationDialog" name="VacationApprovalHRConfirmationDialog" class="dialog" data-role="dialog">
+    <div class="dialog-title">Approve HR</div>
+    <div class="dialog-content"> Are you sure you want to approve this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="HrApprovingVacations()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#VacationApprovalHRConfirmationDialog')"> No</button>
+    </div>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="VacationCancelDialog" name="VacationCancelDialog" class="dialog" data-role="dialog">
+    <div class="dialog-title">Cancel Vacation</div>
+    <div class="dialog-content"> Are you sure you want to cancel this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="CancelRecordVacations()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#VacationCancelDialog')"> No</button>
+    </div>
+</div>
+
+<div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="VacationRevertDialog" name="VacationRevertDialog" class="dialog" data-role="dialog">
+    <div class="dialog-title">Revert Vacation</div>
+    <div class="dialog-content"> Are you sure you want to revert this item?</div>
+    <div class="dialog-actions ml-auto">
+        <button class="button my-control-colors" onclick="RevertRecordVacation()"> Yes</button>
+        <button class="button alert" onclick="Metro.dialog.close('#VacationRevertDialog')"> No</button>
+    </div>
+</div>
+
 <!-- Contenedor de filas hijas -->
 <div id="child-rows-container" style="display: none;">
     @foreach (var data in Model)
@@ -102,6 +168,17 @@
 
 <script>
     $(document).ready(function () {
+
+
+        // Verifica si la tabla ya está inicializada
+        if ($.fn.DataTable.isDataTable('#dttHistoryVacations')) {
+            // Destruye la instancia existente de DataTables
+            $('#dttHistoryVacations').DataTable().destroy();
+            // Limpia el contenido de la tabla para evitar problemas
+            //$('#dttHistoryVacations tbody').empty();
+        }
+
+
         // Inicializa DataTables
         var table = $('#dttHistoryVacations').DataTable({
             responsive: true,

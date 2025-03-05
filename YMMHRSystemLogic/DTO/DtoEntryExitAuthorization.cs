@@ -12,6 +12,7 @@ namespace YMMHRSystemLogic
         public long IdRecordsInOut { get; set; }
         public List<DtoWorkerFile> WorkerList { get; set; } = new List<DtoWorkerFile>();
         public string Associate {  get; set; }
+        public string WorkerId { get; set; }
         public string Process { get; set; }
         public DateTime DateFor { get; set; }
         public TimeSpan TimeFor { get; set; }

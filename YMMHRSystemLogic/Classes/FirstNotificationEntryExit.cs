@@ -80,15 +80,15 @@ namespace YMMHRSystemLogic
         #endregion
 
         #region Process methods
-        public string GetNotifyTo(string IdApplicant)
+        public List<DtoEmailToNotify> GetNotifyTo(string IdApplicant)
         {
             try
             {
-                DataRow dataRow = null;
-                string sqlString = "SELECT EmailToNotify FROM FirstNotificationEntryExit WHERE IdApplicant = " + IdApplicant;
-                dataRow = oDatabase.GetRow(sqlString, "Get EmailToNotify");
-                if (dataRow == null) return "";
-                return dataRow["EmailToNotify"].ToString();
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoEmailToNotify> listToNotify = new List<DtoEmailToNotify>();
+                mapping.Load<DtoEmailToNotify>("SELECT EmailToNotify FROM FirstNotificationEntryExit WHERE IdApplicant = " + IdApplicant, "FirstNotificationEntryExit", new DtoEmailToNotify());
+                listToNotify.AddRange(mapping.dtoList.Select(renglon => (DtoEmailToNotify)renglon.Dto));
+                return listToNotify;
             }
             catch (Exception ex)
             {

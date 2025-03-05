@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Record";
+    List<YMMHRSystemLogic.DtoWorkerFile> workerfilesList = ViewBag.Workerfiles;
 }
 <head>
     <script src="~/Areas/YMMHRSystem/Scripts/Record.js"></script>
@@ -11,7 +12,8 @@
         $ExportTransports = '@Url.Action("ExportTransports", "Graph", new { area = "YMMHRSystem" })';
         $ExportExtraTransports = '@Url.Action("ExportExtraTransports", "Graph", new { area = "YMMHRSystem" })';
         $ExportLegalRequirements = '@Url.Action("ExportLegalRequirements", "Graph", new { area = "YMMHRSystem" })';
-        $ExportAccessAuthorization = '@Url.Action("ExportAccessAuthorization", "Graph", new { area = "YMMHRSystem" })'
+        $ExportAccessAuthorization = '@Url.Action("ExportAccessAuthorization", "Graph", new { area = "YMMHRSystem" })';
+        $ExportVacations = '@Url.Action("ExportVacations", "Graph", new { area = "YMMHRSystem" })';
     </script>
 </head>
 
@@ -99,6 +101,32 @@
                         </div>
                         <div class="row mb-1">
                             <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportExtraInOut()">Export</button>
+                        </div>
+                    </div>
+                </div>
+                <!----- Vacations  ---->
+                <div class="cell-lg-4 mb-2">
+                    <div style="background-color: rgb(54, 54, 54);" class="row mr-0 ml-0 mt-2 d-flex flex-justify-center flex-align-center">
+                        <h5>Vacations</h5>
+                    </div>
+                    <div class="col">
+                        <div class="row mb-1">
+                            <select id="WorkerId" name="WorkerId" data-role="select">
+                                <option value="0">All Workers</option>
+                                @foreach (var workerfile in workerfilesList)
+                                {
+                                    <option value="@workerfile.WorkerFileId">@workerfile.Names</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="row mb-1">
+                            <input data-prepend="Start Date:" autocomplete="off" id="StartDate9" name="StartDate9" data-role="calendarpicker" data-cls-calendar="compact">
+                        </div>
+                        <div class="row mb-1">
+                            <input data-prepend="End Date:" autocomplete="off" id="EndDate9" name="EndDate9" data-role="calendarpicker" data-cls-calendar="compact">
+                        </div>
+                        <div class="row mb-1">
+                            <button class="flat-button button my-control-colors w-100" style="color:white; border-color:white" onclick="ExportVacations()">Export</button>
                         </div>
                     </div>
                 </div>

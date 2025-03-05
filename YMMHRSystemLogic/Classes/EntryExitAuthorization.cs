@@ -261,11 +261,11 @@ namespace YMMHRSystemLogic
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoEntryExitAuthorization> dtoEntryExitAuthorizationsList = new List<DtoEntryExitAuthorization>();
 
-                mapping.Load<DtoEntryExitAuthorization>("SELECT IdRecordsInOut, Associate, Process, DateFor, TimeFor, " +
+                mapping.Load<DtoEntryExitAuthorization>("SELECT IdRecordsInOut, Associate, w.WorkerId, e.Process, DateFor, TimeFor, " +
                                                         "IdType, IdSalary, IdMotive, " +
                                                         "FirtsAuthorization, FirtsAuthorizedby, SecondAuthorization, SecondAuthorizedby, " +
                                                         "CurrentState, CreateBy, CreateDate " +
-                                                        "FROM EntryExitAuthorization " +
+                                                        "FROM EntryExitAuthorization e JOIN WorkerFiles w ON (e.Associate = w.Names)" +
                                                         "WHERE DateFor BETWEEN '"+ startDate + "' AND '" + endDate + "' " +
                                                         "ORDER BY IdRecordsInOut DESC;", "EntryExitAuthorization", new DtoEntryExitAuthorization());
                 dtoEntryExitAuthorizationsList.AddRange(mapping.dtoList.Select(renglon => (DtoEntryExitAuthorization)renglon.Dto));

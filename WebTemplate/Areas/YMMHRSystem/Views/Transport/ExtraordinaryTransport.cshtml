@@ -78,11 +78,14 @@
                             </td>
 
                             <td style="text-align: center">
-                                <span class="@(
-                                    item.Status == 1 ? "fg-black" : 
-                                    item.Status == 3 ? "fg-green" : 
-                                    item.Status == 2 ? "fg-red" : ""
-                                )"> @(item.Status == 1 ? "Generated" : item.Status == 3 ? "Confirmed" : "Cancelled") </span>
+                                @{
+                                    var statusLabel = item.Status == 1 ? "Generated" :
+                                                      item.Status == 3 ? "Confirmed" : "Cancelled";
+                                    var statusClass = item.Status == 1 ? "bg-blue fg-white" :
+                                                      item.Status == 3 ? "bg-green fg-white" :
+                                                      "bg-red fg-white";
+                                }
+                                <kbd class="@statusClass">@statusLabel</kbd>
                             </td>
 
                             <td style="text-align: center">

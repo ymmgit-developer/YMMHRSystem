@@ -19,7 +19,7 @@ namespace YMMHRSystemLogic
         SQLTools oDatabase = new SQLTools();
         HistoryAnniversary historyAnniversary = new HistoryAnniversary();
         VacationDayUsage vacationDayUsage = new VacationDayUsage();
-
+        
         #region General methods
         public bool Save(DtoVacations vacation)
         {
@@ -32,7 +32,6 @@ namespace YMMHRSystemLogic
                 }
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = vacation, TableName = "Vacations" });
-
                 mapping.Save();
                 return true;
             }
@@ -147,12 +146,27 @@ namespace YMMHRSystemLogic
             }
         }
 
+        public bool ApproveHrVacation(long VacationId)
+        {
+            try
+            {
+                string query = "UPDATE Vacations SET HrAuthorization = 1 WHERE VacationId = " + VacationId.ToString();
+                oDatabase.ExecuteNonQuery(query, "Approve HR Register Vacations");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Approve Vacations Records", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "ApproveRequestVacation");
+                return false;
+            }
+        }
+
         public int TotalAvailableDays(long WorkerFileId)
         {
             try
             {
                 DataRow totalAvailableDays;
-                string query = "SELECT SUM(h.CorrespondingDays) - COALESCE(SUM(vu.DaysUsed), 0) AS TotalAvailableDays FROM HistoryAnniversary h LEFT JOIN VacationDayUsage vu ON h.HistoryAnniversaryId = vu.HistoryAnniversaryId WHERE h.WorkerFileId =" + WorkerFileId.ToString() + "AND DATEDIFF(MONTH, h.DateAwarded, GETDATE()) <= 18";
+                string query = "SELECT SUM(DaysAvailable) AS TotalAvailableDays FROM HistoryAnniversary WHERE WorkerFileId =" + WorkerFileId.ToString() + "AND DATEDIFF(MONTH, DateAwarded, GETDATE()) <= 18";
                 totalAvailableDays = oDatabase.GetRow(query, "Get Total Available Days");
                 return int.Parse(totalAvailableDays["TotalAvailableDays"].ToString());
             }
@@ -260,6 +274,99 @@ namespace YMMHRSystemLogic
             {
                 log.WriteToErrorLog("HR System", "Blocked Vacations Records", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Blocked");
                 return false;
+            }
+        }
+
+        public List<DtoReportVacations> LoadReportVacations(string startDate, string endDate, long workerfileId)
+        {
+            try
+            {
+                string query = "";
+                if (workerfileId == 0)
+                {
+                    query = "SELECT V.VacationId, V.DateRequest, Wf.Names, V.DaysRequest, V.Comments, V.GralStatus, DFV.Date FROM Vacations V JOIN DatesForVacations DFV on DFV.VacationId = V.VacationId JOIN WorkerFiles Wf on V.WorkerFileId = Wf.WorkerFileId WHERE DFV.Date BETWEEN '" + startDate +"' AND '" + endDate +"' ORDER BY 1 DESC";
+                }
+                else
+                {
+                    query = "SELECT V.VacationId, V.DateRequest, Wf.Names, V.DaysRequest, V.Comments, V.GralStatus, DFV.Date FROM Vacations V JOIN DatesForVacations DFV on DFV.VacationId = V.VacationId JOIN WorkerFiles Wf on V.WorkerFileId = Wf.WorkerFileId WHERE DFV.Date BETWEEN '" + startDate + "' AND '" + endDate + "' AND V.WorkerFileId = " + workerfileId.ToString() + " ORDER BY 1 DESC";
+                }
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoReportVacations> dtoListReportVacations = new List<DtoReportVacations>();
+                mapping.Load<DtoReportVacations>(query, "Vacations", new DtoReportVacations());
+                dtoListReportVacations.AddRange(mapping.dtoList.Select(renglon => (DtoReportVacations)renglon.Dto));
+                return dtoListReportVacations;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Report Vacations", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadReportVacations");
+                throw ex;
+            }
+        }
+
+        public bool ReturnsDaysVacation(long VacationId)
+        {
+            try
+            {
+                string query = "EXEC CancelVacationRequest @VacationId = " + VacationId.ToString();
+                oDatabase.ExecuteNonQuery(query, "Returns Vacations by Cancel o Revert");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Return Days Vacation", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "ReturnsDaysVacation");
+                return false;
+            }
+        }
+
+        public int DaysAvaiblebyUser(long WorkerFileId)
+        {
+            try
+            {
+                DataRow daysAvaible;
+                string query = "SELECT SUM(DaysAvailable) AS DaysAvaible FROM HistoryAnniversary WHERE WorkerFileId = " + WorkerFileId.ToString();
+                daysAvaible = oDatabase.GetRow(query, "Get Days Avaible");
+                return int.Parse(daysAvaible["DaysAvaible"].ToString());
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get Days Avaible by User", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DaysAvaiblebyUser");
+                return -1;
+            }
+        }
+
+        public List<DtoDaysAvaible>DaysAvaibleGral()
+        {
+            try
+            {
+                string query = "SELECT WorkerFileId , SUM(DaysAvailable) AS 'DaysAvaible' FROM HistoryAnniversary WHERE AnniversaryNumber != 0 GROUP BY WorkerFileId ORDER BY 1 ASC";
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoDaysAvaible> dtoListDaysAvaible = new List<DtoDaysAvaible>();
+                mapping.Load<DtoDaysAvaible>(query, "DaysAvaible", new DtoDaysAvaible());
+                dtoListDaysAvaible.AddRange(mapping.dtoList.Select(renglon => (DtoDaysAvaible)renglon.Dto));
+                return dtoListDaysAvaible;
+            }
+            catch(Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Days Avaible General", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "DaysAvaibleGral");
+                throw ex;
+            }
+        }
+
+        public List<DtoStatusGral>GetStatusGral()
+        {
+            try
+            {
+                string query = "WITH CTE_LastRecord AS (SELECT VacationId, WorkerFileId, GralStatus, ROW_NUMBER() OVER (PARTITION BY WorkerFileId ORDER BY VacationId DESC) AS RowNum FROM Vacations) SELECT VacationId, WorkerFileId, GralStatus FROM CTE_LastRecord WHERE RowNum = 1;\r\n";
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoStatusGral> dtoListStatusGral = new List<DtoStatusGral>();
+                mapping.Load<DtoStatusGral>(query, "StatusGral", new DtoStatusGral());
+                dtoListStatusGral.AddRange(mapping.dtoList.Select(renglon => (DtoStatusGral)renglon.Dto));
+                return dtoListStatusGral;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Status General", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetStatusGral");
+                throw ex;
             }
         }
         #endregion

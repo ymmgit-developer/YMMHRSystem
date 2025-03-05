@@ -75,4 +75,15 @@ function ExportExtraInOut() {
     }
 }
 
+function ExportVacations() {
+    var startDate = $("#StartDate9").val();
+    var endDate = $("#EndDate9").val();
+    var workerId = $("#WorkerId").val();
+    if (startDate === "" || endDate === "") {
+        Metro.toast.create("Please enter dates", null, null, "bg-red fg-white");
+    } else {
+        window.location = $ExportVacations + "?startDate=" + startDate + "&endDate=" + endDate + "&workerId=" + workerId;
+    }
+}
+
 

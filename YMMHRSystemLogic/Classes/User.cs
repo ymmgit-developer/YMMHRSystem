@@ -500,7 +500,25 @@ namespace YMMHRSystemLogic
             catch (Exception ex)
             {
                 Log log = new Log();
-                log.WriteToErrorLog("HR System", "Query Process", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "QueryProcess");
+                log.WriteToErrorLog("HR System", "Get Process by User", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetProcessbyUser");
+                throw ex;
+            }
+        }
+
+        public string GetEmailbyName(string Name) 
+        {
+            try
+            {
+                SQLTools oBD = new SQLTools();
+                DataRow dr;
+                dr = oBD.GetRow("select Email FROM Users u WHERE CONCAT(Name, ' ' ,FirstSurname)  LIKE('" + Name + "')", "");
+
+                return dr["Email"].ToString();
+            }
+            catch (Exception ex)
+            {
+                Log log = new Log();
+                log.WriteToErrorLog("HR System", "Get email by Name", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "GetEmailbyName");
                 throw ex;
             }
         }

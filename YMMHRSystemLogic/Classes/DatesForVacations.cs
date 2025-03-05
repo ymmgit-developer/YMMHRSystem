@@ -21,7 +21,6 @@ namespace YMMHRSystemLogic
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 mapping.dtoList.Add(new DBFrameworkDto() { Dto = date, TableName = "DatesForVacations" });
-
                 mapping.Save();
                 return true;
             }

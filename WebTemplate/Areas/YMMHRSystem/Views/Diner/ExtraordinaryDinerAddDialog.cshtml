@@ -187,13 +187,12 @@
     $(document).ready(function () {
         // Obtener el valor de RolUser
         var rolUserValue = parseInt($("#RolUser").val());
-
         // Configuración base para Flatpickr
         var config = {
             allowInput: true,
             clickOpens: true, // Previene la apertura automática del calendario
             dateFormat: "d-m-Y", // Formato DD-MM-YYYY
-            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+            minDate: rolUserValue === 0 ? "today" : null
         };
 
         // Inicializar los Datepickers
@@ -256,7 +255,7 @@
             allowInput: true,
             clickOpens: true, // Previene la apertura automática del calendario
             dateFormat: "d-m-Y", // Formato DD-MM-YYYY
-            minDate: rolUserValue < 1 ? "today" : "2024-01", // Ajustar configuración según el valor de RolUser
+            minDate: rolUserValue === 0 ? "today" : null, // Ajustar configuración según el valor de RolUser
             onClose: function (selectedDates, dateStr, instance) {
                 if ($("#multipleDays").is(":checked")) {
 

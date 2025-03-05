@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -246,7 +247,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             if (DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                             {
                                 // Aquí validamos cada fecha como se hace para dtoExtraDiner.Date
-                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time.ToString());
+                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time);
                                 if (!validationResult.success)
                                 {
                                     return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
@@ -261,8 +262,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     else
                     {
                         // Validar la fecha única de dtoExtraDiner
-                        DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
-                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time.ToString());
+                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time);
                         if (!validationResult.success)
                         {
                             return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
@@ -313,7 +313,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         if (dtoExtraDiner.FinishDate < dtoExtraDiner.Date)
                         {
-                            return Json(false, JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "Finish Date cannot be less than Start Date" }, JsonRequestBehavior.AllowGet);
                         }
 
                         List<DateTime?> selectedDates = new List<DateTime?>();
@@ -378,7 +378,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         if (diner.GetExtraDinerId(dtoExtraDiner.AssociateName, dtoExtraDiner.Type, dtoExtraDiner.Date, dtoExtraDiner.Time) != 0)
                         {
-                            return Json(false, JsonRequestBehavior.AllowGet);
+                            return Json(new { success = false, message = "This ExtraDiner already exists" }, JsonRequestBehavior.AllowGet);
                         }
                     }
                     dtoExtraDiner.Lading = dtoExtraDiner.LadingCost > 0.0m ? true : false;
@@ -390,15 +390,15 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         dtoExtraDiner.UserModified = Session["UserName"].ToString();
                     }
-
+                    dtoExtraDiner.FinishDate = dtoExtraDiner.Date;
                     diner.SaveExtra(dtoExtraDiner, Convert.ToInt64(Session["UserId"]));
                 }
 
-                return Json(true, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "Diner saved" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -430,7 +430,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                             if (DateTime.TryParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                             {
                                 // Aquí validamos cada fecha como se hace para dtoExtraDiner.Date
-                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time.ToString());
+                                var validationResult = diner.ValidateDinerDate(parsedDate, dtoExtraDiner.Time);
                                 if (!validationResult.success)
                                 {
                                     return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
@@ -446,7 +446,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         // Validar la fecha única de dtoExtraDiner
                         DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
-                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time.ToString());
+                        var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time);
                         if (!validationResult.success)
                         {
                             return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
