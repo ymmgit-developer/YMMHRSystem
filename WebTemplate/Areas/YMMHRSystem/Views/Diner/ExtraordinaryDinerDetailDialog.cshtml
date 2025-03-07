@@ -12,6 +12,9 @@
 
 <div class="dialog-content">
     <form id="ExtraDinerForm" data-role="validator" data-on-validate-form="AddExtraordinaryDiner()" action="javascript:">
+        <div class="row" style="visibility:hidden">
+            <input id="Contacts" name="Contacts" value="no.reply@motherson.com"/>
+        </div>
         <div class="row">
             <div class="cell-md-12">
                 <div class="row mb-2">
@@ -28,7 +31,10 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
+                        <div class="row">
+                            <input data-role="input" type="text" data-prepend="Start Date:" class="selector active w-100 dotted-border" id="Date" name="Date" value="@Model.Date" autocomplete="off" readonly data-input />
+                        </div>
+                        <!--<input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
                     </div>
                     <div class="cell-md-6">
                         <div class="row">
@@ -103,22 +109,33 @@
     @Html.Partial("~/Areas/YMMHRSystem/Views/Shared/AssociateList.cshtml", associateList)
 </div>
 
-@*<script>
-    $(document).ready(function () {
+<script>
+    //$(document).ready(function () {
 
-        setInterval(function () {
-            $("#LadingCost").val($("#LadingCost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
-            let costField = $("#Cost");
-            if (costField.length > 0 && costField.val() !== undefined) {
-              let costValue = costField.val();
-              let costMatch = costValue.match(/^-?\d+(?:\.\d{0,2})?/);
-              if (costMatch !== null) {
-                    costField.val(costMatch.toString());
-                }
+    //    setInterval(function () {
+    //        $("#LadingCost").val($("#LadingCost").val().toString().match(/^-?\d+(?:\.\d{0,2})?/));
+    //        let costField = $("#Cost");
+    //        if (costField.length > 0 && costField.val() !== undefined) {
+    //          let costValue = costField.val();
+    //          let costMatch = costValue.match(/^-?\d+(?:\.\d{0,2})?/);
+    //          if (costMatch !== null) {
+    //                costField.val(costMatch.toString());
+    //            }
+    //        }
+    //    }, 500);
+    //});
+    $(document).ready(function () {
+        $("#Date").flatpickr({
+            enableTime: false,  // Deshabilita la selección de hora (solo fecha)
+            dateFormat: "d-m-Y", // Formato de fecha (Año-Mes-Día)
+            minDate: "today",
+            onReady: function (selectedDates, dateStr, instance) {
+                instance.input.style.border = "none";
+                instance.input.style.outline = "none"; // Evita el borde al hacer focus
             }
-        }, 500);
+        });
     });
-</script>*@
+</script>
 
 <style>
     input[type="time"] {
