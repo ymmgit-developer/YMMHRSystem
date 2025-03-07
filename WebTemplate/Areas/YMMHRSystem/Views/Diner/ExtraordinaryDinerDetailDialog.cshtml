@@ -12,7 +12,7 @@
 
 <div class="dialog-content">
     <form id="ExtraDinerForm" data-role="validator" data-on-validate-form="AddExtraordinaryDiner()" action="javascript:">
-        <div class="row" style="visibility:hidden">
+        <div class="row" style="display:none">
             <input id="Contacts" name="Contacts" value="no.reply@motherson.com"/>
         </div>
         <div class="row">
@@ -31,17 +31,11 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <div class="row">
-                            <input data-role="input" type="text" data-prepend="Start Date:" class="selector active w-100 dotted-border" id="Date" name="Date" value="@Model.Date" autocomplete="off" readonly data-input />
-                        </div>
+                        <input data-role="input" type="text" data-prepend="Start Date:" class="selector active w-100 dotted-border" id="Date" name="Date" value="@Model.Date" autocomplete="off" readonly data-input />
                         <!--<input data-prepend="Start Date:" autocomplete="off" id="Date" name="Date" value="@Model.Date" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
                     </div>
                     <div class="cell-md-6">
-                        <div class="row">
-                            <div class="cell-12 border bd-gray">
-                                <input type="time" style="font-size:15px;" @*data-role="timepicker" data-seconds="false" data-value="@Model.Time"*@ value="@Model.Time" id="Time" name="Time" class="w-100">
-                            </div>
-                        </div>
+                        <input data-role="input" type="time" data-prepend="Time:" @*data-role="timepicker" data-seconds="false" data-value="@Model.Time"*@ autocomplete="off" value="@Model.Time" id="Time" name="Time" data-input>
                     </div>
                 </div>
                 <div class="row mb-2">
