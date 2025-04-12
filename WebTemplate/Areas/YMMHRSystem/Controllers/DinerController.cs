@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using YMMHRSystemLogic;
 
 namespace WebTemplate.Areas.YMMHRSystem.Controllers
@@ -411,12 +412,17 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         {
             try
             {
-
+                
                 if (dtoExtraDiner.GuestQuantity <= 0)
                 {
                     return Json(new { success = false, message = "Guest quantity must be greater than zero." }, JsonRequestBehavior.AllowGet);
                 }
 
+                // Si no hay fechas múltiples ni FinishDate, asignar FinishDate = Date
+                if (dtoExtraDiner.FinishDate == null && string.IsNullOrEmpty(MultipleDates) && dtoExtraDiner.Date != null)
+                {
+                    dtoExtraDiner.FinishDate = dtoExtraDiner.Date;
+                }
 
                 if (!Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) && !Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
@@ -447,13 +453,13 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         // Validar la fecha única de dtoExtraDiner
                         DateTime dateOrdered = Convert.ToDateTime(dtoExtraDiner.Date + dtoExtraDiner.Time);
                         var validationResult = diner.ValidateDinerDate(dtoExtraDiner.Date.Value, dtoExtraDiner.Time);
+
                         if (!validationResult.success)
                         {
                             return Json(new { success = false, message = validationResult.message }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
-
 
                 List<DtoExtraordinaryDiner> dinerList = new List<DtoExtraordinaryDiner>();
                 WorkerFile workerFile = new WorkerFile();
@@ -465,10 +471,9 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
 
                 if (dtoExtraDiner.FinishDate != null)
                 {
-
                     if (dtoExtraDiner.FinishDate < dtoExtraDiner.Date)
                     {
-                        return Json("false", JsonRequestBehavior.AllowGet);
+                        return Json(new {success = false, message = "The end date is less than the current date" });
                     }
 
                     List<DateTime?> selectedDates = new List<DateTime?>();
@@ -539,7 +544,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
         }
