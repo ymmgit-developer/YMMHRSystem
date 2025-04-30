@@ -90,7 +90,7 @@
                 <div class="cell-md-4">
                     @if (Model.Status <= 1)
                     {
-                        <input data-prepend="License Expiration:" data-min-date="@DateTime.Now" data-validate="required" id="LicenseExpiration" name="LicenseExpiration" value="@(Model.LicenseExpiration?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.LicenseExpiration?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
+                        <input data-role="input" type="text" data-prepend="License Expiration:" data-validate="required" id="LicenseExpiration" name="LicenseExpiration" value="@Model.LicenseExpiration" autocomplete="off" readonly data-input>
                     }
                     else
                     {
@@ -104,7 +104,7 @@
                     {
                         if (Model.Status <= 1)
                         {
-                            <input data-prepend="Departure Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
+                            <input data-role="input" type="text" data-prepend="Departure Date:" data-validate="required" id="DepartureDate" name="DepartureDate" value="@Model.DepartureDate" autocomplete="off" readonly  data-input>
                         }
                         else
                         {
@@ -115,7 +115,7 @@
                     {
                         if (Model.Status <= 1)
                         {
-                            <input data-prepend="Departure Date:" data-min-date="@DateTime.Now" data-validate="required" id="DepartureDate" name="DepartureDate" value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.DepartureDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y"*@ data-input-format="%d/%m/%Y">
+                            <input data-role="input" type="text" data-prepend="Departure Date:" data-validate="required" id="DepartureDate" name="DepartureDate" value="@Model.DepartureDate" autocomplete="off" readonly data-input>
                         }
                         else
                         {
@@ -124,13 +124,12 @@
                     }
                 </div>
                 <div class="cell-md-3">
-                    @*<input style="font-size:8px;" data-role="timepicker" data-validate="required" data-seconds="false" data-value="@Model.DepartureTime" id="DepartureTime" name="DepartureTime">*@
-                    <input type="time" class="w-100" autocomplete="off" value="@Model.DepartureTime" style="width: 100%;" id="DepartureTime" name="DepartureTime" />
+                    <input data-role="input" type="time" data-prepend="Departure Time" autocomplete="off" value="@Model.DepartureTime" id="DepartureTime" name="DepartureTime" />
                 </div>
                 <div class="cell-md-3">
                     @if (Model.Status <= 1)
                     {
-                        <input data-prepend="Arrival Date:" data-min-date="@DateTime.Now" data-validate="required" id="ArrivalDate" name="ArrivalDate" value="@(Model.ArrivalDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.ArrivalDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact" @*data-format="%d/%m/%Y*@" data-input-format="%d/%m/%Y">
+                        <input data-role="input" type="text" data-prepend="Arrival Date:" data-validate="required" id="ArrivalDate" name="ArrivalDate" value="@Model.ArrivalDate" autocomplete="off" readonly data-input>
                     }
                     else
                     {
@@ -138,8 +137,37 @@
                     }
                 </div>
                 <div class="cell-md-3">
-                    @*<input style="font-size:8px;" data-validate="required" data-role="timepicker" data-seconds="false" data-value="@Model.ArrivalTime" id="ArrivalTime" name="ArrivalTime">*@
-                    <input type="time" class="w-100" autocomplete="off" data-value="@Model.ArrivalTime" style="width: 100%;" id="ArrivalTime" name="ArrivalTime" />
+                    <input data-role="input" type="time" data-prepend="Arrival Time" autocomplete="off" value="@Model.ArrivalTime" id="ArrivalTime" name="ArrivalTime" />
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="cell-md-3">
+                    <select class="notranslate" data-role="select" id="Card" name="Card" data-prepend="Fuel Card Use:">
+                        @if (Model.Card)
+                        {
+                            <option selected value="true">Yes</option>
+                            <option value="false">No</option>
+                        }
+                        else
+                        {
+                            <option value="true">Yes</option>
+                            <option selected value="false">No</option>
+                        }
+                    </select>
+                </div>
+                <div class="cell-md-3">
+                    <select class="notranslate" data-role="select" id="Tag" name="Tag" data-prepend="TAG Use:">
+                        @if (Model.Tag)
+                        {
+                            <option selected value="true">Yes</option>
+                            <option value="false">No</option>
+                        }
+                        else
+                        {
+                            <option value="true">Yes</option>
+                            <option selected value="false">No</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-1">
@@ -176,22 +204,8 @@
                     <div class="cell-md-4">
                         <input type="text" readonly="readonly" name="LicensePlate" id="LicensePlate" data-role="input" data-prepend="License Plate:" autocomplete="off" value="@Model.LicensePlate">
                     </div>
-                    <div class="cell-md-4">
-                        <select class="notranslate" data-role="select" id="Card" name="Card" data-prepend="Fuel Card Used:">
-                            @if (Model.Card)
-                            {
-                                <option selected value="true">Yes</option>
-                                <option value="false">No</option>
-                            }
-                            else
-                            {
-                                <option value="true">Yes</option>
-                                <option selected value="false">No</option>
-                            }
-                        </select>
-                    </div>
                 </div>
-                <div class="row mb-1">
+                <div class="row mb-1" style="display:none">
                     <div class="cell-md-3">
                         <input type="text" data-role="input" value="@Model.KMDeparture" data-prepend="KM Departure:" id="KMDeparture" name="KMDeparture">
                     </div>
@@ -290,4 +304,45 @@
         });
     }
 
+    $(document).ready(function () {
+        $("#LicenseExpiration").flatpickr({
+            enableTime: false,  // Deshabilita la selección de hora (solo fecha)
+            dateFormat: "d-m-Y", // Formato de fecha (Año-Mes-Día)
+            minDate: "today",
+            onReady: function (selectedDates, dateStr, instance) {
+                instance.input.style.border = "none";
+                instance.input.style.outline = "none"; // Evita el borde al hacer focus
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#DepartureDate").flatpickr({
+            enableTime: false,  // Deshabilita la selección de hora (solo fecha)
+            dateFormat: "d-m-Y", // Formato de fecha (Año-Mes-Día)
+            minDate: "today",
+            onReady: function (selectedDates, dateStr, instance) {
+                instance.input.style.border = "none";
+                instance.input.style.outline = "none"; // Evita el borde al hacer focus
+            }
+        });
+
+        $("#DepartureDate").on("change", function () { // Despues de un segundo se ejecuta la funcion DateSelected
+            setTimeout(function () {
+                DateSelected();
+            }, 1000);
+        });
+    });
+
+    $(document).ready(function () {
+        $("#ArrivalDate").flatpickr({
+            enableTime: false,  // Deshabilita la selección de hora (solo fecha)
+            dateFormat: "d-m-Y", // Formato de fecha (Año-Mes-Día)
+            minDate: "today",
+            onReady: function (selectedDates, dateStr, instance) {
+                instance.input.style.border = "none";
+                instance.input.style.outline = "none"; // Evita el borde al hacer focus
+            }
+        });
+    });
 </script>

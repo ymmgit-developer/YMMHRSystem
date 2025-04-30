@@ -22,8 +22,9 @@ namespace YMMHRSystemLogic
         public TimeSpan ArrivalTime { get; set; }
         public DateTime? LicenseExpiration { get; set; }
         public bool Card { get; set; }
-        public int KMDeparture { get; set; }
-        public int KMArrival { get; set; }
+        public bool Tag { get; set; }
+        public int? KMDeparture { get; set; }
+        public int? KMArrival { get; set; }
         public string TankLevelDeparture { get; set; }
         public string TankLevelArrival { get; set; }
         public int Status { get; set; }

@@ -51,7 +51,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.AsEnumerable().Reverse())
                     {
                         <tr>
 
@@ -80,9 +80,17 @@
                                     <span> @item.Passengers </span>
                                 </td>
                             }
-                            <td style="text-align: center">
-                                <span> @(item.Status == 3 ? "Complete" : item.Status == 2 ? "In Progress" : "New") </span>
-                            </td>
+                        <td style="text-align: center">
+                            @{
+                                var statusLabel = item.Status == 3 ? "Complete" :
+                                                  item.Status == 2 ? "In Progress" :
+                                                  "New";
+                                var statusClass = item.Status == 3 ? "bg-green fg-white" :
+                                                  item.Status == 2 ? "bg-orange fg-white" :
+                                                  "bg-blue fg-white";
+                            }
+                            <kbd class="@statusClass">@statusLabel</kbd>
+                        </td>
 
                             <td style="text-align: center">
                                 <a class="button bg-black fg-white" style="cursor: pointer;" href="@Url.Action("LoadUtilityCar", "UtilityCar", new { Area = "YMMHRSystem" , nMR4z = item.UtilityCarId })" @*onclick="UtilityCarDetailDialog(@item.UtilityCarId)"*@><span class="mif-eye"></span><span class="actionButton"> View</span></a>

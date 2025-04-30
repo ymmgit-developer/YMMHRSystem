@@ -67,7 +67,9 @@ namespace YMMHRSystemLogic
                         {"$APPLICANT$", utilityCar.Associate},
                         {"$PASSENGERS$", utilityCar.Passengers.ToString()},
                         {"$DESTINATION$", utilityCar.Destination },
-                        {"$DATE$", utilityCar.DepartureDate?.ToString("dd/MM/yyyy")}
+                        {"$DATE$", utilityCar.DepartureDate?.ToString("dd/MM/yyyy")},
+                        {"$CARD$", utilityCar.Card ? "Yes" : "No"},
+                        {"$TAG$", utilityCar.Tag ? "Yes" : "No"}
                     }, sendEmail.GetAdminEmail(), contacts);
                 }
 

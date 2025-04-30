@@ -127,8 +127,16 @@ function StartUtilityCar() {
 }
 
 function EndUtilityCar() {
-    if ($("#KMDeparture").val() == 0 || $("#KMArrival").val() == 0) {
-        Metro.toast.create("Please enter the departure and arrival KMs", null, null, "bg-red fg-white");
+    
+    let arrivalParts = $("#ArrivalDate").val().split('-');
+    let arrivalDate = new Date(arrivalParts[2], arrivalParts[1] - 1, arrivalParts[0]); // YYYY, MM, DD
+
+    let today = new Date();
+    // Normalizamos la fecha de hoy (sin horas)
+    today.setHours(0, 0, 0, 0);
+    arrivalDate.setHours(0, 0, 0, 0);
+    if (arrivalDate > today) { // Validamos que la fecha de llegada no sea mayor a la fecha actual
+        Metro.toast.create("Arrival date is higher than the current date, update the “Arrival Date” parameter to match the closing date.", null, 6000, "bg-red fg-white");
     } else {
         Metro.dialog.open('#preloaderUtilityCar');
 
@@ -140,12 +148,12 @@ function EndUtilityCar() {
             success: function (result) {
                 Metro.dialog.close('#preloaderUtilityCar');
                 if (result === "true") {
-                    Metro.toast.create("Utility car loan ended.", null, null, "bg-green fg-white");
+                    Metro.toast.create("Utility car loan ended.", null, 2000, "bg-green fg-white");
                     setTimeout(function () {
                         window.location.replace(window.$UtilityCarIndex);
                     }, 1000);
                 } else {
-                    Metro.toast.create("Utility car loan could not be ended.", null, null, "bg-red fg-white");
+                    Metro.toast.create("Utility car loan could not be ended.", null, 2000, "bg-red fg-white");
                 }
             }
         });
