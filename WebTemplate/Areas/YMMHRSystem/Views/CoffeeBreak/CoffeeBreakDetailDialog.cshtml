@@ -22,28 +22,32 @@
         <div class="row mb-1">
             <div class="cell-md-6">
                 <!--<input data-prepend="Start Date:" data-on-change="DateSelected()" data-min-date="@DateTime.Now" data-validate="required" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
-                <label for="StartDate">Start Date</label>
-                <input type="text" class="selector active w-100 dotted-border" onchange="DateSelected()" id="StartDate" name="StartDate" placeholder="Start Date" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" readonly data-input />
+                @*<label for="StartDate">Start Date</label>
+                <input type="text" class="selector active w-100 dotted-border" onchange="DateSelected()" id="StartDate" name="StartDate" placeholder="Start Date" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" readonly data-input />*@
+                <input data-role="input" type="text" data-prepend="Start Date" onchange="DateSelected()" class="selector active w-100 dotted-border" id="StartDate" name="StartDate" autocomplete="off" value="@(Model.StartDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.StartDate?.ToString("dd-MM-yyyy"))" readonly data-input/>
             </div>
             <div class="cell-md-6">
-                <div class="row">
+                @*<div class="row">
                     <label for="time">Start Time</label>
                     <input class="w-100" type="time" id="StartTime" value="@Model.StartTime" name="StartTime" />
-                </div>
+                </div>*@
+                <input data-role="input" type="time" data-prepend="Start Time" autocomplete="off" value="@Model.StartTime" id="StartTime" name="StartTime" data-input/>
                 @*<input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.StartTime" id="StartTime" name="StartTime">*@
             </div>
         </div>
         <div class="row mb-1">
             <div class="cell-md-6">
                 <!--<input data-prepend="Finish Date:" data-min-date="@DateTime.Now" data-validate="required" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" data-role="calendarpicker" data-cls-calendar="compact"--> @*data-format="%d/%m/%Y"*@ <!--data-input-format="%d/%m/%Y">-->
-                <label for="FinishDate">Finish Date</label>
-                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Finish Date" autocomplete="off" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" readonly data-input />
+                @*<label for="FinishDate">Finish Date</label>
+                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Finish Date" autocomplete="off" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" readonly data-input />*@
+                <input data-role="input" type="text" data-prepend="Finish Date" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" value="@(Model.FinishDate?.ToString("yyyy-MM-dd") == "1900-01-01" ? DateTime.Now.ToString("dd-MM-yyyy") : Model.FinishDate?.ToString("dd-MM-yyyy"))" autocomplete="off" readonly data-input/>
             </div>
             <div class="cell-md-6">
-                <div class="row">
+                @*<div class="row">
                     <label for="FinishTime">Finish Time</label>
                     <input class="w-100" type="time" id="FinishTime" value="@Model.FinishTime" name="FinishTime" />
-                </div>
+                </div>*@
+                <input data-role="input" type="time" data-prepend="Finish Time" autocomplete="off" value="@Model.FinishTime" id="FinishTime" name="FinishTime" data-input/>
                 @*<input style="font-size:12px;" data-role="timepicker" data-seconds="false" data-value="@Model.FinishTime" id="FinishTime" name="FinishTime">*@           
             </div>
         </div>

@@ -81,7 +81,16 @@
                             </td>
 
                             <td style="text-align: center">
-                                <span> @(item.Status == 3 ? "Complete" : item.Status == 2 ? "In Progress" : "New") </span>
+                                @{
+                                    var statusLabel = item.Status == 3 ? "Complete" :
+                                                      item.Status == 2 ? "In Progress" :
+                                                      "New";
+
+                                    var statusClass = item.Status == 3 ? "bg-green fg-white" :
+                                                      item.Status == 2 ? "bg-orange fg-white" :
+                                                      "bg-blue fg-white";
+                                }
+                                <kbd class="@statusClass">@statusLabel</kbd>
                             </td>
 
                             <td style="text-align: center">

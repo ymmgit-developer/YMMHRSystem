@@ -61,29 +61,26 @@
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <div class="row">
-                            <div class="container">
-                                <label for="Date">Start Date</label>
-                                <input type="text" class="selector active w-100 dotted-border" id="Date" name="Date" placeholder="Date" autocomplete="off" readonly data-input />
-                            </div>
-                        </div>
+
+                                @*<label for="Date">Start Date</label>
+                                <input type="text" class="selector active w-100 dotted-border" id="Date" name="Date" placeholder="Date" autocomplete="off" readonly data-input />*@
+                                <input data-role="input" type="text" data-prepend="Start Date:" class="selector active w-100 dotted-border" id="Date" name="Date" autocomplete="off" readonly data-input/>
+
                     </div>
                     <div class="cell-md-6">
-                        <div class="row">
-                            <div class="container">
-                                <label for="FinishDate">Finish Date</label>
-                                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Date" readonly data-input disabled />
-                            </div>
-                        </div>
+
+                                @*<label for="FinishDate">Finish Date</label>
+                                <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Date" readonly data-input disabled />*@
+                                <input data-role="input" type="text" data-prepend="Finish Date" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" autocomplete="off" readonly data-input disabled/>
+
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="cell-md-6">
-                        <div class="w-100">
-                            <div class="cell-12 border bd-gray">
-                                <input type="time" style="font-size:15px;" autocomplete="off" class="form-control w-100" id="Time" name="Time">
-                            </div>
-                        </div>
+                        
+                                <input data-role="input" type="time" data-prepend="Time" autocomplete="off" id="Time" name="Time" data-input/>
+                                @*<input type="time" style="font-size:15px;" autocomplete="off" class="form-control w-100" id="Time" name="Time">*@
+                          
                     </div>
                     <div class="cell-md-6">
                         <select class="notranslate" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">

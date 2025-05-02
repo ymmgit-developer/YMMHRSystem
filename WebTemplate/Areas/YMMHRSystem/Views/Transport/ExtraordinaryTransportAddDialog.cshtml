@@ -50,7 +50,7 @@
                     <div class="cell-md-6">
                         <label>Type of service</label>
                         <div class="row">
-                            <div class="container p-3" @*role="group" aria-label="Basic radio toggle button group"*@>
+                            <div class="cell-md-12" @*role="group" aria-label="Basic radio toggle button group"*@>
                                 @*<input type="radio" class="btn-check" name="TypeTransport" value="1" id="radio_oneday" autocomplete="off" checked>
                 <label class="btn btn btn-outline-dark" for="radio_oneday">One day</label>*@
                                 <input type="radio" data-role="radio" data-style="2" data-caption="One day" name="TypeTransport" value="1" id="radio_oneday" autocomplete="off" checked />
@@ -65,8 +65,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="container p-3">
-                                <input type="text" class="selector active w-100 dotted-border" id="StartDate_Front" name="StartDate_Front" placeholder="Select Date" data-input>
+                            <div class="cell-md-12">
+                                <input data-role="input" type="text" data-prepend="Start Date" class="selector active w-100 dotted-border" id="StartDate_Front" name="StartDate_Front" autocomplete="off" readonly @*placeholder="Select Date"*@ data-input>
                             </div>
                             <div class="container p-3" style="display: none;">
                                 <input type="text" class="selector active w-100 dotted-border" id="StartDate" name="StartDate" placeholder="Select Date" data-input>
@@ -92,10 +92,11 @@
                                 string minute = now.Minute.ToString("D2");
                                 string value = hour + ":" + minute;
                                 <div class="cell-12">
-                                    <div class="form-group">
-                                        <label>Arrival Time:</label>
-                                        <input type="time" class="w-100" id="StartTime" name="StartTime" disabled>
-                                    </div>
+                                    @*<div class="form-group">
+            <label>Arrival Time:</label>
+            <input type="time" class="w-100" id="StartTime" name="StartTime" disabled>
+        </div>*@
+                                    <input data-role="input" type="time" data-prepend="Arrival Time:" autocomplete="off" id="StartTime" name="StartTime" disabled>
                                 </div>
                             }
                             else
@@ -108,8 +109,9 @@
                         <div class="cell-12">
                             <div class="row">
                                 <div class="col-6">
-                                    <label>Arrival Time:</label>
-                                    <input type="time" class="form-control w-100" id="StartTime" name="StartTime" min="@value" disabled>
+                                    @*<label>Arrival Time:</label>
+        <input type="time" class="form-control w-100" id="StartTime" name="StartTime" min="@value" disabled>*@
+                                    <input data-role="input" type="time" data-prepend="Arrival Time:" autocomplete="off" id="StartTime" name="StartTime" disabled>
                                     <div id="SuggestedTimeTooltip" style="display: none;" class="fg-green">
                                         Suggested time
                                     </div>
@@ -128,8 +130,9 @@
                         <div class="row">
                             <div class="cell-12">
                                 <div class="form-group">
-                                    <label>Departure Time:</label>
-                                    <input type="time" class="w-100" id="FinishTime" name="FinishTime" disabled>
+                                    @*<label>Departure Time:</label>
+                                    <input type="time" class="w-100" id="FinishTime" name="FinishTime" disabled>*@
+                                    <input data-role="input" type="time" data-prepend="Departure Time:" autocomplete="off" id="FinishTime" name="FinishTime" disabled data-input>
                                 </div>
                             </div>
                         </div>

@@ -57,9 +57,10 @@
         </div>
         <div class="row mb-2">
             <div class="cell-md-6">
-                <div class="w-100">
+                @*<div class="w-100">
                     <input type="text" class="selector active w-100 dotted-border" id="Date" name="Date" placeholder="Date" autocomplete="off" readonly data-input />
-                </div>
+                </div>*@
+                <input data-role="input" type="text" data-prepend="Start Date" class="selector active w-100 dotted-border" id="Date" name="Date" autocomplete="off" readonly data-input/>
                 @*@if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <input data-prepend="Start Date:" data-validate="required" autocomplete="off" id="Date" name="Date" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
@@ -71,9 +72,10 @@
 
             </div>
             <div class="cell-md-6">
-                <div class="w-100">
+                @*<div class="w-100">
                     <input type="text" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" placeholder="Date" autocomplete="off" readonly data-input disabled />
-                </div>
+                </div>*@
+                <input data-role="input" type="text" data-prepend="Finish Date" class="selector active w-100 dotted-border" id="FinishDate" name="FinishDate" autocomplete="off" readonly data-input disabled/>
                 @*@if (Role.QueryRole("HR", Convert.ToInt64(Session["UserId"])) || Role.QueryRole("Admin", Convert.ToInt64(Session["UserId"])))
                 {
                     <input data-prepend="Finish Date:" disabled="disabled" autocomplete="off" id="FinishDate" name="FinishDate" value="" data-role="calendarpicker" data-cls-calendar="compact" data-format="%d/%m/%Y" data-input-format="%d/%m/%Y">
@@ -87,11 +89,12 @@
         </div>
         <div class="row mb-2">
             <div class="cell-md-6">
-                <div class="w-100">
+                @*<div class="w-100">
                     <div class="cell-12 border bd-gray">
                         <input style="font-size:15px;" type="time" id="Time" name="Time" class="w-100" autocomplete="off">
                     </div>
-                </div>
+                </div>*@
+                <input data-role="input" type="time" data-prepend="Time:" id="Time" name="Time" data-input>
             </div>
             <div class="cell-md-6">
                 <select class="notranslate" data-role="select" id="SelectType" name="SelectType" data-prepend="Type:">
