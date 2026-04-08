@@ -16,7 +16,7 @@
         $SaveBusinessTripContacts = '@Url.Action("SaveBusinessTripContacts", "EmailNotification", new { area = "YMMHRSystem" })';
         $SaveLegalAffairContacts = '@Url.Action("SaveLegalAffairContacts", "EmailNotification", new { area = "YMMHRSystem" })';
         $SaveGiftContacts = '@Url.Action("SaveGiftContacts", "EmailNotification", new { area = "YMMHRSystem" })';
-
+        $SaveRewardsInventoryContacts = '@Url.Action("SaveRewardsInvenContacts", "EmailNotification", new { area = "YMMHRSystem" })';
     </script>
 </head>
 
@@ -133,6 +133,16 @@
         <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
             <div class="cell">
                 <input id="GiftContacts" value="@Model.GiftContacts" name="GiftContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
+            </div>
+        </div>
+
+        <div style="background-color: rgb(54, 54, 54);" class="row mt-2 d-flex flex-justify-between flex-align-center">
+            <h5 class="pl-5">Rewards Inventory</h5>
+            <button class="flat-button button my-control-colors mr-5" style="color:white;" onclick="SaveRewardsInvenContacts()"><span class="mif-floppy-disk"> Save</span></button>
+        </div>
+        <div style="border: 1px solid rgb(54, 54, 54)!important" class="row d-flex flex-justify-center flex-align-center">
+            <div class="cell">
+                <input id="RewardsInventoryContacts" value="@Model.RewardInventory" name="RewardsInventoryContacts" type="text" data-on-before-tag-add="onBeforeTagAdd" data-role="taginput">
             </div>
         </div>
 

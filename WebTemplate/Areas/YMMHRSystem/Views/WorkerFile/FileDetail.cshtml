@@ -7,8 +7,10 @@
     List<string> civilStatusList = new List<string> { "Single", "Married", "Free Union", "Divorced", "Widower" };
     List<string> workerTypeList = new List<string> { "Union Worker", "Staff" };
     YMMHRSystemLogic.Route route = new YMMHRSystemLogic.Route();
+    YMMHRSystemLogic.Group group = new YMMHRSystemLogic.Group();
     var routeList = route.LoadMultiple();
     var stopList = route.GetRouteStopList(route.GetRouteId(Model.Route));
+    var groupList = group.GetGroupsList();
     Process process = new Process();
     var processList = process.LoadMultiple();
 }
@@ -111,6 +113,21 @@
                                     else
                                     {
                                         <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="cell">
+                            <select class="notranslate" data-role="select" id="GroupId" name="GroupId" data-prepend="Group:">
+                                @foreach (var item in groupList)
+                                {
+                                    if (Model.GroupId == item.GroupId)
+                                    {
+                                        <option selected value="@item.GroupId">@item.GroupName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.GroupId">@item.GroupName</option>
                                     }
                                 }
                             </select>

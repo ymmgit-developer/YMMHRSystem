@@ -230,6 +230,8 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\EmailNotificationController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\MotiveController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\NotificationsController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\RewardsController.cs" />
+    <Compile Include="Areas\YMMHRSystem\Controllers\RewardsInvController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\TypeController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\UtilityCarController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\LegalProcedureController.cs" />
@@ -255,7 +257,15 @@
     <Compile Include="Areas\YMMHRSystem\Controllers\TransportController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\BusinessTripController.cs" />
     <Compile Include="Areas\YMMHRSystem\Controllers\WorkerFileController.cs" />
+    <Content Include="Areas\YMMHRSystem\Scripts\Rewards.js" />
     <Content Include="Areas\YMMHRSystem\Views\Shared\MultiSelectUserList.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Rewards\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Rewards\ScoreAddDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Rewards\ScoreHistoryViewDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\Rewards\RedeemRewardsDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\RewardsInv\Index.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\RewardsInv\ItemAddDialog.cshtml" />
+    <Content Include="Areas\YMMHRSystem\Views\RewardsInv\ItemEditDialog.cshtml" />
     <None Include="Areas\YMMHRSystem\Views\VacationAuthorizations\AuthorizationAddDialog.cshtml" />
     <Compile Include="Areas\YMMHRSystem\YMMHRSystemAreaRegistration.cs" />
     <Compile Include="Controllers\Error\ErrorController.cs" />
@@ -519,6 +529,7 @@
     <Content Include="Templates\TemplateBusinessTripRequest.html" />
     <Content Include="Templates\TemplateBusinessTripResponse.html" />
     <Content Include="Templates\TemplateImmigrationProcedureRequest.html" />
+    <Content Include="Templates\TemplateRewardInventoryLowStock.html" />
     <Content Include="Templates\TemplateSecondApproval.html" />
     <Content Include="Templates\TemplateTranslationFinish.html" />
     <Content Include="Templates\TemplateTranslationStart.html" />

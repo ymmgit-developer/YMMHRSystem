@@ -1,0 +1,169 @@
+@model YMMHRSystemLogic.DtoRewardsItem
+@using YMMHRSystemLogic
+
+<div class="dialog-title">Edit Item</div>
+
+<div class="dialog-content">
+    <form id="RewardsItemEditForm"
+          data-role="validator"
+          data-on-validate-form="SubmitEditItem()"
+          action="javascript:">
+
+        <div class="row mb-1">
+            <div class="cell-md-5">
+                <input data-role="input"
+                       type="text"
+                       id="ItemName"
+                       name="ItemName"
+                       data-prepend="Item name"
+                       data-validate="required minlength=2 maxlength=100"
+                       autocomplete="off"
+                       value="@Model.ItemName" />
+            </div>
+
+            <div class="cell-md-2">
+                <input data-role="input"
+                       type="number"
+                       id="ValuePoints"
+                       name="ValuePoints"
+                       data-prepend="Value pts"
+                       data-validate="required"
+                       min="1"
+                       step="1"
+                       value="@Model.ValuePoints" />
+            </div>
+
+            <div class="cell-md-2">
+                <input data-role="input"
+                       type="number"
+                       id="Cost"
+                       name="Cost"
+                       data-prepend="Cost"
+                       data-append="$"
+                       min="0"
+                       step="0.01"
+                       value="@Model.Cost.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" />
+                <span class="helper-text">MXN (2 decimals)</span>
+            </div>
+
+            <div class="cell-md-3">
+                <label class="d-block">Active</label>
+                <input type="checkbox"
+                       id="IsActive"
+                       name="IsActive"
+                       data-role="switch"
+                       data-caption="Active"
+                       @(Model.IsActive ? "checked" : "") />
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="cell-md-4">
+                <label>Stock</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="Stock"
+                       name="Stock"
+                       value="@Model.Stock" />
+                <span class="helper-text">This value will replace the current stock.</span>
+            </div>
+
+            <div class="cell-md-4">
+                <label>Stock Min</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="StockMin"
+                       name="StockMin"
+                       value="@Model.StockMin" />
+            </div>
+
+            <div class="cell-md-4">
+                <label>Stock Max</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="StockMax"
+                       name="StockMax"
+                       value="@Model.StockMax" />
+                <span class="helper-text">0 = no maximum</span>
+            </div>
+        </div>
+
+        <input type="hidden" id="ItemId" name="ItemId" value="@Model.ItemId" />
+
+        <div class="row mb-1">
+            <div class="cell-md-12">
+                <div id="ItemEditValidation" class="remark alert" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="dialog-actions d-flex flex-justify-start">
+                    <div>
+                        <button id="SaveRegisterRewardsItem" class="button my-control-colors">
+                            <span class="mif-floppy-disk"> Save</span>
+                        </button>
+                    </div>
+                    <div>
+                        <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    function validateRewardsItemBusinessRules_Edit() {
+        const name = ($('#ItemName').val() || '').trim();
+        const valuePoints = parseInt($('#ValuePoints').val() || '0', 10);
+        const stock = parseInt($('#Stock').val() || '0', 10);
+        const stockMin = parseInt($('#StockMin').val() || '0', 10);
+        const stockMax = parseInt($('#StockMax').val() || '0', 10);
+
+        if (!name) return "Item name is required.";
+        if (valuePoints <= 0) return "Value points must be greater than 0.";
+        if (stock < 0) return "Stock must be 0 or more.";
+        if (stockMin < 0) return "Stock Min must be 0 or more.";
+        if (stockMax < 0) return "Stock Max must be 0 or more.";
+        if (stockMax !== 0 && stockMax < stockMin) return "Stock Max must be 0 or >= Stock Min.";
+
+        return "";
+    }
+
+    function validateRewardsItemBusinessRules_Edit() {
+        const name = ($('#ItemName').val() || '').trim();
+        const valuePoints = parseInt($('#ValuePoints').val() || '0', 10);
+        const cost = parseFloat($('#Cost').val() || '0');
+        const stock = parseInt($('#Stock').val() || '0', 10);
+        const stockMin = parseInt($('#StockMin').val() || '0', 10);
+        const stockMax = parseInt($('#StockMax').val() || '0', 10);
+
+        if (!name) return "Item name is required.";
+        if (valuePoints <= 0) return "Value points must be greater than 0.";
+        if (isNaN(cost) || cost < 0) return "Cost must be 0 or more.";
+        if (stock < 0) return "Stock must be 0 or more.";
+        if (stockMin < 0) return "Stock Min must be 0 or more.";
+        if (stockMax < 0) return "Stock Max must be 0 or more.";
+        if (stockMax !== 0 && stockMax < stockMin) return "Stock Max must be 0 or >= Stock Min.";
+
+        return "";
+    }
+
+    $(document).off('change.invEdit input.invEdit', '#ItemName,#ValuePoints,#Cost,#Stock,#StockMin,#StockMax');
+    $(document).on('change.invEdit input.invEdit', '#ItemName,#ValuePoints,#Cost,#Stock,#StockMin,#StockMax', function () {
+        const msg = validateRewardsItemBusinessRules_Edit();
+        if (msg) {
+            $('#ItemEditValidation').text(msg).show();
+        } else {
+            $('#ItemEditValidation').hide();
+        }
+    });
+</script>

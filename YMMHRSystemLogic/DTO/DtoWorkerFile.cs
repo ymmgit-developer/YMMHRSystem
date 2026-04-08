@@ -33,6 +33,7 @@ namespace YMMHRSystemLogic
         public string Route { get; set; }
         public string Shift { get; set; }
         public string Stop { get; set; }
+        public long? GroupId { get; set; }
         public int AdmissionNumber { get; set; }
         public int DismissalNumber { get; set; }
         public int AvailableVacationDays { get; set; }

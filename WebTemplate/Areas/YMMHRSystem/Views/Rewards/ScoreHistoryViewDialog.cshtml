@@ -1,0 +1,67 @@
+@model DtoRewardsHistoryLog
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "View Score History";
+    var rewardsHistory = ViewBag.RewardsHistory as List<DtoRewardsHistoryLog> ?? new List<DtoRewardsHistoryLog>();
+}
+
+<head>
+    <script>
+
+    </script>
+</head>
+
+<div class="dialog-title">View Scores History</div>
+
+<div class="dialog-content" data-height="auto">
+    <div class="container">
+        <table id="dttRewardsHistoryWorker" class="display" style="width:100%;">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Transaction Type</th>
+                    <th style="text-align: center">Improvement</th>
+                    <th style="text-align: center">Items</th>
+                    <th style="text-align: center">Score Before</th>
+                    <th style="text-align: center">Score by Improvement</th>
+                    <th style="text-align: center">Score After</th>
+                    <th style="text-align: center">Create date</th>
+                    <th style="text-align: center">Create by</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rewardsHistory)
+                {
+                    var isReward = row.TransactionType == 1;
+
+                    var typeLabel = row.TransactionType == 1 ? "Reward" : row.TransactionType == 2 ? "Redeem" : "Reset";
+                    var classstyle = row.TransactionType == 1 ? "bg-green fg-white" : row.TransactionType == 2 ? "bg-orange fg-white" : "bg-yellow fg-black";
+
+                    var deltaAbs = Math.Abs(row.ScoreDelta);
+                    var deltaText = (isReward ? "+" : "-") + deltaAbs.ToString();
+                    var deltaClass = isReward ? "fg-green" : "fg-orange";
+                    <tr>
+                        <td style="text-align:center">
+                            <kbd class="@classstyle">@typeLabel</kbd>
+                        </td>
+                        <td style="text-align:center">
+                            @(!string.IsNullOrWhiteSpace(row.ImprovemenName) ? row.ImprovemenName : "-")
+                        </td>
+                        <td style="text-align:center">
+                            @(!string.IsNullOrWhiteSpace(row.RedeemName) ? row.RedeemName : "-")
+                        </td>
+                        <td style="text-align:center">
+                            @row.ScoreBefore
+                        </td>
+                        <td style="text-align:center">
+                            <strong class="@deltaClass">@deltaText</strong>
+                        </td>
+                        <td style="text-align:center">@row.ScoreAfter</td>
+                        <td style="text-align:center">@row.TransactionDate</td>
+                        <td style="text-align:center">@row.TransactionName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

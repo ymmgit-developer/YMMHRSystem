@@ -14,6 +14,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
     public class WorkerFileController : Controller
     {
         WorkerFile workerFile = new WorkerFile();
+        Rewards rewards = new Rewards();
 
         // GET: YMMHRSystem/WorkerFile
         public ActionResult Index()
@@ -59,6 +60,7 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 }
 
                 workerFile.Save(dtoWorkerFile);
+                rewards.EnsureImprovementCredits(dtoWorkerFile.WorkerId); // Registro del usuario para puntos
 
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
