@@ -1,0 +1,186 @@
+@{
+    var workerId = ViewBag.WorkerId?.ToString() ?? "";
+    var score = (int)(ViewBag.Score ?? 0);
+    var items = ViewBag.Items as List<YMMHRSystemLogic.DtoRewardsItem> ?? new List<YMMHRSystemLogic.DtoRewardsItem>();
+}
+
+<input type="hidden" id="RedeemWorkerId" value="@workerId" />
+<input type="hidden" id="RedeemAvailablePoints" value="@score" />
+
+<div class="dialog-title">Redeem Rewards</div>
+
+<div class="dialog-content" data-height="auto">
+    <div class="container">
+
+        <div class="row mb-1" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+            <!-- Sección de Información del Trabajador -->
+            <div class="col-md-3 col-sm-6 d-flex flex-column flex-align-center">
+                <small class="text-bold">Worker ID</small>
+                <div><kbd class="bg-blue fg-white" style="font-size: 1rem;">@workerId</kbd></div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 d-flex flex-column flex-align-center" style="border-right: 1px solid #ddd;">
+                <small class="text-bold">Available Balance</small>
+                <div><kbd class="bg-green fg-white" style="font-size: 1rem;">@score pts</kbd></div>
+            </div>
+
+            <!-- Sección de Cálculo de Canje -->
+            <div class="col-md-3 col-sm-6 d-flex flex-column flex-align-center">
+                <small class="text-bold">Redeem Total</small>
+                <div><kbd id="RedeemTotal" class="bg-white fg-dark" style="border: 1px solid #ccc; font-size: 1rem;">0 pts</kbd> <span class="fg-gray"></span></div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 d-flex flex-column flex-align-center">
+                <small class="text-bold">Remaining</small>
+                <div><kbd id="RedeemRemaining" class="bg-green fg-white" style="font-size: 1rem;">@score pts</kbd> <span class="fg-gray"></span></div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div id="RedeemItemsTable" class="table-container" style="max-height: 40vh; overflow-y: auto; overflow-x: hidden;">
+            <table id="dttRedeemItems" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align:center; width:35px;"></th>
+                        <th style="text-align:center; width:90px;">Qty</th>
+                        <th style="text-align:center;">Item</th>
+                        <th style="text-align:center;">Cost</th>
+                        <th style="text-align:center;">Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var it in items)
+                    {
+                        <tr data-itemid="@it.ItemId" data-cost="@it.ValuePoints" data-stock="@it.Stock">
+                            <td style="text-align:center">
+                                <input type="checkbox" class="redeem-select" data-itemid="@it.ItemId" />
+                            </td>
+                            <td style="text-align:center">
+                                <input type="number" class="redeem-qty" value="1" min="1" max="@it.Stock" disabled
+                                       style="width:80px; text-align:center;" />
+                            </td>
+                            <td style="text-align:center">@it.ItemName</td>
+                            <td style="text-align:center"><kbd class="bg-green fg-white">@it.ValuePoints pts</kbd></td>
+                            <td style="text-align:center">@it.Stock @(it.Stock<2 ? "pc":"pcs")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12 d-flex flex-justify-end">
+                <button id="BtnConfirmRedeem" class="button my-control-colors" onclick="SubmitRedeemRewards()"><span class="mif-floppy-disk"> Save</span> </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Contenedor de la tabla con scroll */
+    #RedeemItemsTable {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background: #fff;
+        max-height: 45vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+        /* Wrapper de DataTables */
+        #RedeemItemsTable .dataTables_wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 0 !important;
+        }
+
+        /* Caja de búsqueda estilo Metro */
+        #RedeemItemsTable .dataTables_filter {
+            padding: 8px 12px;
+            margin: 0;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+            text-align: right;
+        }
+
+            #RedeemItemsTable .dataTables_filter label {
+                font-weight: normal;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            #RedeemItemsTable .dataTables_filter input {
+                margin: 0;
+                padding: 4px 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                width: 180px;
+                max-width: 100%;
+                font-size: 14px;
+            }
+
+                #RedeemItemsTable .dataTables_filter input:focus {
+                    border-color: #0078d7;
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(0,120,215,0.2);
+                }
+
+        /* Ocultar elementos no deseados */
+        #RedeemItemsTable .dataTables_info,
+        #RedeemItemsTable .dataTables_paginate,
+        #RedeemItemsTable .dataTables_length {
+            display: none !important;
+        }
+
+        /* Área de scroll para la tabla */
+        #RedeemItemsTable .dataTables_scrollBody {
+            border-top: none !important;
+        }
+
+            /* Scroll personalizado */
+            /*#RedeemItemsTable::-webkit-scrollbar,
+            #RedeemItemsTable .dataTables_scrollBody::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #RedeemItemsTable::-webkit-scrollbar-track,
+            #RedeemItemsTable .dataTables_scrollBody::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            #RedeemItemsTable::-webkit-scrollbar-thumb,
+            #RedeemItemsTable .dataTables_scrollBody::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 4px;
+            }
+
+                #RedeemItemsTable::-webkit-scrollbar-thumb:hover,
+                #RedeemItemsTable .dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+                    background: #a1a1c1;
+                }*/
+
+    /* Sin estilos de selección en filas */
+    #dttRedeemItems.dataTable tbody tr {
+        transition: none !important;
+        transform: none !important;
+    }
+
+        #dttRedeemItems.dataTable tbody tr:hover {
+            background-color: rgba(0,0,0,0.03) !important;
+        }
+
+    /* Checkboxes */
+    #dttRedeemItems .redeem-select {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        vertical-align: middle;
+        margin: 0;
+        accent-color: #0078d7; /* Color del check en navegadores modernos */
+    }
+</style>

@@ -1,0 +1,260 @@
+@model List<DtoWorkerRewards>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Rewards";
+    List<DtoWorkerRewards> improvementCredits = ViewBag.ImprovementCredits;
+}
+<head>
+    <script>
+        /*Variables Global*/
+        $ViewHistoryRecordRewards = '@Url.Action("GetRecordsRewards", "Rewards", new { area = "YMMHRSystem" })';
+        $AddRecordRewards = '@Url.Action("AddRecordsRewards", "Rewards", new { area = "YMMHRSystem" })';
+        $AddRedeemRewards = '@Url.Action("AddRedeemRewards", "Rewards", new { area = "YMMHRSystem" })';
+        $SaveRegisterRewards = '@Url.Action("SaveRegisterRecords", "Rewards", new { area = "YMMHRSystem" })';
+        $SaveRedeemRewards = '@Url.Action("SaveRedeemRewards", "Rewards", new { area = "YMMHRSystem" })';
+        $DeleteRecordRewards = '@Url.Action("DeleteRecordsRewards", "Rewards", new { area = "YMMHRSystem" })';
+        $ResetPoints = '@Url.Action("ResetPoints", "Rewards", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Rewards.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<style>
+    .dt-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .dt-left {
+        display: flex;
+        gap: 8px;
+    }
+
+    .dt-center {
+        display: flex;
+        align-items: center;
+    }
+
+    .dt-right {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .dt-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .dt-info {
+    }
+
+    .dt-paging {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    /* Ajuste para que el Select2 no se vea gigante en el header */
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #aaa;
+        min-height: 30px;
+    }
+
+    .select2-container .select2-search--inline .select2-search__field {
+        margin-top: 0;
+    }
+
+    /* Evita que el click para abrir el select dispare el ordenamiento de la columna */
+    thead th select, .select2-container {
+        text-transform: none !important;
+        font-weight: normal !important;
+    }
+
+    /* 1. Permitir que elementos sobresalgan de la cabecera (ayuda extra por si acaso) */
+    .dataTables_scrollHead,
+    .dataTables_scrollHeadInner {
+        overflow: visible !important;
+    }
+
+    /* Compacto y alineado al alto del select nativo */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 28px !important;
+        height: 28px !important;
+        padding: 0 4px !important;
+        border: 1px solid #767676 !important;
+        border-radius: 3px;
+        box-sizing: border-box;
+    }
+
+        /* Mantener 1 sola línea (evita que crezca la cabecera) */
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            white-space: nowrap !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            align-items: center;
+        }
+
+        /* Tags compactos */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important; /* separación entre X y texto */
+            padding: 1px 8px !important; /* más aire */
+            line-height: 18px !important;
+            height: 22px !important; /* chip compacto */
+            box-sizing: border-box !important;
+        }
+
+        /* Campo de búsqueda inline compacto */
+        .select2-container--default .select2-selection--multiple .select2-search__field {
+            margin: 0 !important;
+            height: 20px !important;
+            line-height: 20px !important;
+        }
+
+        /* Botón de remover (la X) */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            position: static !important; /* evita overlays por posiciones raras */
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 6px 0 0 !important; /* separación hacia el texto */
+            padding: 0 6px !important;
+            line-height: 18px !important;
+            height: 18px !important;
+            border-right: 1px solid #bbb !important; /* separador como en tu ejemplo */
+            color: #555 !important;
+        }
+
+            /* (opcional) hover más bonito */
+            .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+                color: #000 !important;
+            }
+
+    /* Que ambos selects (multi y simple) se vean parejos */
+    .rw-filter {
+        height: 28px;
+        padding: 2px 4px;
+        border: 1px solid #767676;
+        border-radius: 3px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* Asegurar fuente normal en cabeceras */
+    thead th select, .select2-container {
+        text-transform: none !important;
+        font-weight: normal !important;
+        text-align: left;
+    }
+</style>
+
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Rewards</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanAddUpdateRecordsRewards"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new record" data-position='auto' onclick="RewardScoreAddDialog()"><span class="mif-plus"></span><span class="actionButton"> Add </span></a>
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to redeem points" data-position='auto' onclick="RewardRedeemDialog()"><span class="mif-gift"></span><span class="actionButton"> Redeem </span></a>
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to redeem points" data-position='auto' onclick="ResetPoints()"><span class="mif-refresh"></span><span class="actionButton"> Reset Points </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <!------- Workers Table ------>
+    <div class="container-fluid mt-5">
+        <div id="WorkerRewardTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttWorkerFiles" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center"></th>
+                        <th style="text-align: center">ID</th>
+                        <th style="text-align: center">Name</th>
+                        <th style="text-align: center">Process</th>
+                        <th style="text-align: center">Job Title</th>
+                        <th style="text-align: center">Score</th>
+                        <th style="text-align: center" data-step="4" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in improvementCredits)
+                    {
+                        <tr data-workerid="@item.WorkerId">
+                            <td style="text-align: center">
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.WorkerId </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Names </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Process </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.Job </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <kbd class="bg-green fg-white">@item.Score pts</kbd>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="RewardsHistoryDialog(@item.WorkerId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div class="dialog" data-role="dialog" id="ScoreAddDialog" name="ScoreAddDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div class="dialog" data-role="dialog" id="ScoreHistoryViewDialog" name="ScoreHistoryViewDialog" data-overlay="true" data-offset-top="50" data-position="center" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div class="dialog" data-role="dialog" data-height="auto" id="RedeemRewardsDialog" name="RedeemRewardsDialog" data-overlay="true" data-offset-top="50" data-position="center" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div data-overlay="true" data-default-action="false" data-close-button="true" data-overlay-click-close="true" id="ResetPointsDialog" name="ResetPointsDialog" class="dialog" data-role="dialog">
+        <div class="dialog-title">Reset</div>
+        <div class="dialog-content"> Are you sure you want to reset the points for the selected workers?</div>
+        <div class="dialog-actions ml-auto">
+            <button class="button my-control-colors" onclick="ResetPointsConfirm()"> Yes</button>
+            <button class="button alert" onclick="Metro.dialog.close('#ResetPointsDialog')"> No</button>
+        </div>
+    </div>
+</body>

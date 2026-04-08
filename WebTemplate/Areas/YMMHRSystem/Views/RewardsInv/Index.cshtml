@@ -1,0 +1,161 @@
+@model List<DtoRewardsItem>
+
+@using YMMHRSystemLogic
+
+@{
+    ViewBag.Title = "Rewards Inventory";
+    List<DtoRewardsItem> dtoRewardsInv = ViewBag.RewardsInv;
+}
+<head>
+    <script>
+        /*Variables Global*/
+        $AddItemDialog = '@Url.Action("AddItemDialog", "RewardsInv", new { area = "YMMHRSystem" })';
+        $SaveItem = '@Url.Action("SaveItem", "RewardsInv", new { area = "YMMHRSystem" })';
+        $EditItemDialog = '@Url.Action("EditItemDialog", "RewardsInv", new { area = "YMMHRSystem" })';
+        $SaveEditItem = '@Url.Action("SaveEditItem", "RewardsInv", new { area = "YMMHRSystem" })';
+        $DeleteItem = '@Url.Action("DeleteItem", "RewardsInv", new { area = "YMMHRSystem" })';
+    </script>
+    <script src="~/Areas/YMMHRSystem/Scripts/Rewards.js"></script>
+
+    <style>
+        .dt-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .dt-left {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dt-center {
+            display: flex;
+            align-items: center;
+        }
+
+        .dt-right {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .dt-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .dt-info {
+        }
+
+        .dt-paging {
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+
+</head>
+<!------- BARRA  ------>
+<body style="width: 100%">
+    <div id="titleBar" class="d-flex flex-justify-start flex-align-center">
+        <h5 class="pl-5">Rewards</h5>
+        <div class="ml-auto pr-5">
+            @if (HttpContext.Current.Session["CanAddUpdateRecordsRewardsInv"].Equals(true))
+            {
+                <a class="button flat-button" style="color:white" data-step="1" data-intro="This button will open a window that allows the user to add a new record" data-position='auto' onclick="RewardInventoryAddDialog()"><span class="mif-plus"></span><span class="actionButton"> Add </span></a>
+            }
+            <a class="button flat-button" style="color:white" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <span class="mif-arrow-left"></span><span class="actionButton"> Back</span>
+            </a>
+
+            <a class="button flat-button" style="color:white" href="javascript:void(0);" onclick="introJs().start()"> <span class="mif-question"></span><span class="actionButton"> Help </span></a>
+        </div>
+    </div>
+
+    <!------- Items Table ------>
+    <div class="container-fluid mt-5">
+        <div id="RewardsItemsTable" style="display: none" data-step="3" data-intro="This table shows all the registered information" data-position='auto'>
+            <!---------------------------------------TABLA ------------------------------------------>
+            <table id="dttrewardsItems" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Name</th>
+                        <th style="text-align: center">Value Points</th>
+                        <th style="text-align: center">Stock</th>
+                        <th style="text-align: center"> Cost</th>
+                        <th style="text-align: center">Stock Min</th>
+                        <th style="text-align: center">Stock Max</th>
+                        <th style="text-align: center"> Status</th>
+                        <th style="text-align: center" data-step="4" data-intro="These are the action buttons for editing, viewing or deleting"
+                            data-position='auto'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in dtoRewardsInv)
+                    {
+                        var classstyle = item.Stock > item.StockMin && item.Stock < item.StockMax ? "bg-green fg-white" :
+                                         item.Stock == item.StockMin ? "bg-yellow fg-black" :
+                                         item.Stock < item.StockMin ? "bg-red fg-white" :
+                                         item.Stock > item.StockMax ? "bg-yellow fg-black" : "bg-black fg-white";
+
+                        var statusstyle = item.IsActive == true ? "bg-blue fg-white" : "bg-gray fg-white";
+
+                        var statuslabel = item.IsActive == true ? "Active" : "Inactive";
+
+                        <tr data-itemid="@item.ItemId">
+
+                            <td style="text-align: center">
+                                <kbd class="@classstyle"> @item.ItemName </kbd>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.ValuePoints pts</span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <kbd class="@classstyle">@item.Stock</kbd>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> $@item.Cost MXN</span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.StockMin </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <span> @item.StockMax </span>
+                            </td>
+
+                            <td style="text-align: center">
+                                <kbd class="@statusstyle"> @statuslabel </kbd>
+                            </td>
+
+                            <td style="text-align: center">
+                                <a class="button bg-black fg-white" style="cursor: pointer;" onclick="DetailsRewardsInvDialog(@item.ItemId)"><span class="mif-eye"></span><span class="actionButton"> View</span></a>
+                                <a class="button bg-red fg-white" style="cursor: pointer;" onclick="DeleteRewardsInvDialog(@item.ItemId)"><span class="mif-cancel"></span><span class="actionButton"> Delete</span></a>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!---------------------------------------DIALOGS ------------------------------------------>
+    <div class="dialog" data-role="dialog" id="ItemAddDialog" name="ItemAddDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-close-action="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+
+    <div class="dialog" data-role="dialog" id="ItemEditDialog" data-overlay="true" data-width="1500" data-default-action="false" data-close-button="true" data-remove-on-close="close" data-overlay-click-close="true">
+
+    </div>
+</body>

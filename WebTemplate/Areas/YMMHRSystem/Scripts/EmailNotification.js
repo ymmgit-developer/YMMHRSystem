@@ -227,3 +227,24 @@ function SaveGiftContacts() {
     });
 
 }
+
+function SaveRewardsInvenContacts() {
+    var dialog = Metro.getPlugin('#preloader', 'dialog');
+    dialog.open();
+    var contacts = $("#RewardsInventoryContacts").val();
+
+    $.ajax({
+        method: "POST",
+        url: window.$SaveRewardsInventoryContacts,
+        cache: false,
+        data: { contacts: contacts },
+        success: function (result) {
+            dialog.close();
+            if (result !== "false") {
+                Metro.toast.create("Contacts saved.", null, null, "bg-green fg-white");
+            } else {
+                Metro.toast.create("Please enter correct email addresses / Please do not repeat a contact.", null, null, "bg-red fg-white");
+            }
+        }
+    });
+}

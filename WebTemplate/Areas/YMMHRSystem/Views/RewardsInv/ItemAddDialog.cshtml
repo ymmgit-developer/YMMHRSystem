@@ -1,0 +1,176 @@
+@model DtoRewardsItem
+@using YMMHRSystemLogic
+
+@{}
+
+<div class="dialog-title">Add Items</div>
+
+<div class="dialog-content" data-height="auto">
+    <form id="RewardsItemForm"
+          data-role="validator"
+          data-on-validate-form="SubmitAddItem()"
+          action="javascript:">
+
+        <!-- Row 1 -->
+        <div class="row mb-1">
+            <div class="cell-md-5">
+                <input data-role="input"
+                       type="text"
+                       id="ItemName"
+                       name="ItemName"
+                       data-prepend="Item name"
+                       data-validate="required minlength=2 maxlength=100"
+                       autocomplete="off"
+                       placeholder="Example: Alexa / Voucher / Soccer ball" />
+            </div>
+
+            <div class="cell-md-2">
+                <input data-role="input"
+                       type="number"
+                       id="ValuePoints"
+                       name="ValuePoints"
+                       data-prepend="Value pts"
+                       data-validate="required"
+                       min="1"
+                       step="1"
+                       value="1" />
+            </div>
+
+            <div class="cell-md-2">
+                <input data-role="input"
+                       type="number"
+                       id="Cost"
+                       name="Cost"
+                       data-prepend="Cost"
+                       data-append="$"
+                       min="0"
+                       step="0.01"
+                       value="0.00" />
+                <span class="helper-text">MXN (2 decimals)</span>
+            </div>
+
+            <div class="cell-md-3">
+                <label class="d-block">Active</label>
+                <input type="checkbox"
+                       id="IsActive"
+                       name="IsActive"
+                       data-role="switch"
+                       data-caption="Active"
+                       checked />
+            </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row mb-1">
+            <div class="cell-md-4">
+                <label>Stock</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="Stock"
+                       name="Stock"
+                       value="0" />
+            </div>
+
+            <div class="cell-md-4">
+                <label>Stock Min</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="StockMin"
+                       name="StockMin"
+                       value="0" />
+            </div>
+
+            <div class="cell-md-4">
+                <label>Stock Max</label>
+                <input type="text"
+                       data-role="spinner"
+                       data-buttons-position="right"
+                       data-min-value="0"
+                       id="StockMax"
+                       name="StockMax"
+                       value="0" />
+            </div>
+        </div>
+
+        <!-- Hidden -->
+        <input type="hidden" id="ItemId" name="ItemId" value="0" />
+
+        <!-- Validation message -->
+        <div class="row mb-1">
+            <div class="cell-md-12">
+                <div id="ItemAddValidation" class="remark alert" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="row">
+            <div class="cell-md-12">
+                <div class="dialog-actions d-flex flex-justify-start">
+                    <div>
+                        <button id="SaveRegisterRewardsItem" class="button my-control-colors">
+                            <span class="mif-floppy-disk"> Save</span>
+                        </button>
+                    </div>
+                    <div>
+                        <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    // Validación adicional (regla de negocio): StockMax=0 o >= StockMin
+    function validateRewardsItemBusinessRules() {
+        const name = ($('#ItemName').val() || '').trim();
+        const valuePoints = parseInt($('#ValuePoints').val() || '0', 10);
+        const stock = parseInt($('#Stock').val() || '0', 10);
+        const stockMin = parseInt($('#StockMin').val() || '0', 10);
+        const stockMax = parseInt($('#StockMax').val() || '0', 10);
+
+        if (!name) return "Item name is required.";
+        if (valuePoints <= 0) return "Value points must be greater than 0.";
+        if (stock < 0) return "Stock must be 0 or more.";
+        if (stockMin < 0) return "Stock Min must be 0 or more.";
+        if (stockMax < 0) return "Stock Max must be 0 or more.";
+        if (stockMax !== 0 && stockMax < stockMin) return "Stock Max must be 0 or greater than/equal to Stock Min.";
+
+        return "";
+    }
+
+    function validateRewardsItemBusinessRules() {
+        const name = ($('#ItemName').val() || '').trim();
+        const valuePoints = parseInt($('#ValuePoints').val() || '0', 10);
+        const stock = parseInt($('#Stock').val() || '0', 10);
+        const stockMin = parseInt($('#StockMin').val() || '0', 10);
+        const stockMax = parseInt($('#StockMax').val() || '0', 10);
+        const cost = parseFloat($('#Cost').val() || '0');
+
+        if (!name) return "Item name is required.";
+        if (valuePoints <= 0) return "Value points must be greater than 0.";
+        if (isNaN(cost) || cost < 0) return "Cost must be 0 or more.";
+        if (stock < 0) return "Stock must be 0 or more.";
+        if (stockMin < 0) return "Stock Min must be 0 or more.";
+        if (stockMax < 0) return "Stock Max must be 0 or more.";
+        if (stockMax !== 0 && stockMax < stockMin) return "Stock Max must be 0 or greater than/equal to Stock Min.";
+
+        return "";
+    }
+
+    // Muestra/oculta mensaje en tiempo real
+    $(document).off('change.inv input.inv', '#ItemName,#ValuePoints,#Cost,#Stock,#StockMin,#StockMax');
+    $(document).on('change.inv input.inv', '#ItemName,#ValuePoints,#Cost,#Stock,#StockMin,#StockMax', function () {
+        const msg = validateRewardsItemBusinessRules();
+        if (msg) {
+            $('#ItemAddValidation').text(msg).show();
+        } else {
+            $('#ItemAddValidation').hide();
+        }
+    });
+</script>

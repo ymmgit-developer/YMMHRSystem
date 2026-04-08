@@ -749,6 +749,53 @@ namespace YMMHRSystemLogic
             , sendEmail.GetAdminEmail()
             , notifyToList);
         }
+
+        /// <summary>
+        /// Get the email addresses of the rewards inventory administrators
+        /// </summary>
+        /// <returns></returns>
+        public string GetRewardInventoryContacts(long emailNotificationId)
+        {
+            try
+            {
+                DataRow dataRow = null;
+                string sqlString = "SELECT RewardInventory FROM EmailNotifications WHERE EmailNotificationId = " + emailNotificationId;
+
+                dataRow = oDatabase.GetRow(sqlString, "Get RewardInventory Contacts");
+
+                if (dataRow == null) return "";
+
+                return dataRow["RewardInventory"].ToString();
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Get Reward Inventory Contacts", SQLTools.userId.ToString(),
+                    ex.Message, ex.StackTrace, "GetRewardInventoryContacts");
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Save Legal Affair Contacts
+        /// </summary>
+        /// <param name="contacts"></param>
+        /// <param name="emailNotificationId"></param>
+        /// <returns></returns>
+        public bool SaveRewardInventoryContacts(string contacts)
+        {
+            try
+            {
+                string query = "UPDATE EmailNotifications SET RewardInventory = '" + contacts + "' WHERE EmailNotificationId =" + 1;
+                oDatabase.ExecuteNonQuery(query, "Save Reward Inventory Contacts");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Save Reward Inventory Contacts", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "SaveRewardInventoryContacts");
+                return false;
+            }
+
+        }
         #endregion
     }
 }

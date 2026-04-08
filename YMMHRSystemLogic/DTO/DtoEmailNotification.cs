@@ -19,5 +19,6 @@ namespace YMMHRSystemLogic
         public string BusinessTripContacts { get; set; }
         public string LegalAffairContacts { get; set; }
         public string GiftContacts { get; set; }
+        public string RewardInventory { get; set; }
     }
 }

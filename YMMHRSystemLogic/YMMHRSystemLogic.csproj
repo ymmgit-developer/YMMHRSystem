@@ -183,6 +183,7 @@
     <Compile Include="Classes\HistoryAnniversary.cs" />
     <Compile Include="Classes\Motive.cs" />
     <Compile Include="Classes\EntryExiNotifications.cs" />
+    <Compile Include="Classes\Rewards.cs" />
     <Compile Include="Classes\SecondNotificationEntryExit.cs" />
     <Compile Include="Classes\Types.cs" />
     <Compile Include="Classes\UtilityCar.cs" />
@@ -229,9 +230,15 @@
     <Compile Include="DTO\DtoFlightReservation.cs" />
     <Compile Include="DTO\DtoHeadCount.cs" />
     <Compile Include="DTO\DtoHistoryAnniversary.cs" />
+    <Compile Include="DTO\DtoImprovements.cs" />
+    <Compile Include="DTO\DtoLowStockRow.cs" />
     <Compile Include="DTO\DtoMotive.cs" />
+    <Compile Include="DTO\DtoRedeemResult.cs" />
     <Compile Include="DTO\DtoReportVacations.cs" />
+    <Compile Include="DTO\DtoRewardsHistoryLog.cs" />
+    <Compile Include="DTO\DtoRewardsItem.cs" />
     <Compile Include="DTO\DtoSalary.cs" />
+    <Compile Include="DTO\DtoScoreRow.cs" />
     <Compile Include="DTO\DtoSecondNotificationEntryExit.cs" />
     <Compile Include="DTO\DtoStatusGral.cs" />
     <Compile Include="DTO\DtoTurnOver.cs" />
@@ -309,6 +316,8 @@
     <Compile Include="DTO\DtoEntryExiNotifications.cs" />
     <Compile Include="DTO\DtoVacations.cs" />
     <Compile Include="DTO\DtoWorkerList.cs" />
+    <Compile Include="DTO\DtoWorkerRewards.cs" />
+    <Compile Include="DTO\DtoRewardsHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -133,6 +133,36 @@ namespace YMMHRSystemLogic
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// Load multiple Workers by filter.
+        /// </summary>
+        /// <returns>Load WorkerFile Dto</returns>
+        public List<DtoWorkerFile> LoadMultipleWorkersbyWorkerId(string[] workerIds)
+        {
+            try 
+            {
+                var ids = workerIds
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim().Replace("'", "''"))
+                .Distinct()
+                .ToList();
+                string inWorkerIds = string.Join(",", ids.Select(x => $"'{x}'"));
+
+                DBFrameworkMapping mapping = new DBFrameworkMapping();
+                List<DtoWorkerFile> workerfileList = new List<DtoWorkerFile>();
+                    mapping.Load<DtoWorkerFile>("SELECT * FROM WorkerFiles WHERE WorkerId IN (" +  inWorkerIds + ")", "WorkerFiles", new DtoWorkerFile());
+                    workerfileList.AddRange(mapping.dtoList.Select(renglon => (DtoWorkerFile)renglon.Dto));
+                
+                return workerfileList;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Load Multiple WorkerFiles filtrering by WorkerId", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "LoadMultiple");
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// Saves multiple workers
         /// </summary>

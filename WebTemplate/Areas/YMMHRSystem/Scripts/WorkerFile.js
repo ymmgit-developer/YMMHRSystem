@@ -1,5 +1,4 @@
-﻿console.warn("WorkerFile.js load succes");
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $('#dttWorkerFiles').DataTable({
         buttons: [
             {

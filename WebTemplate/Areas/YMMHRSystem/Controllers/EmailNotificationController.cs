@@ -197,5 +197,20 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
         /// <summary>
         /// Send Anniversarty Gift Email
         /// </summary>
+        /// 
+        /// <summary>
+        /// Send Anniversarty Gift Email
+        /// </summary>
+        public string SaveRewardsInvenContacts(string contacts)
+        {
+            try
+            {
+                return emailNotification.SaveRewardInventoryContacts(contacts) ? "true" : "false";
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
