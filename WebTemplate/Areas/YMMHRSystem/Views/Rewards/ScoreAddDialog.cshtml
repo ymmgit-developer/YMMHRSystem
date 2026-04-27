@@ -1,11 +1,11 @@
-@model DtoImprovements
+@model object
 @using YMMHRSystemLogic
-
+@using System
+@using System.Linq
+@using System.Collections.Generic
 
 @{
     ViewBag.Title = "Add Score";
-    List<DtoImprovements> improvement = ViewBag.Improvements;
-    List<DtoWorkerFile> workerFiles = ViewBag.Workers;
 
     var workers = ViewBag.Workers as List<DtoWorkerFile> ?? new List<DtoWorkerFile>();
     var improvements = ViewBag.Improvements as List<DtoImprovements> ?? new List<DtoImprovements>();
@@ -21,27 +21,33 @@
     var impB = improvements.Where(i => (i.WorkerType ?? "") == "B").ToList();
     var impC = improvements.Where(i => (i.WorkerType ?? "") == "C").ToList();
 
-    // Determinar qué bloques mostrar según selección real
+    // Mostrar A si hay Union workers seleccionados y hay improvements A
     bool showA = hasUnion && impA.Any();
+    // Mostrar B si hay Staff workers seleccionados y hay improvements B
     bool showB = hasStaff && impB.Any();
-    bool showC = improvements.Any(i => (i.WorkerType ?? "") == "C"); // C generalmente aplica si existe
+    // Mostrar C si existe en el catálogo (aplica general)
+    bool showC = impC.Any();
 
-    @functions{
-        string GetJobStyle(string job)
-        {
-                   "bg-black fg-white";
-        }
-    }
+    // Helpers
+    Func<string, string> SafeCat = (c) => string.IsNullOrWhiteSpace(c) ? "General" : c.Trim();
+
+    Func<string, string> GetJobStyle = (job) =>
+    {
+        var j = (job ?? "").Trim().ToUpperInvariant();
+        return j == "ASSOCIATE PRODUCTION" ? "bg-blue fg-white" :
+               j == "TEAM LEADER" ? "bg-indigo fg-white" :
+               j == "COORDINATOR" ? "bg-brown fg-white" :
+               j == "ADVANCED TECHNICAL STAFF" ? "bg-magenta fg-white" :
+               j == "ASSISTANT MANAGER" ? "bg-orange fg-white" :
+               j == "MANAGER" ? "bg-violet fg-white" :
+               j == "SENIOR MANAGER" ? "bg-red fg-white" :
+               j == "VICE PRESIDENT" ? "bg-red fg-white" :
+               "bg-black fg-white";
+    };
 }
 
-<head>
-    <script>
-
-    </script>
-</head>
-
 <style>
-    /* 20% alto visible y scroll interno */
+    /* Scroll interno en listas de workers */
     .rw-list {
         height: 20vh;
         overflow-y: auto;
@@ -50,18 +56,12 @@
         padding: 10px;
         background: #fff;
     }
-    /* Activa el scroll en el dialog */
+
+    /* Scroll en contenido del dialog */
     .dialog-content {
         overflow-y: auto;
         overflow-x: hidden;
-        padding-right: 10px; /* evita que el scroll tape contenido */
-    }
-    /* Divisor */
-    .imp-divider-metro {
-        height: 2px;
-        background: linear-gradient(to right, #1976d2, #42a5f5);
-        margin: 25px 0;
-        border-radius: 2px;
+        padding-right: 10px;
     }
 </style>
 
@@ -69,6 +69,7 @@
 
 <div class="dialog-content" data-height="auto">
     <div class="container">
+
         <input type="hidden" id="trustedWorkerIds" value="@string.Join(",", staffWorkers.Select(w => w.WorkerId))" />
         <input type="hidden" id="associateWorkerIds" value="@string.Join(",", unionWorkers.Select(w => w.WorkerId))" />
 
@@ -102,7 +103,7 @@
             }
             else
             {
-                var title = hasStaff ? "Staff" : "Union Worker";
+                var title = hasStaff ? "Trusted Personnel" : "Associates";
                 var list = hasStaff ? staffWorkers : unionWorkers;
 
                 <div class="col-12">
@@ -119,46 +120,54 @@
             }
         </div>
 
-        <!-- Improvements (side by side por categoría) -->
+        <!-- Improvements A/B side-by-side -->
         <div class="row">
+
             @* ---------- B: Trusted Personnel ---------- *@
             @if (showB)
             {
                 var catB = impB
-                    .GroupBy(x => string.IsNullOrWhiteSpace(x.CategoryName) ? "General" : x.CategoryName)
+                    .GroupBy(x => SafeCat(x.CategoryName))
                     .OrderBy(g => g.Key)
                     .ToList();
 
                 <div class="col-12 @(showA ? "col-md-6" : "") mt-1">
+                    <div class="row">
+                        <div class="col-12"><h6>Trusted Personnel</h6></div>
+                    </div>
+
                     <div data-role="accordion" data-one-frame="false">
                         @foreach (var cat in catB)
                         {
                             <div class="frame">
                                 <div class="heading">@cat.Key</div>
                                 <div class="content">
-                    <div class="row">
-                        {
+                                    <div class="row">
+                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
+                                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                <label>
-                                    <input type="checkbox" class="imp-check"
-                                           value="@imp.ImprovementId"
-                                           data-score="@imp.ScoreValue"
-                                           data-workertype="@imp.WorkerType" />
-
-                                    <span class="ml-1">
-                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                    </span>
-                                </label>
+                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                                <label>
+                                                    <input type="checkbox" class="imp-check"
+                                                           value="@imp.ImprovementId"
+                                                           data-score="@imp.ScoreValue"
+                                                           data-workertype="@imp.WorkerType" />
+                                                    <span class="ml-1">
+                                                        <strong @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
+                                                            @imp.ImprovemenName
+                                                        </strong>
+                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         }
-                    </div>
-                </div>
-                            </div>
-            }
                     </div>
                 </div>
             }
@@ -167,32 +176,45 @@
             @if (showA)
             {
                 var catA = impA
-                    .GroupBy(x => string.IsNullOrWhiteSpace(x.CategoryName) ? "General" : x.CategoryName)
+                    .GroupBy(x => SafeCat(x.CategoryName))
                     .OrderBy(g => g.Key)
                     .ToList();
 
                 <div class="col-12 @(showB ? "col-md-6" : "") mt-1">
                     <div class="row">
+                        <div class="col-12"><h6>Associates</h6></div>
+                    </div>
+
+                    <div data-role="accordion" data-one-frame="false">
+                        @foreach (var cat in catA)
                         {
+                            <div class="frame">
+                                <div class="heading">@cat.Key</div>
+                                <div class="content">
+                                    <div class="row">
+                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
+                                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                <label>
-                                    <input type="checkbox" class="imp-check"
-                                           value="@imp.ImprovementId"
-                                           data-score="@imp.ScoreValue"
-                                           data-workertype="@imp.WorkerType" />
-
-                                    <span class="ml-1">
-                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                    </span>
-                                </label>
-                            </div>
-                        }
-                    </div>
-                </div>
+                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                                <label>
+                                                    <input type="checkbox" class="imp-check"
+                                                           value="@imp.ImprovementId"
+                                                           data-score="@imp.ScoreValue"
+                                                           data-workertype="@imp.WorkerType" />
+                                                    <span class="ml-1">
+                                                        <strong @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
+                                                            @imp.ImprovemenName
+                                                        </strong>
+                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         }
                     </div>
@@ -201,35 +223,49 @@
 
         </div>
 
+        <!-- C: Contingencies (full width) -->
         @if (showC)
         {
             var catC = impC
-                .GroupBy(x => string.IsNullOrWhiteSpace(x.CategoryName) ? "General" : x.CategoryName)
+                .GroupBy(x => SafeCat(x.CategoryName))
                 .OrderBy(g => g.Key)
                 .ToList();
 
-            <div class="row mt-1">
+            <div class="row mt-2">
                 <div class="col-12">
                     <div class="row">
+                        <div class="col-12"><h6>Contingencies</h6></div>
+                    </div>
+
+                    <div data-role="accordion" data-one-frame="false">
+                        @foreach (var cat in catC)
                         {
+                            <div class="frame">
+                                <div class="heading">@cat.Key</div>
+                                <div class="content">
+                                    <div class="row">
+                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
+                                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                <label>
-                                    <input type="checkbox" class="imp-check"
-                                           value="@imp.ImprovementId"
-                                           data-score="@imp.ScoreValue"
-                                           data-workertype="@imp.WorkerType" />
-
-                                    <span class="ml-1">
-                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                    </span>
-                                </label>
-                            </div>
-                        }
-                    </div>
+                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                                <label>
+                                                    <input type="checkbox" class="imp-check"
+                                                           value="@imp.ImprovementId"
+                                                           data-score="@imp.ScoreValue"
+                                                           data-workertype="@imp.WorkerType" />
+                                                    <span class="ml-1">
+                                                        <strong @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
+                                                            @imp.ImprovemenName
+                                                        </strong>
+                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -240,21 +276,28 @@
         }
 
         <!-- Footer -->
-        <div class="row">
+        <div class="row mt-2">
             <div class="dialog-actions d-flex flex-justify-start w-100">
                 <div class="container-fluid">
                     <div class="row flex-justify-between flex-align-center">
                         <div class="cell-5">
                             <strong>Total selected points:</strong>
-                            <p>Associates: <kbd class="bg-white fg-green"><span id="ptsA">0</span></kbd> | Trusted Personnel: <kbd class="bg-white fg-green"><span id="ptsB">0</span></kbd> | Contingencies: <kbd class="bg-white fg-green"><span id="ptsC">0</span></kbd></p>
+                            <p>
+                                Associates: <kbd class="bg-white fg-green"><span id="ptsA">0</span></kbd> |
+                                Trusted Personnel: <kbd class="bg-white fg-green"><span id="ptsB">0</span></kbd> |
+                                Contingencies: <kbd class="bg-white fg-green"><span id="ptsC">0</span></kbd>
+                            </p>
                         </div>
                         <div class="cell-1">
-                            <button id="SaveRegisterRewards" onclick="SubmitAddRewards()" class="button my-control-colors"><span class="mif-floppy-disk"> Save</span> </button>
+                            <button id="SaveRegisterRewards" onclick="SubmitAddRewards()" class="button my-control-colors">
+                                <span class="mif-floppy-disk"> Save</span>
+                            </button>
                             <span id="Preloader" class="mif-2x mif-spinner4 ani-spin" style="visibility:hidden"></span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
