@@ -29,14 +29,6 @@
     @functions{
         string GetJobStyle(string job)
         {
-            return job == "ASSOCIATE PRODUCTION" ? "bg-blue fg-white" :
-                   job == "TEAM LEADER" ? "bg-indigo fg-white" :
-                   job == "COORDINATOR" ? "bg-brown fg-white" :
-                   job == "ADVANCED TECHNICAL STAFF" ? "bg-magenta fg-white" :
-                   job == "ASSISTANT  MANAGER" ? "bg-orange fg-white" :
-                   job == "MANAGER" ? "bg-violet fg-white" :
-                   job == "SENIOR MANAGER" ? "bg-red fg-white" :
-                   job == "VICE PRESIDENT" ? "bg-red fg-white" :
                    "bg-black fg-white";
         }
     }
@@ -127,6 +119,7 @@
             }
         </div>
 
+        <!-- Improvements (side by side por categoría) -->
         <div class="row">
             @* ---------- B: Trusted Personnel ---------- *@
             @if (showB)
@@ -143,34 +136,29 @@
                             <div class="frame">
                                 <div class="heading">@cat.Key</div>
                                 <div class="content">
-                                    <div class="row">
-                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
-                                        {
+                    <div class="row">
+                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                                <label>
-                                                    <input type="checkbox" class="imp-check"
-                                                           value="@imp.ImprovementId"
-                                                           data-score="@imp.ScoreValue"
-                                                           data-workertype="@imp.WorkerType" />
+                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                <label>
+                                    <input type="checkbox" class="imp-check"
+                                           value="@imp.ImprovementId"
+                                           data-score="@imp.ScoreValue"
+                                           data-workertype="@imp.WorkerType" />
 
-                                                    <span class="ml-1">
-                                                        <strong
-                                                                @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
-                                                            @imp.ImprovemenName
-                                                        </strong>
-                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                                    <span class="ml-1">
+                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                    </span>
+                                </label>
                             </div>
                         }
+                    </div>
+                </div>
+                            </div>
+            }
                     </div>
                 </div>
             }
@@ -184,38 +172,27 @@
                     .ToList();
 
                 <div class="col-12 @(showB ? "col-md-6" : "") mt-1">
-                    <div data-role="accordion" data-one-frame="false">
-                        @foreach (var cat in catA)
+                    <div class="row">
                         {
-                            <div class="frame">
-                                <div class="heading">@cat.Key</div>
-                                <div class="content">
-                                    <div class="row">
-                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
-                                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                                <label>
-                                                    <input type="checkbox" class="imp-check"
-                                                           value="@imp.ImprovementId"
-                                                           data-score="@imp.ScoreValue"
-                                                           data-workertype="@imp.WorkerType" />
+                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                <label>
+                                    <input type="checkbox" class="imp-check"
+                                           value="@imp.ImprovementId"
+                                           data-score="@imp.ScoreValue"
+                                           data-workertype="@imp.WorkerType" />
 
-                                                    <span class="ml-1">
-                                                        <strong
-                                                                @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
-                                                            @imp.ImprovemenName
-                                                        </strong>
-                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                                    <span class="ml-1">
+                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                    </span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
                             </div>
                         }
                     </div>
@@ -224,7 +201,6 @@
 
         </div>
 
-        @* ---------- C: Contingencies (full width) ---------- *@
         @if (showC)
         {
             var catC = impC
@@ -234,37 +210,26 @@
 
             <div class="row mt-1">
                 <div class="col-12">
-                    <div data-role="accordion" data-one-frame="false">
-                        @foreach (var cat in catC)
+                    <div class="row">
                         {
-                            <div class="frame">
-                                <div class="heading">@cat.Key</div>
-                                <div class="content">
-                                    <div class="row">
-                                        @foreach (var imp in cat.OrderBy(x => x.ImprovemenName))
-                                        {
                                             var hint = string.IsNullOrWhiteSpace(imp.DescriptionImpro)
                                                 ? null
                                                 : System.Web.HttpUtility.HtmlAttributeEncode(imp.DescriptionImpro);
 
-                                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
-                                                <label>
-                                                    <input type="checkbox" class="imp-check"
-                                                           value="@imp.ImprovementId"
-                                                           data-score="@imp.ScoreValue"
-                                                           data-workertype="@imp.WorkerType" />
+                            <div class="col-12 col-sm-6 col-lg-3 mt-1">
+                                <label>
+                                    <input type="checkbox" class="imp-check"
+                                           value="@imp.ImprovementId"
+                                           data-score="@imp.ScoreValue"
+                                           data-workertype="@imp.WorkerType" />
 
-                                                    <span class="ml-1">
-                                                        <strong
-                                                                @Html.Raw(hint == null ? "" : $"data-role=\"hint\" data-hint-text=\"{hint}\" data-hint-position=\"top\"")>
-                                                            @imp.ImprovemenName
-                                                        </strong>
-                                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        }
-                                    </div>
+                                    <span class="ml-1">
+                                        <kbd class="bg-green fg-white">@imp.ScoreValue pts</kbd>
+                                    </span>
+                                </label>
+                            </div>
+                        }
+                    </div>
                                 </div>
                             </div>
                         }

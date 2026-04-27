@@ -11,22 +11,18 @@ $(document).ready(function () {
                 extend: 'copyHtml5',
                 text: 'Copy',
                 exportOptions: {
-                    // Exporta TODO menos la col 0 (checkbox) y Actions (col 7)
-                    columns: [1, 2, 3, 4, 5, 6]
                 }
             },
             {
                 extend: 'excelHtml5',
                 text: 'Excel',
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6]
                 }
             },
             {
                 extend: 'print',
                 text: 'Print',
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6]
                 }
             }
         ],
@@ -43,7 +39,6 @@ $(document).ready(function () {
         // Para que no intente ordenar/filtrar por la columna de checkbox
         columnDefs: [
             { targets: 0, searchable: false, orderable: false, width: "35px" },
-            { targets: 7, searchable: false, orderable: false }
         ],
 
         initComplete: function () {
@@ -188,7 +183,6 @@ $(document).ready(function () {
                 });
             });
 
-            // 5) Checkbox "select all"
             const th0 = $(api.column(0).header());
             if (th0.find('#rw-select-all').length === 0) {
                 th0.html('<input type="checkbox" id="rw-select-all" />');
@@ -742,10 +736,6 @@ function ResetPointsConfirm() {
                 Metro.toast.create(res.message || 'Points reset successfully.', null, null, "bg-green fg-white");
                 Metro.dialog.close('#ResetPointsDialog');
 
-                //refrescar la página
-                setTimeout(function () {
-                    location.reload();
-                }, 2000);
             } else {
                 Metro.toast.create(res.message || 'Could not reset points.', null, null, "bg-red fg-white");
             }
@@ -967,6 +957,9 @@ function DeleteRewardsInvDialog(ItemId) {
         Metro.toast.create('Invalid ItemId.', null, null, "bg-red fg-white");
         return;
     }
+
+    // Confirmación simple (nativa del navegador)
+    // Si prefieres Metro dialog, te lo armo también.
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     $.ajax({

@@ -513,6 +513,7 @@ namespace YMMHRSystemLogic
             {
                 if (workerIds == null || workerIds.Length == 0) return false;
 
+                // Sanitizar + eliminar vacíos/duplicados
                 var ids = workerIds
                     .Where(x => !string.IsNullOrWhiteSpace(x))
                     .Select(x => x.Trim().Replace("'", "''"))
@@ -521,6 +522,8 @@ namespace YMMHRSystemLogic
 
                 if (ids.Count == 0) return false;
 
+                // Generar batch por cada WorkerId (para capturar ScoreBefore individual)
+                // Nota: usamos transacción para que sea consistente
                 var sb = new System.Text.StringBuilder();
                 sb.AppendLine("SET NOCOUNT ON;");
                 sb.AppendLine("SET XACT_ABORT ON;");
