@@ -724,7 +724,6 @@ function ResetPointsConfirm() {
         Metro.toast.create('No workers selected.', null, null, "bg-orange fg-white");
         return;
     }
-    // $('#BtnResetYes').prop('disabled', true);
 
     $.ajax({
         method: "POST",
@@ -735,6 +734,10 @@ function ResetPointsConfirm() {
             if (res && res.success) {
                 Metro.toast.create(res.message || 'Points reset successfully.', null, null, "bg-green fg-white");
                 Metro.dialog.close('#ResetPointsDialog');
+
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
 
             } else {
                 Metro.toast.create(res.message || 'Could not reset points.', null, null, "bg-red fg-white");
