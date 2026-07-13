@@ -95,14 +95,15 @@ namespace YMMHRSystemLogic
         /// Carga multiples usuarios con sus respectivos campos.
         /// </summary>
         /// <returns>Dtos de usuario cargados.</returns>
-        public List<DtoUser> LoadMultiple()
+        public List<DtoUser> LoadMultiple(bool activeOnly = false)
         {
             try
             {
                 DBFrameworkMapping mapping = new DBFrameworkMapping();
                 List<DtoUser> userList = new List<DtoUser>();
 
-                mapping.Load<DtoUser>("SELECT usuario.*, rol.Name as RoleName FROM Users usuario JOIN Roles rol ON usuario.RoleId=rol.RoleId", "Users", new DtoUser());
+                string activeFilter = activeOnly ? " WHERE usuario.Status = 1" : "";
+                mapping.Load<DtoUser>("SELECT usuario.*, rol.Name as RoleName FROM Users usuario JOIN Roles rol ON usuario.RoleId=rol.RoleId" + activeFilter, "Users", new DtoUser());
                 userList.AddRange(mapping.dtoList.Select(renglon => (DtoUser)renglon.Dto));
 
                 return userList;

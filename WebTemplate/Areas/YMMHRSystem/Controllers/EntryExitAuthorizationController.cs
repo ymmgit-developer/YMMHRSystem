@@ -93,41 +93,69 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 {
                     return Json(new { success = false, message = "Please select an associate." }, JsonRequestBehavior.AllowGet);
                 }
-                else
-                {
-                    foreach (var worker in dtoEntryExitAuthorization.WorkerList)
+
+                var workers = dtoEntryExitAuthorization.WorkerList
+                    .Where(worker => worker != null && !string.IsNullOrWhiteSpace(worker.Names))
+                    .GroupBy(worker => new
                     {
-                        EntryExitAuthorization checkInOut = new EntryExitAuthorization();
-                        var entryExit = new DtoEntryExitAuthorization
-                        {
-                            Associate = worker.Names,
-                            Process = worker.Process,
-                            DateFor = dtoEntryExitAuthorization.DateFor,
-                            TimeFor = dtoEntryExitAuthorization.TimeFor,
-                            IdType = dtoEntryExitAuthorization.IdType,
-                            IdSalary = dtoEntryExitAuthorization.IdSalary,
-                            IdMotive = dtoEntryExitAuthorization.IdMotive,
-                            CurrentState = dtoEntryExitAuthorization.CurrentState,
-                            CreateBy = HttpContext.Session["UserName"].ToString(),
-                            CreateDate = DateTime.Now
-                        };
-                        if (!checkInOut.Save(entryExit))
-                        {
-                            // Si el guardado falla para un trabajador, detener y retornar false
-                            return Json(false, JsonRequestBehavior.AllowGet);
-                        }
-                        else
-                        {                            
-                            emailNotification.FirstApprovalNotification(workerFile.GetWorkerFileIdByName(worker.Names), worker.Names, types.GetTypeDescription(dtoEntryExitAuthorization.IdType), motive.GetMotiveDescription(dtoEntryExitAuthorization.IdMotive), dtoEntryExitAuthorization.DateFor, dtoEntryExitAuthorization.TimeFor.ToString());
-                        }
-                    }
-                    return Json(true, JsonRequestBehavior.AllowGet);
+                        Names = worker.Names.Trim().ToUpperInvariant(),
+                        Process = (worker.Process ?? string.Empty).Trim().ToUpperInvariant()
+                    })
+                    .Select(group => group.First())
+                    .ToList();
+
+                if (!workers.Any())
+                {
+                    return Json(new { success = false, message = "Please select an associate." }, JsonRequestBehavior.AllowGet);
                 }
-                
+
+                var entries = workers.Select(worker => new DtoEntryExitAuthorization
+                {
+                    Associate = worker.Names,
+                    Process = worker.Process,
+                    DateFor = dtoEntryExitAuthorization.DateFor,
+                    TimeFor = dtoEntryExitAuthorization.TimeFor,
+                    IdType = dtoEntryExitAuthorization.IdType,
+                    IdSalary = dtoEntryExitAuthorization.IdSalary,
+                    IdMotive = dtoEntryExitAuthorization.IdMotive,
+                    CurrentState = dtoEntryExitAuthorization.CurrentState,
+                    CreateBy = HttpContext.Session["UserName"].ToString(),
+                    CreateDate = DateTime.Now
+                }).ToList();
+
+                foreach (var entry in entries)
+                {
+                    if (checkinout.Exists(entry))
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "An identical access request already exists for " + entry.Associate + "."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
+                foreach (var entry in entries)
+                {
+                    if (!checkinout.Save(entry))
+                    {
+                        return Json(new { success = false, message = "The access request could not be saved." }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    emailNotification.FirstApprovalNotification(
+                        workerFile.GetWorkerFileIdByName(entry.Associate),
+                        entry.Associate,
+                        types.GetTypeDescription(entry.IdType),
+                        motive.GetMotiveDescription(entry.IdMotive),
+                        entry.DateFor,
+                        entry.TimeFor.ToString());
+                }
+
+                return Json(new { success = true, message = "Successful registration." }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "The access request could not be saved." }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -190,34 +218,89 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
-
-        public ActionResult ApproveCheckInOut(int IdRecordsInOut) 
+        public ActionResult ApproveCheckInOut(int IdRecordsInOut, int approvalLevel)
         {
             try
             {
-                EntryExitAuthorization EntryExitAuthorization = new EntryExitAuthorization();
+                EntryExitAuthorization entryExitAuthorization = new EntryExitAuthorization();
 
-                if(EntryExitAuthorization.GetRecord(IdRecordsInOut).FirtsAuthorization == null || EntryExitAuthorization.GetRecord(IdRecordsInOut).FirtsAuthorization != true) 
+                long userId = Convert.ToInt64(HttpContext.Session["UserId"]);
+                string userName = HttpContext.Session["UserName"]?.ToString();
+                string workerFileName = HttpContext.Session["WorkerFileName"]?.ToString();
+
+                var record = entryExitAuthorization.GetRecord(IdRecordsInOut);
+
+                if (record == null)
                 {
-                    if(EntryExitAuthorization.ApproveRecords(1, HttpContext.Session["UserName"].ToString(), IdRecordsInOut))
+                    return Json(new { success = false, message = "Record not found." });
+                }
+
+                if (record.CurrentState == 2)
+                {
+                    return Json(new { success = false, message = "This record is already fully approved." });
+                }
+
+                if (string.Equals(record.Associate?.Trim(), workerFileName?.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return Json(new { success = false, message = "You cannot approve your own record." });
+                }
+
+                if (approvalLevel == 1)
+                {
+                    if (!Permission.QueryPermission("CHECKINOUT.FIRSTAPPROVAL", userId))
                     {
-                        EntryExitAuthorization.ChangeCurrentStatus(1, IdRecordsInOut);
+                        return Json(new { success = false, message = "You do not have permission for first approval." });
+                    }
+
+                    if (record.CurrentState != 0 || record.FirtsAuthorization == true)
+                    {
+                        return Json(new { success = false, message = "This record is no longer pending first approval." });
+                    }
+
+                    bool approved = entryExitAuthorization.ApproveRecords(1, userName, IdRecordsInOut);
+
+                    if (approved)
+                    {
+                        entryExitAuthorization.ChangeCurrentStatus(1, IdRecordsInOut);
                         emailNotification.SecondApprovalNotification(IdRecordsInOut);
+
+                        return Json(new { success = true, message = "First approval completed." });
                     }
+
+                    return Json(new { success = false, message = "Error approving record." });
                 }
-                else
+
+                if (approvalLevel == 2)
                 {
-                    if(EntryExitAuthorization.ApproveRecords(2, HttpContext.Session["UserName"].ToString(), IdRecordsInOut)) 
+                    if (!Permission.QueryPermission("CHECKINOUT.SECONDAPPROVAL", userId))
                     {
-                        EntryExitAuthorization.ChangeCurrentStatus(2, IdRecordsInOut);
-                        emailNotification.CompleteApprovalNotification(IdRecordsInOut);
+                        return Json(new { success = false, message = "You do not have permission for second approval." });
                     }
+
+                    if (record.CurrentState != 1 || record.FirtsAuthorization != true)
+                    {
+                        return Json(new { success = false, message = "This record is not pending second approval." });
+                    }
+
+                    bool approved = entryExitAuthorization.ApproveRecords(2, userName, IdRecordsInOut);
+
+                    if (approved)
+                    {
+                        entryExitAuthorization.ChangeCurrentStatus(2, IdRecordsInOut);
+                        emailNotification.CompleteApprovalNotification(IdRecordsInOut);
+
+                        return Json(new { success = true, message = "Second approval completed." });
+                    }
+
+                    return Json(new { success = false, message = "Error approving record." });
                 }
-                return Json(true, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false, message = "Invalid approval level." });
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                // Aquí conviene registrar el error real en log.
+                return Json(new { success = false, message = "Unexpected error approving record." });
             }
         }
     }

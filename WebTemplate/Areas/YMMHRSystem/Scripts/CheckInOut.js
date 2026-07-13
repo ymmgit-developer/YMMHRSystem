@@ -77,27 +77,44 @@ function RemoveAssociate(names) {
 }
 
 function AddRegister() {
+    var $button = $("#SaveCheckInOut");
+
+    if ($button.data("busy") === true) {
+        return;
+    }
+
+    $button.data("busy", true);
+    $button.prop("disabled", true);
     $("#Preloader").css("visibility", "visible");
+
     $.ajax({
         method: "POST",
         url: window.$SaveRecordCheckInOut,
         cache: false,
         data: $("#CheckInOutForm").serialize(),
         success: function (result) {
-            if (result) {
-                Metro.toast.create("Successful registration.", null, null, "bg-green fg-white");
+            if (result.success === true) {
+                Metro.toast.create(result.message || "Successful registration.", null, null, "bg-green fg-white");
                 Metro.dialog.close('#CheckInOutAddDialog');
                 setTimeout(function () {
                     location.reload();
                 }, 1500);
             }
             else {
-                $("#Error .dialog-content").html("<p>" + result.message + "</p>");
+                $("#Error .dialog-content").text(result.message || "The access request could not be saved.");
                 Metro.dialog.open('#Error');
             }
+        },
+        error: function () {
+            $("#Error .dialog-content").text("The access request could not be saved.");
+            Metro.dialog.open('#Error');
+        },
+        complete: function () {
+            $button.data("busy", false);
+            $button.prop("disabled", false);
+            $("#Preloader").css("visibility", "hidden");
         }
     });
-    console.log("AddRegister");
 }
 
 function UpdateCheckInOut()
@@ -166,23 +183,49 @@ function CancelCheckInOut() {
     });
 }
 
-function RecordApproveCheckInOut(IdRecordsInOut)
-{
+function RecordApproveCheckInOut(IdRecordsInOut, approvalLevel, button) {
+
+    var $button = $(button);
+
+    if ($button.data("busy") === true) {
+        return;
+    }
+
+    $button.data("busy", true);
+    $button.addClass("disabled");
+    $button.css("pointer-events", "none");
+
     $.ajax({
         method: "POST",
         url: window.$ApprovedRecordCheckInOut,
-        data: { IdRecordsInOut: IdRecordsInOut },
+        data: {
+            IdRecordsInOut: IdRecordsInOut,
+            approvalLevel: approvalLevel
+        },
         success: function (result) {
             console.log(result);
-            if (result == true) {
-                Metro.toast.create("Register approved.", null, null, "bg-green fg-white");
+
+            if (result.success === true) {
+                Metro.toast.create(result.message || "Register approved.", null, null, "bg-green fg-white");
+
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             }
             else {
-                Metro.toast.create("Error approving registration", null, null, "bg-red fg-white");
+                Metro.toast.create(result.message || "Error approving registration.", null, null, "bg-red fg-white");
+
+                $button.data("busy", false);
+                $button.removeClass("disabled");
+                $button.css("pointer-events", "auto");
             }
+        },
+        error: function () {
+            Metro.toast.create("Error approving registration.", null, null, "bg-red fg-white");
+
+            $button.data("busy", false);
+            $button.removeClass("disabled");
+            $button.css("pointer-events", "auto");
         }
     });
 }

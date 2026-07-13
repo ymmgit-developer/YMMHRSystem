@@ -12,6 +12,8 @@ namespace YMMHRSystemLogic
     {
         Log log = new Log();
         SQLTools oDatabase = new SQLTools();
+        WorkerFile workerFile = new WorkerFile();
+        User user = new User();
 
         #region Standard Methods
         /// <summary>
@@ -45,6 +47,39 @@ namespace YMMHRSystemLogic
             {
                 log.WriteToErrorLog("HR System", "Save Register In-Out", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Save");
                 return false;
+            }
+        }
+
+        public bool Exists(DtoEntryExitAuthorization inputoutput)
+        {
+            try
+            {
+                string associate = (inputoutput.Associate ?? string.Empty).Replace("'", "''");
+                string process = (inputoutput.Process ?? string.Empty).Replace("'", "''");
+                string createBy = (inputoutput.CreateBy ?? string.Empty).Replace("'", "''");
+                string dateFor = inputoutput.DateFor.ToString("yyyyMMdd");
+                string timeFor = inputoutput.TimeFor.ToString(@"hh\:mm\:ss");
+                string typeCondition = inputoutput.IdType.HasValue ? "IdType = " + inputoutput.IdType.Value : "IdType IS NULL";
+                string salaryCondition = inputoutput.IdSalary.HasValue ? "IdSalary = " + inputoutput.IdSalary.Value : "IdSalary IS NULL";
+                string motiveCondition = inputoutput.IdMotive.HasValue ? "IdMotive = " + inputoutput.IdMotive.Value : "IdMotive IS NULL";
+
+                string query = "SELECT COUNT(*) AS Total FROM EntryExitAuthorization " +
+                               "WHERE Associate = '" + associate + "' " +
+                               "AND Process = '" + process + "' " +
+                               "AND CONVERT(date, DateFor) = '" + dateFor + "' " +
+                               "AND TimeFor = '" + timeFor + "' " +
+                               "AND " + typeCondition + " " +
+                               "AND " + salaryCondition + " " +
+                               "AND " + motiveCondition + " " +
+                               "AND CreateBy = '" + createBy + "'";
+
+                DataRow record = oDatabase.GetRow(query, "Validate duplicate register In-Out");
+                return record != null && Convert.ToInt32(record["Total"]) > 0;
+            }
+            catch (Exception ex)
+            {
+                log.WriteToErrorLog("HR System", "Validate Duplicate Register In-Out", SQLTools.userId.ToString(), ex.Message, ex.StackTrace, "Exists");
+                throw ex;
             }
         }
 
@@ -123,7 +158,8 @@ namespace YMMHRSystemLogic
                         mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE SecondAuthorization = 0 ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
                         break;
                     case 2: //Records created by the user
-                        mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CreateBy = @userid ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
+                        string userName = user.GetUserName(userid.ToString());
+                        mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CreateBy LIKE '%" + userName + "%' ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
                         break;
                     case 3: //Authorized records
                         mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CurrentState = 2 AND DateFor = CONVERT(date, GETDATE()) ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());

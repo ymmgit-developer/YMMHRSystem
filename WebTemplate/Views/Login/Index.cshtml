@@ -1,6 +1,12 @@
 ﻿@model YMMHRSystemLogic.DtoUser
 @{
     Layout = null;
+    var versionAttribute = (System.Reflection.AssemblyInformationalVersionAttribute)System.Attribute.GetCustomAttribute(
+        typeof(WebTemplate.MvcApplication).Assembly,
+        typeof(System.Reflection.AssemblyInformationalVersionAttribute));
+    var applicationVersion = versionAttribute != null
+        ? versionAttribute.InformationalVersion
+        : typeof(WebTemplate.MvcApplication).Assembly.GetName().Version.ToString();
 }
 
 @Styles.Render("~/Content/css")
@@ -78,6 +84,10 @@
     <div data-overlay="true" data-close-button="false" data-overlay-click-close="false" data-role="dialog" id="PreloaderLogin" class="padding20 dialog" style="width: auto; height: auto; display: none">
         <span id="preloaderRedirect" class="mif-2x mif-spinner4 ani-spin" style="visibility: hidden"></span>
         <span>Redirecting...</span>
+    </div>
+
+    <div style="position: fixed; bottom: 10px; left: 12px; color: white; text-shadow: 0 1px 3px black;">
+        Version @applicationVersion
     </div>
 
 </body>

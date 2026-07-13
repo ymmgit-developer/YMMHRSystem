@@ -21,7 +21,7 @@ namespace WebTemplate.Controllers
             {
                 HttpContext.Session["CanSavePermission"] = Permission.QueryPermission("PERMISO.REGISTRAR", long.Parse(HttpContext.Session["UserId"].ToString())) ? true : (object)false;
 
-                return View(user.LoadMultiple());
+                return View(user.LoadMultiple(activeOnly: true));
             }
             else
             {

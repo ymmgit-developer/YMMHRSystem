@@ -208,6 +208,16 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                         return Json(new { success = false, message = "Please select an associate" }, JsonRequestBehavior.AllowGet);
                     }
                 }
+
+                // For a one-day service, a PM arrival followed by an AM departure
+                // means that the departure occurs on the following day. Normalize
+                // the date before applying the time-window validations.
+                if (TypeTransport == 1 && dtoExtraTransport.StartDate.HasValue &&
+                    dtoExtraTransport.StartTime.Hours >= 12 && dtoExtraTransport.FinishTime.Hours < 12)
+                {
+                    dtoExtraTransport.FinishDate = dtoExtraTransport.StartDate.Value.AddDays(1);
+                }
+
                 if (dtoExtraTransport.FinishDate != null)
                 {
                     if (dtoExtraTransport.StartDate != null)
@@ -313,12 +323,6 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                     {
                         if (TypeTransport == 1)
                         {
-                            // Check if StartTime is PM and FinishTime is AM
-                            if (dtoExtraTransport.StartTime.Hours >= 12 && dtoExtraTransport.FinishTime.Hours < 12)
-                            {
-                                dtoExtraTransport.FinishDate = dtoExtraTransport.StartDate.Value.AddDays(1);
-                            }
-
                             transportList.Add(new DtoExtraordinaryTransport()
                             {
                                 AssociateName = item.Names,
