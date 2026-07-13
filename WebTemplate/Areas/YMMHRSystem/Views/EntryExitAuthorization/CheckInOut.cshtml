@@ -106,11 +106,11 @@
                                         {
                                             if (Permission.QueryPermission("CHECKINOUT.FIRSTAPPROVAL", long.Parse(HttpContext.Current.Session["UserId"].ToString())) && (record.CurrentState == 0))
                                             {
-                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut, 1, this)"><span class="mif-checkmark"></span><span class="actionButton"> 1st Confirm</span></a>
                                             }
                                             if (Permission.QueryPermission("CHECKINOUT.SECONDAPPROVAL", long.Parse(HttpContext.Current.Session["UserId"].ToString())) && (record.CurrentState == 1))
                                             {
-                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut)"><span class="mif-checkmark"></span><span class="actionButton"> Confirm</span></a>
+                                                <a class="button small bg-green fg-white" style="cursor: pointer;" onclick="RecordApproveCheckInOut(@record.IdRecordsInOut, 2, this)"><span class="mif-checkmark"></span><span class="actionButton"> 2nd Confirm</span></a>
                                             }
                                         }
                                     }

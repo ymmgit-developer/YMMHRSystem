@@ -12,6 +12,8 @@ namespace YMMHRSystemLogic
     {
         Log log = new Log();
         SQLTools oDatabase = new SQLTools();
+        WorkerFile workerFile = new WorkerFile();
+        User user = new User();
 
         #region Standard Methods
         /// <summary>
@@ -123,7 +125,8 @@ namespace YMMHRSystemLogic
                         mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE SecondAuthorization = 0 ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
                         break;
                     case 2: //Records created by the user
-                        mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CreateBy = @userid ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
+                        string userName = user.GetUserName(userid.ToString());
+                        mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CreateBy LIKE '%" + userName + "%' ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());
                         break;
                     case 3: //Authorized records
                         mapping.Load<DtoEntryExitAuthorization>("SELECT * FROM EntryExitAuthorization WHERE CurrentState = 2 AND DateFor = CONVERT(date, GETDATE()) ORDER BY DateFor DESC", "EntryExitAuthorization", new DtoEntryExitAuthorization());

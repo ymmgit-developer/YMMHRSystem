@@ -166,23 +166,49 @@ function CancelCheckInOut() {
     });
 }
 
-function RecordApproveCheckInOut(IdRecordsInOut)
-{
+function RecordApproveCheckInOut(IdRecordsInOut, approvalLevel, button) {
+
+    var $button = $(button);
+
+    if ($button.data("busy") === true) {
+        return;
+    }
+
+    $button.data("busy", true);
+    $button.addClass("disabled");
+    $button.css("pointer-events", "none");
+
     $.ajax({
         method: "POST",
         url: window.$ApprovedRecordCheckInOut,
-        data: { IdRecordsInOut: IdRecordsInOut },
+        data: {
+            IdRecordsInOut: IdRecordsInOut,
+            approvalLevel: approvalLevel
+        },
         success: function (result) {
             console.log(result);
-            if (result == true) {
-                Metro.toast.create("Register approved.", null, null, "bg-green fg-white");
+
+            if (result.success === true) {
+                Metro.toast.create(result.message || "Register approved.", null, null, "bg-green fg-white");
+
                 setTimeout(function () {
                     location.reload();
                 }, 1000);
             }
             else {
-                Metro.toast.create("Error approving registration", null, null, "bg-red fg-white");
+                Metro.toast.create(result.message || "Error approving registration.", null, null, "bg-red fg-white");
+
+                $button.data("busy", false);
+                $button.removeClass("disabled");
+                $button.css("pointer-events", "auto");
             }
+        },
+        error: function () {
+            Metro.toast.create("Error approving registration.", null, null, "bg-red fg-white");
+
+            $button.data("busy", false);
+            $button.removeClass("disabled");
+            $button.css("pointer-events", "auto");
         }
     });
 }

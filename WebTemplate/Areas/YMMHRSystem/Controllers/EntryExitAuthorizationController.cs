@@ -190,34 +190,89 @@ namespace WebTemplate.Areas.YMMHRSystem.Controllers
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
-
-        public ActionResult ApproveCheckInOut(int IdRecordsInOut) 
+        public ActionResult ApproveCheckInOut(int IdRecordsInOut, int approvalLevel)
         {
             try
             {
-                EntryExitAuthorization EntryExitAuthorization = new EntryExitAuthorization();
+                EntryExitAuthorization entryExitAuthorization = new EntryExitAuthorization();
 
-                if(EntryExitAuthorization.GetRecord(IdRecordsInOut).FirtsAuthorization == null || EntryExitAuthorization.GetRecord(IdRecordsInOut).FirtsAuthorization != true) 
+                long userId = Convert.ToInt64(HttpContext.Session["UserId"]);
+                string userName = HttpContext.Session["UserName"]?.ToString();
+                string workerFileName = HttpContext.Session["WorkerFileName"]?.ToString();
+
+                var record = entryExitAuthorization.GetRecord(IdRecordsInOut);
+
+                if (record == null)
                 {
-                    if(EntryExitAuthorization.ApproveRecords(1, HttpContext.Session["UserName"].ToString(), IdRecordsInOut))
+                    return Json(new { success = false, message = "Record not found." });
+                }
+
+                if (record.CurrentState == 2)
+                {
+                    return Json(new { success = false, message = "This record is already fully approved." });
+                }
+
+                if (string.Equals(record.Associate?.Trim(), workerFileName?.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return Json(new { success = false, message = "You cannot approve your own record." });
+                }
+
+                if (approvalLevel == 1)
+                {
+                    if (!Permission.QueryPermission("CHECKINOUT.FIRSTAPPROVAL", userId))
                     {
-                        EntryExitAuthorization.ChangeCurrentStatus(1, IdRecordsInOut);
+                        return Json(new { success = false, message = "You do not have permission for first approval." });
+                    }
+
+                    if (record.CurrentState != 0 || record.FirtsAuthorization == true)
+                    {
+                        return Json(new { success = false, message = "This record is no longer pending first approval." });
+                    }
+
+                    bool approved = entryExitAuthorization.ApproveRecords(1, userName, IdRecordsInOut);
+
+                    if (approved)
+                    {
+                        entryExitAuthorization.ChangeCurrentStatus(1, IdRecordsInOut);
                         emailNotification.SecondApprovalNotification(IdRecordsInOut);
+
+                        return Json(new { success = true, message = "First approval completed." });
                     }
+
+                    return Json(new { success = false, message = "Error approving record." });
                 }
-                else
+
+                if (approvalLevel == 2)
                 {
-                    if(EntryExitAuthorization.ApproveRecords(2, HttpContext.Session["UserName"].ToString(), IdRecordsInOut)) 
+                    if (!Permission.QueryPermission("CHECKINOUT.SECONDAPPROVAL", userId))
                     {
-                        EntryExitAuthorization.ChangeCurrentStatus(2, IdRecordsInOut);
-                        emailNotification.CompleteApprovalNotification(IdRecordsInOut);
+                        return Json(new { success = false, message = "You do not have permission for second approval." });
                     }
+
+                    if (record.CurrentState != 1 || record.FirtsAuthorization != true)
+                    {
+                        return Json(new { success = false, message = "This record is not pending second approval." });
+                    }
+
+                    bool approved = entryExitAuthorization.ApproveRecords(2, userName, IdRecordsInOut);
+
+                    if (approved)
+                    {
+                        entryExitAuthorization.ChangeCurrentStatus(2, IdRecordsInOut);
+                        emailNotification.CompleteApprovalNotification(IdRecordsInOut);
+
+                        return Json(new { success = true, message = "Second approval completed." });
+                    }
+
+                    return Json(new { success = false, message = "Error approving record." });
                 }
-                return Json(true, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false, message = "Invalid approval level." });
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                // Aquí conviene registrar el error real en log.
+                return Json(new { success = false, message = "Unexpected error approving record." });
             }
         }
     }
